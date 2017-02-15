@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_manageing_invoice_fragment"
+            android:icon="@drawable/side_nav_bar"
+            android:title="@string/title_managing_invoices" />
+        <item
+            android:id="@+id/nav_invoice_statement_fragment"
+            android:icon="@drawable/side_nav_bar"
+            android:title="@string/invoice_statement" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_manage_group_product_fragment"
+            android:icon="@drawable/side_nav_bar"
+            android:title="@string/manage_group_product" />
+        <item
+            android:id="@+id/nav_manage_group_customer_fragment"
+            android:icon="@drawable/side_nav_bar"
+            android:title="@string/manage_group_customer" />
+    </group>
+</menu>

@@ -1,0 +1,201 @@
+<resources>
+    <string name="app_name">Snacking</string>
+    <string name="action_settings">Options</string>
+
+    <string name="invoice_type_facture">Facture</string>
+    <string name="invoice_type_avoir">Avoir</string>
+    <string name="invoice_state_en_cours">EN COURS</string>
+    <string name="invoice_state_terminee">TERMINEE</string>
+
+    <!-- Strings related to navigation drawer -->
+    <string name="invoice_statement">Relevé de facture</string>
+    <string name="manage_group_customer">Groupes de clients</string>
+    <string name="manage_group_product">Groupes de produits</string>
+
+    <!-- Strings related to Sync activity -->
+    <string name="title_activity_synchronization">Synchronisation avec Dolibarr</string>
+    <string name="synchronization_service_name">Synchronisation en cours</string>
+    <string name="tablet_name">Choisir la tablette</string>
+    <string name="current_tablet">Tablette</string>
+    <string name="last_sync_text">Dernière mise à jour des données de la tablette (produits, prix, clients, etc...) :</string>
+    <string name="last_sync_date">vide</string>
+    <string name="button_update">Mise à jour</string>
+    <string name="invoice_to_post">Toutes les factures/avoirs de la tablette sont postées dans Dolibarr</string>
+    <string name="button_post_invoice">Poster maintenant</string>
+    <string name="network_error_activity_sync">Impossible de synchroniser, vous n\'êtes pas connecté à internet</string>
+    <string name="dialog_title_activity_sync">Erreur de réseau</string>
+    <string name="update_data_dolibarr_success">Données mises à jour avec succès</string>
+    <string name="update_data_dolibarr_fail">Echec de la mise à jour</string>
+    <string name="update_data_dolibarr_fail_1">Vous devez d\'abord poster toutes les factures avant de pouvoir mettre à jour les données</string>
+    <string name="update_data_dolibarr_fail_5">La récupération des factures de dolibarr a échoué</string>
+    <string name="post_invoices_dolibarr_success">Factures/Avoirs postés avec succès"</string>
+    <string name="login_dolibarr_credentials_empty">Impossible de se connecter au serveur</string>
+    <string name="login_dolibarr_fail">Echec de la connexion au serveur</string>
+    <string name="login_dolibarr_success">Connecté</string>
+    <string name="sync_dolibarr_fail">Echec de la synchronisation</string>
+    <string name="service_dolibarr_error">Erreur du service de synchronisation</string>
+    <string name="service_dolibarr_start">Début de la synchronisation</string>
+    <string name="service_dolibarr_end">Fin du service de synchronisation</string>
+
+    <!-- Strings related to ManagingInvoice fragment -->
+    <string name="title_managing_invoices">Gérer les factures</string>
+    <string name="dialog_title_create_avoir">Créer un avoir</string>
+
+    <string name="title_customer_select">Sélectionnez un client</string>
+
+    <!-- Strings related to product group fragment-->
+    <string name="minimum_group_size">Impossible de supprimer le dernier groupe</string>
+    <string name="title_product_of_group">Produits du groupe</string>
+
+    <!-- Strings related to product fragment-->
+    <string name="dialog_choose_products">Produits à ajouter au groupe</string>
+
+    <!-- Strings related to customer fragment-->
+    <string name="dialog_choose_customer">Clients</string>
+
+    <!-- Strings related to CustomerOfGroupFragment-->
+    <string name="title_fragment_customer_list">Clients du groupe</string>
+
+    <string name="dialog_title_group_product">Nouveau groupe de produit</string>
+
+    <!-- Strings related to GroupCustomerFragment -->
+    <string name="title_manage_customer_group">Groupe de clients</string>
+    <string name="dialog_title_customer_group">Nouveau groupe de clients</string>
+
+
+    <!-- Strings related to Print -->
+    <string name="title_print">Imprimer</string>
+    <string name="activity_print">Impression</string>
+    <string name="button_print">Imprimer</string>
+    <string name="button_change_last_invoice">Modifier</string>
+    <string name="button_finish">Terminer la facture</string>
+    <string name="products">Produits</string>
+    <string name="price_u_ht">Prix unitaire HT</string>
+    <string name="qty_deliver">Quantité totale</string>
+    <string name="total_line">Montant</string>
+
+    <string name="hot_food_name">HOT FOOD S.A.R.L.</string>
+    <string name="hot_food_address">60 rue des artisans ZA Baco Koné</string>
+    <string name="hot_food_tel">Erick 78 90 14</string>
+    <string name="hot_food_email">hotfood.sarl@gmail.com</string>
+    <string name="tot_ht">TOTAL HT</string>
+    <string name="tss">TSS</string>
+    <string name="tot_ttc">TOTAL TTC</string>
+    <string name="tot_letter">Arrêtée la présente facture à la somme de :</string>
+    <string name="rcs">RCS NOUMEA 2013 B 1 196 666</string>
+    <string name="sgbc">SGBC 18319 06730 86022716001 93</string>
+
+
+    <!-- Strings related to Invoice Statement Print -->
+    <string name="invoice_statement_title">Relevé de facture</string>
+    <string name="invoice_date">Date</string>
+    <string name="invoice_dolibarr_ref">Référence dolibarr</string>
+    <string name="invoice_customer_ref">Référence client</string>
+
+
+    <string name="dialog_negative">Annuler</string>
+    <string name="dialog_title_product_quantity">Quantité à ajouter</string>
+
+    <!-- Strings related to login activity -->
+    <string name="title_activity_login">Sign in to Dolibarr server</string>
+    <string name="prompt_server_url">Dolibarr server url</string>
+    <string name="prompt_email">Dolibarr user</string>
+    <string name="prompt_password">Dolibarr password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This user login is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_url">The url must end with a /</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="login_dolibarr_token_empty">La cle de l\'API Dolibarr est vide</string>
+
+
+    <string name="title_activity_settings">Settings</string>
+
+
+    <!-- Strings related to Settings -->
+
+    <!-- General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <!-- Data & Sync settings-->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="multi_select_list_preference_default_value" />
+
+    <string name="pref_title_manual_sync">Synchronisation Manuelle</string>
+
+    <!-- Products settings -->
+    <string name="pref_header_product">Produits</string>
+
+    <string name="pref_title_manage_product_group">Groupes</string>
+
+    <string name="pref_title_product_sort">Tri</string>
+    <string-array name="pref_product_sort_titles">
+        <item>Code</item>
+        <item>Nom</item>
+        <!-- <item>Groupe</item> -->
+    </string-array>
+    <string-array name="pref_product_sort_values">
+        <item>1</item>
+        <item>2</item>
+        <!-- <item>3</item> -->
+    </string-array>
+
+    <!-- Invoices settings -->
+    <string name="pref_header_invoice">Factures</string>
+
+    <string name="pref_title_invoice_statement_period">Période du relevé</string>
+    <string-array name="pref_invoice_statement_period">
+        <item>Mois en cours</item>
+        <item>Mois précédent</item>
+        <item>1ère quinzaine</item>
+        <item>2ème quinzaine</item>
+        <item>Date perso</item>
+    </string-array>
+    <string-array name="pref_invoice_statement_period_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string name="pref_title_invoice_statement">Relevé de facture</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+
+</resources>

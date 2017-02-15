@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_header_data_sync"
+        android:key="pref_key_storage_settings"
+        android:icon="@drawable/ic_sync_black_24dp">
+        <Preference android:title="@string/pref_title_manual_sync">
+            <intent android:action="ovh.snacking.snacking.view.SynchronizationActivity" />
+        </Preference>
+    </PreferenceCategory>
+
+    <!--<PreferenceCategory
+        android:title="@string/pref_header_invoice">
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/pref_invoice_statement_period"
+            android:entryValues="@array/pref_invoice_statement_period_values"
+            android:key="pref_key_invoice_statement_period"
+            android:summary="%s"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_invoice_statement_period" />
+        <Preference android:title="@string/pref_title_invoice_statement"
+                    android:key="pref_key_invoice_statement" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_product"
+        android:key="pref_key_storage_settings">
+        <Preference android:title="oice_sment">
+            <intent android:action="ovh.snacking.snacking.view.ManageGroupActivity" />
+        </Preference>
+    </PreferenceCategory>-->
+
+    <!-- A 'parent' preference, which enables/disables child preferences (below)
+         when checked/unchecked. -->
+    <!-- <SwitchPreference
+        android:defaultValue="true"
+        android:key="notifications_new_message"
+        android:title="@string/pref_title_new_message_notifications" /> -->
+
+
+    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+    <!-- <SwitchPreference
+        android:defaultValue="true"
+        android:dependency="notifications_new_message"
+        android:key="notifications_new_message_vibrate"
+        android:title="@string/pref_title_vibrate" /> -->
+
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <!-- <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/pref_product_sort_titles"
+        android:entryValues="@array/pref_product_sort_values"
+        android:key="product_sort_list"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_product_sort" /> -->
+
+</PreferenceScreen>

@@ -1,5 +1,6 @@
 package ovh.snacking.snacking.view;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,7 +24,7 @@ import ovh.snacking.snacking.model.DolibarrInvoice;
 
 
 /**
- * Created by ACER on 09/02/2017.
+ * Created by Alex on 09/02/2017.
  */
 
 public class InvoiceStatementFragment extends Fragment {
@@ -75,7 +76,7 @@ public class InvoiceStatementFragment extends Fragment {
         // Total
         final TextView tot_ttc = (TextView) layout.findViewById(R.id.invoice_statement_tot_ttc);
         Integer TOT_TTC = computeTotalTTC(invoices);
-        tot_ttc.setText(String.valueOf(TOT_TTC + " XPF"));
+        tot_ttc.setText(String.format("%,d", TOT_TTC) + " XPF");
 
         TextView tot_words = (TextView) layout.findViewById(R.id.tot_words);
         String total_in_words = "";

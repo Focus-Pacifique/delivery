@@ -32,7 +32,7 @@ public class Invoice extends RealmObject {
     private RealmList<Line> lines;
 
     private Integer fk_facture_source;
-    private Integer fk_facture_source_dolibarr;
+    private Integer id_dolibarr;
     private Boolean isPOSTToDolibarr;
     private Integer counterPrint;
 
@@ -186,12 +186,11 @@ public class Invoice extends RealmObject {
         this.counterPrint++;
     }
 
-    public Integer getFk_facture_source_dolibarr() {
-        return fk_facture_source_dolibarr;
+    public Integer getId_dolibarr() {
+        return id_dolibarr;
     }
 
-    public void setFk_facture_source_dolibarr(Integer fk_facture_source_dolibarr) {
-        this.fk_facture_source_dolibarr = fk_facture_source_dolibarr;
+    public void setId_dolibarr(Integer id_dolibarr) {
+        this.id_dolibarr = id_dolibarr;
     }
-
 }

@@ -599,6 +599,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
     /********************/
     /**  PrinterShare  **/
     /********************/

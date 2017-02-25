@@ -109,9 +109,9 @@ public class PrintInvoiceFragment extends Fragment {
                     TSS = -TSS;
                     TOT_TTC = -TOT_TTC;
                 }
-                tot_ht.setText(TOT_HT.toString() + " XPF");
-                tss.setText(TSS.toString() + " XPF");
-                tot_ttc.setText(TOT_TTC.toString() + " XPF");
+                tot_ht.setText(String.format("%,d", TOT_HT) + " XPF");
+                tss.setText(String.format("%,d", TSS) + " XPF");
+                tot_ttc.setText(String.format("%,d", TOT_TTC) + " XPF");
 
                 // Convert number to words
                 TextView tot_words = (TextView) layout.findViewById(R.id.tot_words);

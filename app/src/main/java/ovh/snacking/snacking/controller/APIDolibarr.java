@@ -47,4 +47,7 @@ public interface APIDolibarr {
 
     @PUT("invoice/{id}/validate")
     Call<JsonPrimitive> validateInvoice(@Path("id") Integer id, @Query("api_key") String apiKey);
+
+    @PUT("invoice/{idavoir}/setpaid/{idinvoice}")
+    Call<JsonPrimitive> setPaidAndConsumeAvoir(@Path("idavoir") Integer idavoir, @Path("idinvoice") Integer idinvoice, @Query("api_key") String apiKey);
 }

@@ -63,9 +63,9 @@ public class PrintInvoiceAdapter extends RealmBaseAdapter<Line> implements ListA
         Integer tot_ht = qty*prodPriceHT;
 
         viewHolder.product.setText(String.valueOf(item.getProd().getLabel()));
-        viewHolder.price_ht.setText(String.valueOf(prodPriceHT));
-        viewHolder.qty.setText(String.valueOf(item.getQty()));
-        viewHolder.tot_ht.setText(String.valueOf(tot_ht));
+        viewHolder.price_ht.setText(String.format("%,d", prodPriceHT));
+        viewHolder.qty.setText(String.format("%,d", item.getQty()));
+        viewHolder.tot_ht.setText(String.format("%,d", tot_ht));
 
         realm.close();
 

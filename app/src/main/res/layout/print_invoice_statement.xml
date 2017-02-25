@@ -94,7 +94,8 @@
         android:id="@+id/invoice_statement"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/invoice_statement_filter_buttons" />
+        android:layout_below="@id/invoice_statement_filter_buttons"
+        android:layout_marginBottom="40dip"/>
 
     <Button
         android:id="@+id/button_print"

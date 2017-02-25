@@ -93,12 +93,14 @@ public class RealmSingleton {
                 }
 
 
-                // Migrate to version 2:
-                /*if (oldVersion == 2) {
-                    schema.get("DolibarrInvoice")
-                            .removeField("date")
-                            .addField("date", Date.class);
-                }*/
+                // Migrate to version 3:
+                if (oldVersion == 2) {
+                    /*schema.get("Invoice")
+                            .addField("id_dolibarr", Integer.class)
+                            .removeField("fk_facture_source_dolibarr");
+
+                    oldVersion = 3;*/
+                }
 
                 /*if (oldVersion == 2) {
                     schema.remove("InvoiceChangeBackup");

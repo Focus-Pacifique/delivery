@@ -5,27 +5,18 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -48,7 +39,6 @@ import ovh.snacking.snacking.model.ProductCustomerPriceDolibarr;
 import ovh.snacking.snacking.model.Product;
 import ovh.snacking.snacking.model.User;
 import ovh.snacking.snacking.model.Value;
-import ovh.snacking.snacking.view.LoginActivity;
 import ovh.snacking.snacking.view.MainActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -154,10 +144,10 @@ public class DolibarrService extends IntentService {
         dolibarr = builder.build().create(APIDolibarr.class);
 
         // Upload file to server ...
-        retrofit = new Retrofit.Builder()
+        /*retrofit = new Retrofit.Builder()
                 .baseUrl("")
                 .build()
-                .create(APIFileUpload.class);
+                .create(APIFileUpload.class);*/
 
         if(isAPIServerAvailable()) {
             sendBroadcastMessage(R.string.service_dolibarr_start);
@@ -352,8 +342,21 @@ public class DolibarrService extends IntentService {
 
             // Get the corresponding facture
             Invoice facture_source = realm.where(Invoice.class).equalTo("id", avoir.getFk_facture_source()).findFirst();
-            final Integer fk_facture_source = postInvoice(facture_source);
 
+            // If many avoirs are related ton one single invoice
+            if (!facture_source.isPOSTToDolibarr()) {
+                if (!postInvoiceToDolibarr(facture_source)) {
+                    return -4;
+                }
+            }
+
+            if (postInvoiceToDolibarr(avoir)) {
+                setPaidAndConsume(avoir.getId_dolibarr(), facture_source.getId_dolibarr());
+            } else {
+                return -5;
+            }
+
+            /*final Integer fk_facture_source = createInvoice(facture_source);
             if (fk_facture_source != 0) {
 
                 // Validate the previous facture
@@ -367,10 +370,14 @@ public class DolibarrService extends IntentService {
                     });
 
                     // POST the avoir
-                    Integer fk_avoir = postInvoice(avoir);
+                    Integer fk_avoir = createInvoice(avoir);
                     if (fk_avoir != 0) {
                         // Validate the avoir
-                        if (!validateInvoice(fk_avoir, avoir)) {
+                        if (validateInvoice(fk_avoir, avoir)) {
+                            if (!setPaidAndConsume(fk_avoir, fk_facture_source)) {
+                                return -5;
+                            }
+                        } else {
                             return -4;
                         }
                     } else {
@@ -381,7 +388,7 @@ public class DolibarrService extends IntentService {
                 }
             } else {
                 return -1;
-            }
+            }*/
         }
 
 
@@ -389,13 +396,9 @@ public class DolibarrService extends IntentService {
         RealmResults<Invoice> invoices = realm.where(Invoice.class).equalTo("state", Invoice.TERMINEE).equalTo("isPOSTToDolibarr", false).findAll();
         for (final Invoice facture : invoices) {
             if (Invoice.TERMINEE.equals(facture.getState()) && !facture.isPOSTToDolibarr() && Invoice.FACTURE.equals(facture.getType())) {
-                Integer fk_facture = postInvoice(facture);
-                if (fk_facture != 0) {
-                    if (!validateInvoice(fk_facture, facture)) {
-                        return -6;
-                    }
-                } else {
-                    return -5;
+
+                if (!postInvoiceToDolibarr(facture)) {
+                    return -6;
                 }
             }
         }
@@ -404,7 +407,20 @@ public class DolibarrService extends IntentService {
         return 0;
     }
 
-    private Integer postInvoice(Invoice invoice) throws IOException {
+    private boolean postInvoiceToDolibarr(Invoice invoice) throws IOException {
+        Integer fk_dolibarr_invoice = createInvoice(invoice);
+        if (fk_dolibarr_invoice > 0) {
+            if (validateInvoice(fk_dolibarr_invoice, invoice)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private Integer createInvoice(Invoice invoice) throws IOException {
         Call<JsonPrimitive> call = dolibarr.createInvoiceFromJson(mAPIKKey, convertInvoice2Json(invoice));
         JsonPrimitive req = call.execute().body();
         if (req == null) {
@@ -414,23 +430,27 @@ public class DolibarrService extends IntentService {
         return req.getAsInt();
     }
 
-    private Boolean validateInvoice(final Integer fk_invoice_dolibarr, final Invoice invoice) throws IOException {
-        Call<JsonPrimitive> call = dolibarr.validateInvoice(fk_invoice_dolibarr, mAPIKKey);
+    private Boolean validateInvoice(final Integer fk_dolibarr_invoice, final Invoice invoice) throws IOException {
+        Call<JsonPrimitive> call = dolibarr.validateInvoice(fk_dolibarr_invoice, mAPIKKey);
         JsonPrimitive req = call.execute().body();
-        if (req == null) {
-            return false;
-        }
-        if (req.getAsBoolean()) {
+        if (req != null && req.getAsBoolean()) {
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
                     invoice.setIsPOSTToDolibarr(true);
+                    invoice.setId_dolibarr(fk_dolibarr_invoice);
                 }
             });
             return true;
         } else {
             return false;
         }
+    }
+
+    private Boolean setPaidAndConsume(final Integer fk_avoir_dolibarr, final Integer fk_facture_dolibarr) throws IOException {
+        Call<JsonPrimitive> call = dolibarr.setPaidAndConsumeAvoir(fk_avoir_dolibarr, fk_facture_dolibarr, mAPIKKey);
+        JsonPrimitive req = call.execute().body();
+        return req != null && req.getAsBoolean();
     }
 
     private JsonObject convertInvoice2Json(Invoice invoice) {
@@ -448,9 +468,14 @@ public class DolibarrService extends IntentService {
             obj.addProperty("date", date.intValue());
             if (Invoice.FACTURE.equals(invoice.getType())) {
                 obj.addProperty("type", 0); // 0=Facture de doit, 2=Facture avoir
-            } else if (Invoice.AVOIR.equals(invoice.getType()) && invoice.getFk_facture_source_dolibarr() != null) {
-                obj.addProperty("type", 2);  // 0=Facture de doit, 2=Facture avoir
-                obj.addProperty("fk_facture_source", invoice.getFk_facture_source_dolibarr());
+            } else if (Invoice.AVOIR.equals(invoice.getType())) {
+                Invoice facture_source = realm.where(Invoice.class).equalTo("id", invoice.getFk_facture_source()).findFirst();
+                if (facture_source != null && facture_source.getId_dolibarr() != null) {
+                    obj.addProperty("type", 2);  // 0=Facture de doit, 2=Facture avoir
+                    obj.addProperty("fk_facture_source", facture_source.getId_dolibarr());
+                } else {
+                    return null;
+                }
             }
             obj.addProperty("cond_reglement_id", 1);            // 1=A reception
             obj.addProperty("note_private", "Tablette " + invoice.getUser().getName() + ", ref " + invoice.getRef());
@@ -531,99 +556,3 @@ public class DolibarrService extends IntentService {
         return obj;*/
     //}
 }
-
-
-
-
-
-
-    /*private boolean computeAllCustomerFullInfo() {
-        final RealmResults<Customer> customers = realm.where(Customer.class).findAll();
-
-        if(!customer.isEmpty()) {
-            RealmResults<Customer> custFullBefore = realm.where(Customer.class).equalTo("id", 31).findAll();
-            for (Customer c : custFullBefore ) {
-                if (c != null) {
-                    RealmResults<Product> PRODUCT_Dolibarr_BEFORE = c.getProducts().sort("ref");
-                    for (Product p : PRODUCT_Dolibarr_BEFORE) {
-                        Log.d("PRODUCT_Dolibarr_BEFORE", p.getRef() + " " + p.getPrice());
-                    }
-                }
-            }
-
-            // Create or update Customers into Realm
-            for (final Customer customer : customers) {
-                createOrUpdateCustomerFullInfo(customer);
-            }
-            RealmResults<Customer> custFullAfter = realm.where(Customer.class).equalTo("id", 31).findAll();
-            for (Customer c : custFullAfter ) {
-                if (c != null) {
-                    RealmResults<Product> PRODUCT_Dolibarr_AFTER = c.getProducts().sort("ref");
-                    for (Product p : PRODUCT_Dolibarr_AFTER) {
-                        Log.d("PRODUCT_Dolibarr_AFTER", p.getRef() + " " + p.getPrice());
-                    }
-                }
-            }
-            return true;
-
-        } else {
-            Log.d("REALM", "customerDolibarrs from Dolibarr are empty");
-            return false;
-        }
-    }*/
-
-    /*private void createOrUpdateCustomerFullInfo(final Customer customerDolibarr) {
-        final RealmResults<Product> products = realm.where(Product.class).findAll();
-
-        if(!products.isEmpty()) {
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    if (customerDolibarr.getId() == 31) {) {
-                        Log.d("TOMO", "Complexe");
-                    }
-
-                    Customer customer = realm.where(Customer.class).equalTo("id", customerDolibarr.getId()).findFirst();
-                    if (customer == null) {
-                        customer = realm.createObject(Customer.class, customerDolibarr.getId());
-                    }
-
-                    // Update the fields
-                    customer.setName(customerDolibarr.getName());
-                    customer.setAddress(customerDolibarr.getAddress());
-                    customer.setZip(customerDolibarr.getZip());
-                    customer.setTown(customerDolibarr.getTown());
-                    customer.setPhone(customerDolibarr.getPhone());
-
-                    // Set products with default and custom price
-                    RealmResults<ProductCustomerPriceDolibarr> prices = realm.where(ProductCustomerPriceDolibarr.class).equalTo("fk_soc", customer.getId()).findAll();
-
-                    for (Product prod : products) {
-                        // Log.d("PRODUCT", prod.getRef() + " " + prod.getPrice());
-
-                        // Set custom price if exist
-                        if (!prices.isEmpty()) {
-                            ProductCustomerPriceDolibarr prodPrice = prices.where().equalTo("fk_product", prod.getId()).findFirst();
-                            if (null != prodPrice) {
-                                Product newProd = new Product(prod);
-
-                                //                    Log.d("PRICES", prodPrice.getId() + " " + prodPrice.getFk_product() + " " + prodPrice.getFk_soc() + " " + prodPrice.getPrice());
-                                prod.setPrice(prodPrice.getPrice());
-                                prod.setTva_tx(prodPrice.getTva_tx());
-                                prod.setPrice_ttc(prodPrice.getPrice_ttc());
-                            }
-                        } else {
-                            //                Log.d("ProductCustomerPriceDolibarr", "Empty");
-                        }
-                        Log.d("PRICES", prod.getRef() + " " + prod.getPrice());
-                        customerFull.getProductDolibarrs().add(prod);
-                    }
-                }
-            });
-        } else {
-            Log.d("REALM", "products from Dolibarr are empty");
-        }
-
-        realm.copyToRealmOrUpdate(customerFullInfo);
-    }
-}*/

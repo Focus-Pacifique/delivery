@@ -6,6 +6,7 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
 import ovh.snacking.snacking.R;
+import ovh.snacking.snacking.util.SyncUtils;
 
 /**
  * Created by Alex on 04/02/2017.
@@ -31,12 +32,24 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onDisplayPreferenceDialog(Preference preference) {
         super.onDisplayPreferenceDialog(preference);
-
     }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.pref);
+
+        Preference syncPref = findPreference("pref_key_auto_sync");
+        syncPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if ((Boolean)newValue) {
+                    SyncUtils.addPeriodicSync(getContext());
+                } else {
+                    SyncUtils.removePeriodicSync(getContext());
+                }
+                return true;
+            }
+        });
     }
 }

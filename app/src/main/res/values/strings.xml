@@ -28,7 +28,8 @@
     <string name="update_data_dolibarr_fail">Echec de la mise à jour</string>
     <string name="update_data_dolibarr_fail_1">Vous devez d\'abord poster toutes les factures avant de pouvoir mettre à jour les données</string>
     <string name="update_data_dolibarr_fail_5">La récupération des factures de dolibarr a échoué</string>
-    <string name="post_invoices_dolibarr_success">Factures/Avoirs postés avec succès"</string>
+    <string name="post_invoices_dolibarr_success">Factures/Avoirs postés avec succès</string>
+    <string name="post_invoices_dolibarr_fail">Echec lors de l\'envoi au serveur des factures/avoirs</string>
     <string name="login_dolibarr_credentials_empty">Impossible de se connecter au serveur</string>
     <string name="login_dolibarr_fail">Echec de la connexion au serveur</string>
     <string name="login_dolibarr_success">Connecté</string>
@@ -114,24 +115,16 @@
     <string name="login_dolibarr_token_empty">La cle de l\'API Dolibarr est vide</string>
 
 
-    <string name="title_activity_settings">Settings</string>
 
 
     <!-- Strings related to Settings -->
-
-    <!-- General settings -->
-    <string name="pref_header_general">General</string>
-
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
-
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
+    <string name="title_activity_settings">Settings</string>
 
     <!-- Data & Sync settings-->
     <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_auto_sync">Synchronisation automatique</string>
+    <string name="pref_title_manual_sync">Synchronisation Manuelle</string>
 
     <string name="pref_title_sync_frequency">Sync frequency</string>
     <string-array name="pref_sync_frequency_titles">
@@ -151,48 +144,8 @@
         <item>-1</item>
     </string-array>
 
-    <string-array name="multi_select_list_preference_default_value" />
 
-    <string name="pref_title_manual_sync">Synchronisation Manuelle</string>
 
-    <!-- Products settings -->
-    <string name="pref_header_product">Produits</string>
-
-    <string name="pref_title_manage_product_group">Groupes</string>
-
-    <string name="pref_title_product_sort">Tri</string>
-    <string-array name="pref_product_sort_titles">
-        <item>Code</item>
-        <item>Nom</item>
-        <!-- <item>Groupe</item> -->
-    </string-array>
-    <string-array name="pref_product_sort_values">
-        <item>1</item>
-        <item>2</item>
-        <!-- <item>3</item> -->
-    </string-array>
-
-    <!-- Invoices settings -->
-    <string name="pref_header_invoice">Factures</string>
-
-    <string name="pref_title_invoice_statement_period">Période du relevé</string>
-    <string-array name="pref_invoice_statement_period">
-        <item>Mois en cours</item>
-        <item>Mois précédent</item>
-        <item>1ère quinzaine</item>
-        <item>2ème quinzaine</item>
-        <item>Date perso</item>
-    </string-array>
-    <string-array name="pref_invoice_statement_period_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-    </string-array>
-
-    <string name="pref_title_invoice_statement">Relevé de facture</string>
-    <string name="title_activity_main2">Main2Activity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

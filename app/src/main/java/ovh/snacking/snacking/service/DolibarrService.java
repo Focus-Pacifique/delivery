@@ -32,9 +32,11 @@ import ovh.snacking.snacking.controller.APIDolibarr;
 import ovh.snacking.snacking.controller.APIFileUpload;
 import ovh.snacking.snacking.controller.Constants;
 import ovh.snacking.snacking.model.Customer;
+import ovh.snacking.snacking.model.CustomerAndGroupBinding;
 import ovh.snacking.snacking.model.DolibarrInvoice;
 import ovh.snacking.snacking.model.Invoice;
 import ovh.snacking.snacking.model.Line;
+import ovh.snacking.snacking.model.ProductAndGroupBinding;
 import ovh.snacking.snacking.model.ProductCustomerPriceDolibarr;
 import ovh.snacking.snacking.model.Product;
 import ovh.snacking.snacking.model.User;
@@ -105,11 +107,36 @@ public class DolibarrService extends IntentService {
                     Intent intentMainActivity = new Intent(this, MainActivity.class);
                     intentMainActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intentMainActivity);
+                } else if (Constants.SYNC_DATA_WITH_DOLIBARR.equals(action)) {
+                    syncData();
                 }
             } else {
                 sendBroadcastMessage(R.string.service_dolibarr_error);
             }
             realm.close();
+        }
+    }
+
+    private void syncData() {
+        Integer res;
+        try {
+            res = postInvoices();
+            if (res == 0) {
+                res = updateData();
+                if (res == 0) {
+                    sendBroadcastMessage(R.string.update_data_dolibarr_success);
+                } else if (res == -1) {
+                    sendBroadcastMessage(R.string.update_data_dolibarr_fail_1);
+                }  else if (res == -5) {
+                    sendBroadcastMessage(R.string.update_data_dolibarr_fail_5);
+                } else {
+                    sendBroadcastMessage(R.string.update_data_dolibarr_fail);
+                }
+            } else {
+                sendBroadcastMessage(R.string.post_invoices_dolibarr_fail);
+            }
+        } catch (IOException e) {
+            sendBroadcastMessage(R.string.post_invoices_dolibarr_fail);
         }
     }
 
@@ -223,6 +250,8 @@ public class DolibarrService extends IntentService {
 
     // GET informations from dolibarr REST server
     private Integer updateData() {
+
+        final Date modifiedDate = new Date();
         try {
             //Prevent incoherence into the database, IMPORTANT
             // DO NOT DELETE ANYTHING BEFORE INVOICE POSTED
@@ -230,39 +259,90 @@ public class DolibarrService extends IntentService {
                 return -1;
             }
 
-            // Create or update Products into Realm
+            // Product part
             final List<Product> products = dolibarr.getAllProducts(mAPIKKey).execute().body();
             if (null != products && !products.isEmpty()) {
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
+                        // Set the new modified date to product
+                        for(Product product : products) {
+                            product.setModifiedDate(modifiedDate);
+                        }
+
                         realm.copyToRealmOrUpdate(products);
+
+                        // Delete the product from realm who are not anymore into dolibarr
+                        RealmResults<Product> productsToDelete = realm.where(Product.class).lessThan("modifiedDate", modifiedDate).findAll();
+                        for(Product product : productsToDelete) {
+                            // First delete product from table ProductAndGroupBinding
+                            RealmResults<ProductAndGroupBinding> binds = realm.where(ProductAndGroupBinding.class).equalTo("product.id", product.getId()).findAll();
+                            for(ProductAndGroupBinding bind : binds) {
+                                deleteProductBind(bind);
+                            }
+
+                            // Then delete product from realm
+                            product.deleteFromRealm();
+                        }
+                    }
+                });
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+
                     }
                 });
             } else {
                 return -2;
             }
 
-            // Create or update ProductsCustomerPrice into Realm
-            final List<ProductCustomerPriceDolibarr> prices = dolibarr.getAllProductsCustomerPrice(mAPIKKey).execute().body();
-            if (null != prices && !prices.isEmpty()) {
+            // Customer part
+            final List<Customer> customers = dolibarr.getAllCustomers(mAPIKKey).execute().body();
+            if (null != customers && !customers.isEmpty()) {
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
-                        realm.copyToRealmOrUpdate(prices);
+                        // Set the new modified date to customer
+                        for(Customer customer : customers) {
+                            customer.setModifiedDate(modifiedDate);
+                        }
+
+                        realm.copyToRealmOrUpdate(customers);
+
+                        // Delete the customer from realm who are not anymore into dolibarr
+                        RealmResults<Customer> customersToDelete = realm.where(Customer.class).lessThan("modifiedDate", modifiedDate).findAll();
+                        for(Customer customer : customersToDelete) {
+                            // First delete customer from table CustomerAndGroupBinding
+                            RealmResults<CustomerAndGroupBinding> binds = realm.where(CustomerAndGroupBinding.class).equalTo("customer.id", customer.getId()).findAll();
+                            for(CustomerAndGroupBinding bind : binds) {
+                                deleteCustomerBind(bind);
+                            }
+
+                            // Then delete customer from realm
+                            customer.deleteFromRealm();
+                        }
                     }
                 });
             } else {
                 return -3;
             }
 
-            // Create or update Customers into Realm
-            final List<Customer> customers = dolibarr.getAllCustomers(mAPIKKey).execute().body();
-            if (null != customers && !customers.isEmpty()) {
+
+            // Price of product per customer part
+            final List<ProductCustomerPriceDolibarr> prices = dolibarr.getAllProductsCustomerPrice(mAPIKKey).execute().body();
+            if (null != prices && !prices.isEmpty()) {
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
-                        realm.copyToRealmOrUpdate(customers);
+                        // Set the new modified date to price
+                        for(ProductCustomerPriceDolibarr price : prices) {
+                            price.setModifiedDate(modifiedDate);
+                        }
+
+                        realm.copyToRealmOrUpdate(prices);
+
+                        // Delete the price from realm who are not anymore into dolibarr
+                        realm.where(ProductCustomerPriceDolibarr.class).lessThan("modifiedDate", modifiedDate).findAll().deleteAllFromRealm();
                     }
                 });
             } else {
@@ -276,7 +356,6 @@ public class DolibarrService extends IntentService {
 
 
         } catch (IOException e) {
-            //Log.d("REALM", e.getMessage());
             return -6;
         }
 
@@ -287,9 +366,7 @@ public class DolibarrService extends IntentService {
                 Value value = realm.where(Value.class).findFirst();
                 if (null != value) {
                     value.setLastSync(new Date());
-                } //else {
-                  //  Log.d("REALM", "Value object doesn't exist");
-                //}
+                }
             }
         });
 
@@ -524,6 +601,32 @@ public class DolibarrService extends IntentService {
             e.printStackTrace();
         }
         return obj;
+    }
+
+    private void deleteCustomerBind(CustomerAndGroupBinding bind) {
+        // Set correct position of customer
+        RealmResults<CustomerAndGroupBinding> lines = realm.where(CustomerAndGroupBinding.class)
+                .equalTo("group.id", bind.getGroup().getId())
+                .greaterThan("position", bind.getPosition())
+                .findAll();
+        for (CustomerAndGroupBinding line : lines) {
+            line.setPosition(line.getPosition() - 1);
+        }
+        //Delete the line
+        bind.deleteFromRealm();
+    }
+
+    private void deleteProductBind(ProductAndGroupBinding bind) {
+        // Set correct position of product
+        RealmResults<ProductAndGroupBinding> lines = realm.where(ProductAndGroupBinding.class)
+                .equalTo("group.id", bind.getGroup().getId())
+                .greaterThan("position", bind.getPosition())
+                .findAll();
+        for (ProductAndGroupBinding line : lines) {
+            line.setPosition(line.getPosition() - 1);
+        }
+        //Delete the line
+        bind.deleteFromRealm();
     }
 
     //private JsonObject convertInvoiceBackup2Json(InvoiceChange invoice) {

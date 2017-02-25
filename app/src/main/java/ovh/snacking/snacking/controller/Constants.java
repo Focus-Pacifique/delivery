@@ -7,6 +7,9 @@ package ovh.snacking.snacking.controller;
 public final class Constants {
 
     // Define action for the dolibarr service
+    public static final String SYNC_DATA_WITH_DOLIBARR =
+            "ovh.snacking.snacking.action.SYNC_DATA_WITH_DOLIBARR";
+
     public static final String GET_DATA_FROM_DOLIBARR =
             "ovh.snacking.snacking.action.GET_DATA_FROM_DOLIBARR";
 

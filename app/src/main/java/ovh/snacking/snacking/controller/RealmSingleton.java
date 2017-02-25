@@ -82,24 +82,25 @@ public class RealmSingleton {
                             .addField("position", Integer.class)
                             .addRealmObjectField("product", schema.get("Product"))
                             .addRealmObjectField("group", schema.get("ProductGroup"));
-
-                    /*
-                    if (schema.get("ProductGroup").isRequired("id")) {
-                        schema.get("ProductGroup")
-                                .removeField("id")
-                                .addField("id", Integer.class, FieldAttribute.PRIMARY_KEY);
-                    }*/
                     oldVersion = 2;
                 }
 
 
                 // Migrate to version 3:
                 if (oldVersion == 2) {
-                    /*schema.get("Invoice")
+                    schema.get("Invoice")
                             .addField("id_dolibarr", Integer.class)
                             .removeField("fk_facture_source_dolibarr");
-
-                    oldVersion = 3;*/
+                    schema.get("Product")
+                            .addField("modifiedDate", Date.class)
+                            .addIndex("modifiedDate");
+                    schema.get("Customer")
+                            .addField("modifiedDate", Date.class)
+                            .addIndex("modifiedDate");
+                    schema.get("ProductCustomerPriceDolibarr")
+                            .addField("modifiedDate", Date.class)
+                            .addIndex("modifiedDate");
+                    oldVersion = 3;
                 }
 
                 /*if (oldVersion == 2) {

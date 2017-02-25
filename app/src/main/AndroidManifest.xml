@@ -64,6 +64,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ovh.snacking.snacking.view.MainActivity" />
         </activity>
+        <receiver
+            android:name=".service.DolibarrBroadcastReceiver"
+            android:label="Broadcast Receiver">
+        </receiver>
     </application>
 
 </manifest>

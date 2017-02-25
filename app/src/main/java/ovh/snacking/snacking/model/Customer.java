@@ -3,8 +3,11 @@ package ovh.snacking.snacking.model;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.Date;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -20,6 +23,15 @@ public class Customer extends RealmObject {
     @Expose private String zip;
     @Expose private String town;
     @Expose private String phone;
+    @Index private Date modifiedDate;
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
 
     public Integer getId() {
         return id;

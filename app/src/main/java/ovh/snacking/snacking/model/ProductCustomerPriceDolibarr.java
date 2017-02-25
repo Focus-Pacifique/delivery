@@ -5,6 +5,7 @@ import com.google.gson.annotations.Expose;
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -17,6 +18,16 @@ public class ProductCustomerPriceDolibarr extends RealmObject {
     @Expose private Integer fk_product;
     @Expose private Integer fk_soc;
     @Expose private Float price;
+    @Index
+    private Date modifiedDate;
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
 
     public Integer getId() {
         return id;

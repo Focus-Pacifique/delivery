@@ -11,7 +11,8 @@
         <SwitchPreference
             android:defaultValue="true"
             android:key="pref_key_auto_sync"
-            android:title="@string/pref_title_auto_sync" />
+            android:title="@string/pref_title_auto_sync"
+            android:summary="@string/pref_summary_auto_sync"/>
 
         <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
         <Preference android:title="@string/pref_title_manual_sync">

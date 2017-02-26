@@ -4,7 +4,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import java.util.Calendar;
 
@@ -17,7 +16,7 @@ import ovh.snacking.snacking.service.DolibarrService;
 
 public class SyncUtils {
 
-    public static void addPeriodicSync(Context context) {
+    public static void schedulePeriodicSync(Context context) {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         // Set the alarm to start at approximately 2:00 a.m.
@@ -27,10 +26,12 @@ public class SyncUtils {
 
         Intent intent = new Intent(context, DolibarrService.class);
         intent.setAction(Constants.SYNC_DATA_WITH_DOLIBARR);
-        PendingIntent alarmIntent = PendingIntent.getService(context, 0, intent, 0);
 
-        alarmMgr.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, alarmIntent);
+        if (PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_NO_CREATE) == null) {
+            PendingIntent alarmIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            alarmMgr.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY, alarmIntent);
+        }
     }
 
     public static void removePeriodicSync(Context context) {
@@ -38,8 +39,11 @@ public class SyncUtils {
 
         Intent intent = new Intent(context, DolibarrService.class);
         intent.setAction(Constants.SYNC_DATA_WITH_DOLIBARR);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
-        alarmMgr.cancel(alarmIntent);
+        PendingIntent alarmIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_NO_CREATE);
+        if (alarmIntent != null) {
+            alarmMgr.cancel(alarmIntent);
+            alarmIntent.cancel();
+        }
     }
 }

@@ -1,6 +1,5 @@
 package ovh.snacking.snacking.view;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -12,7 +11,12 @@ import ovh.snacking.snacking.util.SyncUtils;
  * Created by Alex on 04/02/2017.
  */
 
+
+
 public class SettingsFragment extends PreferenceFragmentCompat {
+
+    public static final String PREF_KEY_AUTO_SYNC = "pref_key_auto_sync";
+
     /*OnPrefFragmentListener mListener;
 
     public interface OnPrefFragmentListener {
@@ -39,12 +43,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.pref);
 
-        Preference syncPref = findPreference("pref_key_auto_sync");
+        Preference syncPref = findPreference(PREF_KEY_AUTO_SYNC);
         syncPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 if ((Boolean)newValue) {
-                    SyncUtils.addPeriodicSync(getContext());
+                    SyncUtils.schedulePeriodicSync(getContext());
                 } else {
                     SyncUtils.removePeriodicSync(getContext());
                 }

@@ -2,10 +2,12 @@ package ovh.snacking.snacking.view;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
@@ -21,7 +23,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -53,6 +58,8 @@ import ovh.snacking.snacking.model.InvoiceChange;
 import ovh.snacking.snacking.model.ProductGroup;
 import ovh.snacking.snacking.model.User;
 import ovh.snacking.snacking.model.Value;
+import ovh.snacking.snacking.service.DolibarrService;
+import ovh.snacking.snacking.util.SyncUtils;
 
 public class MainActivity extends AppCompatActivity
         implements ManagingInvoiceFragment.OnInvoiceListener,
@@ -146,6 +153,13 @@ public class MainActivity extends AppCompatActivity
                     .add(R.id.fragment_container, frag, TAG_MANAGING_INVOICE)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
+        }
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPref.getBoolean(SettingsFragment.PREF_KEY_AUTO_SYNC, true)) {
+            SyncUtils.schedulePeriodicSync(getApplicationContext());
+        } else {
+            SyncUtils.removePeriodicSync(getApplicationContext());
         }
     }
 

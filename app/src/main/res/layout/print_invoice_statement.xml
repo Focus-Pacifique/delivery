@@ -10,10 +10,10 @@
         android:id="@+id/invoice_statement_filter_buttons">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:gravity="center">
 
             <Button
@@ -31,14 +31,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center">
 
             <Button
-                android:text="Date de début"
+                android:text="Date début"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/button_change_start_date"/>
@@ -52,14 +52,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center">
 
             <Button
-                android:text="Date de fin"
+                android:text="Date fin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/button_change_end_date"/>
@@ -73,14 +73,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center">
 
             <Button
-                android:text="Rafraichir"
+                android:text="OK"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/button_refresh_UI"
@@ -93,7 +93,7 @@
     <FrameLayout
         android:id="@+id/invoice_statement"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@id/invoice_statement_filter_buttons"
         android:layout_marginBottom="40dip"/>
 

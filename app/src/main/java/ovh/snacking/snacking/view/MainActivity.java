@@ -1,8 +1,6 @@
 package ovh.snacking.snacking.view;
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,32 +21,25 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import ovh.snacking.snacking.R;
+import ovh.snacking.snacking.controller.Constants;
 import ovh.snacking.snacking.controller.InvoicePrintDocumentAdapter;
 import ovh.snacking.snacking.controller.RealmSingleton;
 import ovh.snacking.snacking.model.Customer;
@@ -154,19 +145,14 @@ public class MainActivity extends AppCompatActivity
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
         }
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPref.getBoolean(SettingsFragment.PREF_KEY_AUTO_SYNC, true)) {
-            SyncUtils.schedulePeriodicSync(getApplicationContext());
-        } else {
-            SyncUtils.removePeriodicSync(getApplicationContext());
-        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         //TODO Ask for PIN
+
+        checkSynchronisation();
     }
 
     @Override
@@ -845,5 +831,17 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void checkSynchronisation() {
+        // Check if an update is needed
+        Long diff = System.currentTimeMillis() - realm.where(Value.class).findFirst().getLastSync().getTime();
+        Long days = TimeUnit.DAYS.convert(diff, java.util.concurrent.TimeUnit.MILLISECONDS);
 
+        if(days >= 1) {
+            if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsFragment.PREF_KEY_AUTO_SYNC, true)) {
+                SyncUtils.schedulePeriodicSync(getApplicationContext());
+            } else {
+                SyncUtils.removePeriodicSync(getApplicationContext());
+            }
+        }
+    }
 }

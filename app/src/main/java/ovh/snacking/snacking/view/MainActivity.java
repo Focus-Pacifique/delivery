@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
@@ -39,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.controller.Constants;
 import ovh.snacking.snacking.controller.InvoicePrintDocumentAdapter;
 import ovh.snacking.snacking.controller.RealmSingleton;
 import ovh.snacking.snacking.model.Customer;
@@ -49,7 +47,6 @@ import ovh.snacking.snacking.model.InvoiceChange;
 import ovh.snacking.snacking.model.ProductGroup;
 import ovh.snacking.snacking.model.User;
 import ovh.snacking.snacking.model.Value;
-import ovh.snacking.snacking.service.DolibarrService;
 import ovh.snacking.snacking.util.SyncUtils;
 
 public class MainActivity extends AppCompatActivity
@@ -716,12 +713,7 @@ public class MainActivity extends AppCompatActivity
             // Device does not support Bluetooth
             bluetoothEnabled = false;
         } else {
-            if (!mBluetoothAdapter.isEnabled()) {
-                // Bluetooth is not enable
-                bluetoothEnabled = false;
-            } else {
-                bluetoothEnabled = true;
-            }
+            bluetoothEnabled = mBluetoothAdapter.isEnabled();
         }
         return bluetoothEnabled;
     }

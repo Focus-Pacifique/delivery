@@ -46,7 +46,7 @@
 
     <!-- Strings related to product group fragment-->
     <string name="minimum_group_size">Impossible de supprimer le dernier groupe</string>
-    <string name="title_product_of_group">Produits du groupe</string>
+    <string name="title_product_of_group">Groupe</string>
 
     <!-- Strings related to product fragment-->
     <string name="dialog_choose_products">Produits à ajouter au groupe</string>
@@ -55,12 +55,11 @@
     <string name="dialog_choose_customer">Clients</string>
 
     <!-- Strings related to CustomerOfGroupFragment-->
-    <string name="title_fragment_customer_list">Clients du groupe</string>
+    <string name="title_customer_of_group">Groupe</string>
 
     <string name="dialog_title_group_product">Nouveau groupe de produit</string>
 
     <!-- Strings related to GroupCustomerFragment -->
-    <string name="title_manage_customer_group">Groupe de clients</string>
     <string name="dialog_title_customer_group">Nouveau groupe de clients</string>
 
 
@@ -119,13 +118,15 @@
 
     <!-- Strings related to Settings -->
     <string name="title_activity_settings">Settings</string>
+    <string name="title_fragment_settings">Paramètres</string>
 
     <!-- Data & Sync settings-->
     <string name="pref_header_data_sync">Data &amp; sync</string>
 
     <string name="pref_title_auto_sync">Synchronisation automatique</string>
-    <string name="pref_summary_auto_sync">Vers 02h00</string>
+    <string name="pref_summary_auto_sync">Entre 23h00 et 00h00</string>
     <string name="pref_title_manual_sync">Synchronisation Manuelle</string>
+    <string name="pref_summary_manual_sync">Dernière synchronisation le</string>
 
     <string name="pref_title_sync_frequency">Sync frequency</string>
     <string-array name="pref_sync_frequency_titles">

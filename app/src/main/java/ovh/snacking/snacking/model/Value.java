@@ -76,4 +76,5 @@ public class Value extends RealmObject {
     public Integer getTss() {
         return tss;
     }
+
 }

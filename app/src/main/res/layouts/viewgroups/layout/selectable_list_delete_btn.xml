@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="?android:attr/listChoiceBackgroundIndicator"
+              android:gravity="center_vertical"
+              android:minHeight="@dimen/list_view_item_height"
+              android:orientation="horizontal"
+              android:padding="@dimen/default_padding">
+
+    <TextView
+        android:id="@+id/selectable_list_delete_btn_item"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="@dimen/default_text_size" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageButton
+            android:id="@+id/delete_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:src="@android:drawable/ic_menu_delete"/>
+    </RelativeLayout>
+
+</LinearLayout>

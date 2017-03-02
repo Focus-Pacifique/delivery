@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/document_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="30dip">
+
+        <include
+            android:id="@+id/print_document_header"
+            layout="@layout/print_document_header"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/print_document_header"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/customer_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dip"
+                android:gravity="end"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dip" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="50dip"
+                android:layout_marginStart="50dip"
+                android:background="@drawable/border">
+
+                <TextView
+                    android:id="@+id/invoice_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/default_padding" />
+
+                <TextView
+                    android:id="@+id/invoice_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:paddingEnd="@dimen/default_padding" />
+
+                <TextView
+                    android:id="@+id/invoice_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/invoice_number"/>
+
+                <TextView
+                    android:id="@+id/facture_source_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@id/invoice_number"
+                    android:paddingEnd="@dimen/default_padding"
+                    android:visibility="invisible" />
+
+            </RelativeLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dip" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="200dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:paddingStart="@dimen/default_padding"
+                    android:text="@string/products"/>
+                <TextView
+                    android:layout_width="80dip"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:paddingEnd="@dimen/default_padding"
+                    android:text="@string/price_u_ht"/>
+                <TextView
+                    android:layout_width="80dip"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:paddingEnd="@dimen/default_padding"
+                    android:text="@string/qty_deliver"/>
+                <TextView
+                    android:layout_width="120dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:gravity="end"
+                    android:paddingEnd="@dimen/default_padding"
+                    android:text="@string/total_line"/>
+
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/list_view_invoice_lines"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@null" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="50dip" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="80dip"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/tot_ht"
+                    android:text="@string/tot_ht"/>
+                <TextView
+                    android:id="@+id/tot_ht"
+                    android:layout_width="120dip"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:gravity="end"/>
+
+                <TextView
+                    android:layout_width="80dip"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tot_ht"
+                    android:layout_toStartOf="@+id/tss"
+                    android:text="@string/tss"/>
+                <TextView
+                    android:id="@+id/tss"
+                    android:layout_width="120dip"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@id/tot_ht"
+                    android:gravity="end"/>
+
+                <TextView
+                    android:layout_width="80dip"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tss"
+                    android:layout_toStartOf="@+id/tot_ttc"
+                    android:text="@string/tot_ttc"/>
+                <TextView
+                    android:id="@+id/tot_ttc"
+                    android:layout_width="120dip"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@id/tss"
+                    android:gravity="end"/>
+
+            </RelativeLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="50dip" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tot_words_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tot_letter"/>
+
+                <TextView
+                    android:id="@+id/tot_words"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tot_words_label"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="100dip">
+
+                <TextView
+                    android:id="@+id/text_view_rcs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:paddingBottom="20dip"
+                    android:text="@string/rcs"/>
+
+                <TextView
+                    android:id="@+id/text_view_sgcb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/sgbc"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/button_print"
+        android:layout_width="200dip"
+        android:layout_height="60dip"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/button_print"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/button_change_last_invoice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:text="@string/button_change_last_invoice"
+        android:visibility="invisible"/>
+
+</RelativeLayout>

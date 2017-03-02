@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/document_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="30dip">
+
+    <android.support.percent.PercentRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageView"
+            app:layout_aspectRatio="100%"
+            app:layout_widthPercent="25%"
+            app:srcCompat="@drawable/logo"/>
+
+        <TextView
+            android:id="@+id/hot_food_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="@string/hot_food_name"
+            app:layout_widthPercent="50%"/>
+
+        <TextView
+            android:id="@+id/hot_food_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/hot_food_name"
+            android:text="@string/hot_food_address"/>
+
+        <TextView
+            android:id="@+id/hot_food_tel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/hot_food_address"
+            android:text="@string/hot_food_tel"/>
+
+        <TextView
+            android:id="@+id/hot_food_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/hot_food_tel"
+            android:text="@string/hot_food_email"/>
+
+
+        <TextView
+            android:id="@+id/customer_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/hot_food_email"
+            android:gravity="end"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+
+        <RelativeLayout
+            android:id="@+id/invoice_statement_date_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/customer_name"
+            android:layout_marginEnd="50dip"
+            android:layout_marginStart="50dip"
+            android:background="@drawable/border">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/default_padding"
+                android:text="@string/invoice_statement_title"/>
+
+            <TextView
+                android:id="@+id/invoice_statement_start_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:paddingEnd="@dimen/default_padding"/>
+
+            <TextView
+                android:id="@+id/invoice_statement_end_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/invoice_statement_start_date"
+                android:paddingEnd="@dimen/default_padding"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/invoice_statement_column_tite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/invoice_statement_date_container"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:paddingStart="@dimen/default_padding"
+                android:text="@string/invoice_date"/>
+
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:paddingEnd="@dimen/default_padding"
+                android:text="@string/invoice_customer_ref"/>
+
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:paddingEnd="@dimen/default_padding"
+                android:text="@string/invoice_dolibarr_ref"/>
+
+            <TextView
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:paddingEnd="@dimen/default_padding"
+                android:text="@string/total_line"/>
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/list_view_invoice_statement_lines"
+            android:layout_width="match_parent"
+            android:layout_height="200dip"
+            android:layout_below="@+id/invoice_statement_column_tite"
+            android:divider="@null"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/list_view_invoice_statement_lines">
+
+            <TextView
+                android:layout_width="80dip"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/invoice_statement_tot_ttc"
+                android:text="@string/tot_ttc"/>
+
+            <TextView
+                android:id="@+id/invoice_statement_tot_ttc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:gravity="end"/>
+
+            <TextView
+                android:id="@+id/tot_words_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/invoice_statement_tot_ttc"
+                android:text="@string/tot_letter"/>
+
+            <TextView
+                android:id="@+id/tot_words"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tot_words_label"/>
+
+            <TextView
+                android:id="@+id/text_view_rcs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:paddingBottom="20dip"
+                android:text="@string/rcs"/>
+
+            <TextView
+                android:id="@+id/text_view_sgcb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:text="@string/sgbc"/>
+
+        </RelativeLayout>
+
+
+    </android.support.percent.PercentRelativeLayout>
+</RelativeLayout>

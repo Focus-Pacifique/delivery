@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/print_product"
+        android:layout_width="200dip"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:paddingStart="@dimen/default_padding" />
+    <TextView
+        android:id="@+id/print_price_ht"
+        android:layout_width="80dip"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:gravity="end"
+        android:paddingEnd="@dimen/default_padding" />
+    <TextView
+        android:id="@+id/print_qty"
+        android:layout_width="80dip"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:gravity="end"
+        android:paddingEnd="@dimen/default_padding" />
+    <TextView
+        android:id="@+id/print_tot_ht"
+        android:layout_width="120dip"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:gravity="end"
+        android:paddingEnd="@dimen/default_padding" />
+</LinearLayout>

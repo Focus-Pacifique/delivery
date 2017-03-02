@@ -14,6 +14,7 @@ public class User extends RealmObject {
     private String serverURL;
     private String apiKey;
     private Boolean isActive;
+    private Integer initialValues;
 
     public User() {
         this.isActive = false;
@@ -39,6 +40,10 @@ public class User extends RealmObject {
         return isActive;
     }
 
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -55,7 +60,11 @@ public class User extends RealmObject {
         this.name = name;
     }
 
-    public void setActive(Boolean active) {
-        isActive = active;
+    public Integer getInitialValues() {
+        return initialValues;
+    }
+
+    public void setInitialValues(Integer initialValues) {
+        this.initialValues = initialValues;
     }
 }

@@ -12,6 +12,23 @@
     <string name="manage_group_customer">Groupes de clients</string>
     <string name="manage_group_product">Groupes de produits</string>
 
+    <!-- Strings related to login activity -->
+    <string name="title_activity_login">Sign in to Dolibarr server</string>
+    <string name="prompt_server_url">Dolibarr server url</string>
+    <string name="prompt_email">Dolibarr user</string>
+    <string name="prompt_password">Dolibarr password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This user login is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_url">The url must end with a /</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="login_dolibarr_token_empty">La cle de l\'API Dolibarr est vide</string>
+
     <!-- Strings related to Sync activity -->
     <string name="title_activity_synchronization">Synchronisation avec Dolibarr</string>
     <string name="synchronization_service_name">Synchronisation en cours</string>
@@ -38,10 +55,15 @@
     <string name="service_dolibarr_start">Début de la synchronisation</string>
     <string name="service_dolibarr_end">Fin du service de synchronisation</string>
 
-    <!-- Strings related to ManagingInvoice fragment -->
-    <string name="title_managing_invoices">Gérer les factures</string>
+    <!-- Strings related to ManageInvoiceFragment -->
+    <string name="title_manage_invoices_fragment">Gérer les factures</string>
     <string name="dialog_title_create_avoir">Créer un avoir</string>
+    <string name="expandable_list_group_encours">En cours</string>
+    <string name="expandable_list_group_terminee">Terminées</string>
+    <string name="expandable_list_group_yesterday">Hier</string>
+    <string name="expandable_list_group_lastweek">Semaine dernière</string>
 
+    <!-- Strings related to CustomerSectionFragment -->
     <string name="title_customer_select">Sélectionnez un client</string>
 
     <!-- Strings related to product group fragment-->
@@ -96,25 +118,6 @@
     <string name="dialog_negative">Annuler</string>
     <string name="dialog_title_product_quantity">Quantité à ajouter</string>
 
-    <!-- Strings related to login activity -->
-    <string name="title_activity_login">Sign in to Dolibarr server</string>
-    <string name="prompt_server_url">Dolibarr server url</string>
-    <string name="prompt_email">Dolibarr user</string>
-    <string name="prompt_password">Dolibarr password</string>
-    <string name="action_sign_in">Sign in</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This user login is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_invalid_url">The url must end with a /</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
-    <string name="login_dolibarr_token_empty">La cle de l\'API Dolibarr est vide</string>
-
-
-
 
     <!-- Strings related to Settings -->
     <string name="title_activity_settings">Settings</string>
@@ -145,8 +148,6 @@
         <item>360</item>
         <item>-1</item>
     </string-array>
-
-
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

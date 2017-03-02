@@ -38,6 +38,7 @@ import java.util.Date;
 
 import io.realm.Realm;
 import ovh.snacking.snacking.R;
+import ovh.snacking.snacking.controller.adapter.InvoicesExpandableListAdapter;
 import ovh.snacking.snacking.util.Constants;
 import ovh.snacking.snacking.controller.adapter.InvoicePrintDocumentAdapter;
 import ovh.snacking.snacking.util.RealmSingleton;
@@ -52,20 +53,20 @@ import ovh.snacking.snacking.controller.service.DolibarrService;
 import ovh.snacking.snacking.util.SyncUtils;
 import ovh.snacking.snacking.view.fragment.CustomerOfGroupFragment;
 import ovh.snacking.snacking.view.fragment.CustomerSectionFragment;
-import ovh.snacking.snacking.view.fragment.DatePickerEndFragment;
-import ovh.snacking.snacking.view.fragment.DatePickerStartFragment;
+import ovh.snacking.snacking.view.dialogFragment.DatePickerEndFragment;
+import ovh.snacking.snacking.view.dialogFragment.DatePickerStartFragment;
 import ovh.snacking.snacking.view.fragment.EditingInvoiceFragment;
 import ovh.snacking.snacking.view.fragment.GroupCustomerFragment;
 import ovh.snacking.snacking.view.fragment.GroupProductFragment;
 import ovh.snacking.snacking.view.fragment.InvoiceStatementFragment;
-import ovh.snacking.snacking.view.fragment.ManagingInvoiceFragment;
+import ovh.snacking.snacking.view.fragment.InvoicesExpandableListFragment;
 import ovh.snacking.snacking.view.fragment.PrintInvoiceFragment;
 import ovh.snacking.snacking.view.fragment.PrintInvoiceStatementFragment;
 import ovh.snacking.snacking.view.fragment.ProductOfGroupFragment;
 import ovh.snacking.snacking.view.fragment.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements ManagingInvoiceFragment.OnInvoiceListener,
+        implements InvoicesExpandableListFragment.OnInvoicesExpandableListener,
         CustomerSectionFragment.OnCustomerDialogListener,
         EditingInvoiceFragment.OnEditInvoiceListener,
         PrintInvoiceFragment.OnPrintListener,
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity
 
     public static final String TAG_CUSTOMER_SELECT = "ovh.snacking.snacking.view.fragment.CustomerSectionFragment";
     public static final String TAG_EDITING_INVOICE = "ovh.snacking.snacking.view.fragment.EditingInvoiceFragment";
-    public static final String TAG_MANAGING_INVOICE = "ovh.snacking.snacking.view.ManagingInvoice";
+    //public static final String TAG_MANAGING_INVOICE = "ovh.snacking.snacking.view.ManagingInvoice";
     public static final String TAG_PRINT_INVOICE = "ovh.snacking.snacking.view.PrntInvoice";
     public static final String TAG_PRINT_INVOICE_STATEMENT = "ovh.snacking.snacking.view.fragment.PrintInvoiceStatementFragment";
     public static final String TAG_INVOICE_STATEMENT = "ovh.snacking.snacking.view.fragment.InvoiceStatementFragment";
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity
     public static final String TAG_CUSTOMER_OF_GROUP = "ovh.snacking.snacking.view.fragment.CustomerOfGroupFragment";
     public static final String TAG_MANAGE_GROUP_PRODUCT = "ovh.snacking.snacking.view.fragment.GroupProductFragment";
     public static final String TAG_PRODUCT_OF_GROUP = "ovh.snacking.snacking.view.fragment.ProductOfGroupFragment";
+    public static final String TAG_INVOICES_EXPANDABLE_LIST = "ovh.snacking.snacking.view.fragment.InvoicesExpandableListFragment";
 
     private Realm realm;
     private User mUser;
@@ -114,10 +116,10 @@ public class MainActivity extends AppCompatActivity
         fm = getSupportFragmentManager();
         mPrintJobs = new ArrayList<>();
 
-        Fragment frag = getFragment(TAG_MANAGING_INVOICE);
+        Fragment frag = getFragment(TAG_INVOICES_EXPANDABLE_LIST);
         if (!frag.isAdded()) {
             fm.beginTransaction()
-                    .add(R.id.fragment_container, frag, TAG_MANAGING_INVOICE)
+                    .add(R.id.fragment_container, frag, TAG_INVOICES_EXPANDABLE_LIST)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
         }
@@ -191,7 +193,7 @@ public class MainActivity extends AppCompatActivity
                 launchFragment(getFragment(TAG_MANAGE_GROUP_CUSTOMER), TAG_MANAGE_GROUP_CUSTOMER, true);
                 break;
             case R.id.nav_manageing_invoice_fragment:
-                launchFragment(getFragment(TAG_MANAGING_INVOICE), TAG_MANAGING_INVOICE, true);
+                launchFragment(getFragment(TAG_INVOICES_EXPANDABLE_LIST), TAG_INVOICES_EXPANDABLE_LIST, true);
                 break;
             case R.id.nav_manage_group_product_fragment:
                 launchFragment(getFragment(TAG_MANAGE_GROUP_PRODUCT), TAG_MANAGE_GROUP_PRODUCT, true);
@@ -227,9 +229,9 @@ public class MainActivity extends AppCompatActivity
         return createInvoice(customerId, invoiceType, null);
     }
 
-    /*****************************/
-    /**  Managing invoice frag  **/
-    /*****************************/
+    /***********************************/
+    /**  InvoiceExpandableList frag  **/
+    /**********************************/
     @Override
     public void onNewInvoice() {
         launchFragment(getFragment(TAG_CUSTOMER_SELECT), TAG_CUSTOMER_SELECT, true);
@@ -303,6 +305,7 @@ public class MainActivity extends AppCompatActivity
                                     invoice.deleteFromRealm();
                                 }
                             });
+                            ((InvoicesExpandableListFragment) getFragment(MainActivity.TAG_INVOICES_EXPANDABLE_LIST)).refreshAdapter();
                         }
                     })
                     .setNegativeButton("Non", new DialogInterface.OnClickListener() {
@@ -355,7 +358,7 @@ public class MainActivity extends AppCompatActivity
     /****************************/
     @Override
     public void onEditInvoiceBack() {
-        launchFragment(getFragment(TAG_MANAGING_INVOICE), TAG_MANAGING_INVOICE, true);
+        launchFragment(getFragment(TAG_INVOICES_EXPANDABLE_LIST), TAG_INVOICES_EXPANDABLE_LIST, true);
     }
 
     @Override
@@ -370,7 +373,7 @@ public class MainActivity extends AppCompatActivity
     /***********************************/
     @Override
     public void onPrintBack() {
-        launchFragment(getFragment(TAG_MANAGING_INVOICE), TAG_MANAGING_INVOICE, true);
+        launchFragment(getFragment(TAG_INVOICES_EXPANDABLE_LIST), TAG_INVOICES_EXPANDABLE_LIST, true);
     }
 
     @Override
@@ -611,9 +614,9 @@ public class MainActivity extends AppCompatActivity
                 case TAG_EDITING_INVOICE:
                     frag = new EditingInvoiceFragment();
                     break;
-                case TAG_MANAGING_INVOICE:
-                    frag =  new ManagingInvoiceFragment();
-                    break;
+                /*case TAG_MANAGING_INVOICE:
+                    frag =  new ManageInvoiceFragment();
+                    break;*/
                 case TAG_PRINT_INVOICE:
                     frag =  new PrintInvoiceFragment();
                     break;
@@ -637,6 +640,9 @@ public class MainActivity extends AppCompatActivity
                     break;
                 case TAG_PRODUCT_OF_GROUP:
                     frag =  new ProductOfGroupFragment();
+                    break;
+                case TAG_INVOICES_EXPANDABLE_LIST:
+                    frag = new InvoicesExpandableListFragment();
                     break;
                 default:
                     //Log.e("SWITCH MainActivity", "No case");

@@ -40,7 +40,7 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".view.activity.MainActivity"
-            android:label="@string/title_managing_invoices"
+            android:label="@string/title_manage_invoices_fragment"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity

@@ -4,7 +4,7 @@
         <item
             android:id="@+id/nav_manageing_invoice_fragment"
             android:icon="@drawable/side_nav_bar"
-            android:title="@string/title_managing_invoices" />
+            android:title="@string/title_manage_invoices_fragment"/>
         <item
             android:id="@+id/nav_invoice_statement_fragment"
             android:icon="@drawable/side_nav_bar"

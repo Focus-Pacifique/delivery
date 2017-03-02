@@ -25,6 +25,8 @@ import ovh.snacking.snacking.controller.adapter.CustomerAdapter;
 import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.model.Customer;
 import ovh.snacking.snacking.view.activity.MainActivity;
+import ovh.snacking.snacking.view.dialogFragment.DatePickerEndFragment;
+import ovh.snacking.snacking.view.dialogFragment.DatePickerStartFragment;
 
 /**
  * Created by Alex on 04/02/2017.

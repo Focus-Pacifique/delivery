@@ -26,7 +26,7 @@ import ovh.snacking.snacking.view.activity.MainActivity;
  * Created by Alex on 17/11/2016.
  */
 
-public class ManagingInvoiceFragment extends ListFragment {
+public class ManageInvoiceFragment extends ListFragment {
 
     OnInvoiceListener mListener;
     private Realm realm;
@@ -87,7 +87,7 @@ public class ManagingInvoiceFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_managing_invoices));
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_manage_invoices_fragment));
         fab.setImageResource(R.drawable.ic_new);
         fab.show();
     }

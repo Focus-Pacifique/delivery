@@ -37,7 +37,8 @@ public class PrintInvoiceStatementFragment extends Fragment {
 
     OnPrintInvoiceStatementListener mListener;
     private Realm realm;
-    private Button mButtonPrint, mButtonCustomer, mButtonStartDate, mButtonEndDate;
+    private Button mButtonCustomer, mButtonStartDate, mButtonEndDate;
+    private FloatingActionButton fab;
     private ImageButton mButtonRefresh;
     private Customer mCustomer;
     private Date mStartDate, mEndDate;
@@ -58,7 +59,7 @@ public class PrintInvoiceStatementFragment extends Fragment {
         realm = RealmSingleton.getInstance(getContext()).getRealm();
 
         final View layout = inflater.inflate(R.layout.fragment_invoice_statement, container, false);
-        mButtonPrint = (Button) layout.findViewById(R.id.button_print);
+        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         mButtonCustomer = (Button) layout.findViewById(R.id.button_change_customer);
         mButtonStartDate = (Button) layout.findViewById(R.id.button_change_start_date);
         mButtonEndDate = (Button) layout.findViewById(R.id.button_change_end_date);
@@ -100,7 +101,7 @@ public class PrintInvoiceStatementFragment extends Fragment {
             }
         });
 
-        mButtonPrint.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null == mCustomer) {
@@ -126,7 +127,8 @@ public class PrintInvoiceStatementFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((FloatingActionButton) getActivity().findViewById(R.id.fab)).hide();
+        fab.setImageResource(R.drawable.ic_action_print);
+        fab.show();
     }
 
     @Override

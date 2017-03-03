@@ -1,4 +1,4 @@
-package ovh.snacking.snacking.controller.adapter;
+package ovh.snacking.snacking.controller.print;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;

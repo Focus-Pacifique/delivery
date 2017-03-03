@@ -112,8 +112,8 @@
     <!-- Strings related to Invoice Statement Print -->
     <string name="invoice_statement_title">Relevé de facture</string>
     <string name="invoice_date">Date</string>
-    <string name="invoice_dolibarr_ref">Référence dolibarr</string>
-    <string name="invoice_customer_ref">Référence client</string>
+    <string name="invoice_dolibarr_ref">Ref. dolibarr</string>
+    <string name="invoice_customer_ref">Ref. client</string>
 
 
     <string name="dialog_negative">Annuler</string>

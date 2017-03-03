@@ -1,38 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal">
-    <TextView
-        android:id="@+id/dolibarr_invoice_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@drawable/border"
-        android:paddingStart="@dimen/default_padding" />
-    <TextView
-        android:id="@+id/customer_invoice_ref"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@drawable/border"
-        android:gravity="end"
-        android:paddingEnd="@dimen/default_padding" />
-    <TextView
-        android:id="@+id/dolibarr_invoice_ref"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@drawable/border"
-        android:gravity="end"
-        android:paddingEnd="@dimen/default_padding" />
-    <TextView
-        android:id="@+id/dolibarr_invoice_tot_ttc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@drawable/border"
-        android:gravity="end"
-        android:paddingEnd="@dimen/default_padding" />
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/document_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-</LinearLayout>
+    <android.support.percent.PercentRelativeLayout
+        android:id="@+id/invoice_statement_column_tite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/dolibarr_invoice_date"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:paddingStart="@dimen/print_padding_small"
+            android:textSize="@dimen/print_text_size_small"
+            app:layout_widthPercent="24%"/>
+
+        <TextView
+            android:id="@+id/customer_invoice_ref"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/dolibarr_invoice_date"
+            android:background="@drawable/border"
+            android:gravity="end"
+            android:paddingEnd="@dimen/print_padding_small"
+            android:textSize="@dimen/print_text_size_small"
+            app:layout_widthPercent="28%"/>
+
+        <TextView
+            android:id="@+id/dolibarr_invoice_ref"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/customer_invoice_ref"
+            android:background="@drawable/border"
+            android:gravity="end"
+            android:paddingEnd="@dimen/print_padding_small"
+            android:textSize="@dimen/print_text_size_small"
+            app:layout_widthPercent="28%"/>
+
+        <TextView
+            android:id="@+id/dolibarr_invoice_tot_ttc"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/dolibarr_invoice_ref"
+            android:background="@drawable/border"
+            android:gravity="end"
+            android:paddingEnd="@dimen/print_padding_small"
+            android:textSize="@dimen/print_text_size_small"
+            app:layout_widthPercent="20%"/>
+
+    </android.support.percent.PercentRelativeLayout>
+
+</RelativeLayout>

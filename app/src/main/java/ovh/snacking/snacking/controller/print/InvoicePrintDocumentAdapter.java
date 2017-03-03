@@ -1,4 +1,4 @@
-package ovh.snacking.snacking.controller.adapter;
+package ovh.snacking.snacking.controller.print;
 
 import android.app.Activity;
 import android.graphics.pdf.PdfDocument;
@@ -48,6 +48,9 @@ public class InvoicePrintDocumentAdapter extends PrintDocumentAdapter {
             callback.onLayoutCancelled();
             return;
         }
+
+        // Compute the expected number of printed pages
+        //int pages = computePageCount(newAttributes);
 
         // Return print information to print framework
         PrintDocumentInfo info = new PrintDocumentInfo
@@ -101,4 +104,17 @@ public class InvoicePrintDocumentAdapter extends PrintDocumentAdapter {
     public void onFinish() {
         super.onFinish();
     }
+
+    /*private int computePageCount(PrintAttributes printAttributes) {
+        int itemsPerPage = 4; // default item count for portrait mode
+
+        PrintAttributes.MediaSize pageSize = printAttributes.getMediaSize();
+
+        // Determine number of print items
+        int printItemCount = getPrintItemCount();
+
+        return (int) Math.ceil(printItemCount / itemsPerPage);
+    }*/
+
+
 }

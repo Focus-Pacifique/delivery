@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import io.realm.Realm;
 import ovh.snacking.snacking.NumberToWords.FrenchNumberToWords;
 import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.controller.adapter.PrintInvoiceAdapter;
+import ovh.snacking.snacking.controller.print.PrintInvoiceAdapter;
 import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.model.Invoice;
 import ovh.snacking.snacking.view.activity.MainActivity;

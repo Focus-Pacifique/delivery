@@ -20,6 +20,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
@@ -39,7 +40,7 @@ import java.util.Date;
 import io.realm.Realm;
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.util.Constants;
-import ovh.snacking.snacking.controller.adapter.InvoicePrintDocumentAdapter;
+import ovh.snacking.snacking.controller.print.InvoicePrintDocumentAdapter;
 import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.model.Customer;
 import ovh.snacking.snacking.model.CustomerGroup;
@@ -204,8 +205,10 @@ public class MainActivity extends AppCompatActivity
 
         // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);
+
         // Set action bar title
         setTitle(menuItem.getTitle());
+
         // Close the navigation drawer
         mDrawerLayout.closeDrawers();
     }

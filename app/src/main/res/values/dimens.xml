@@ -5,17 +5,28 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="default_text_size">20sp</dimen>
-    <dimen name="big_text_size">30sp</dimen>
-    <dimen name="default_padding">8dip</dimen>
-    <dimen name="default_horizontal_space">8dip</dimen>
-    <dimen name="default_vertical_space">0dip</dimen>
+    <dimen name="big_text_size">28sp</dimen>
 
-    <dimen name="grid_view_item_height">60dip</dimen>
-    <dimen name="list_view_item_height">60dip</dimen>
+    <dimen name="default_padding">8dp</dimen>
+    <dimen name="default_horizontal_space">8dp</dimen>
+    <dimen name="default_vertical_space">0dp</dimen>
 
-    <dimen name="design_fab_size_mini">80dip</dimen>
+    <dimen name="grid_view_item_height">60dp</dimen>
+    <dimen name="list_view_item_height">60dp</dimen>
+
+    <dimen name="design_fab_size_mini">80dp</dimen>
+
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
+
+    <!-- Print dimensions -->
+    <dimen name="print_text_size_customer">13sp</dimen>
+    <dimen name="print_text_size_default">8sp</dimen>
+    <dimen name="print_text_size_small">6sp</dimen>
+    <dimen name="print_margin">10dp</dimen>
+    <dimen name="print_margin_small">7dp</dimen>
+    <dimen name="print_padding">16dp</dimen>
+    <dimen name="print_padding_small">5dp</dimen>
 
 </resources>

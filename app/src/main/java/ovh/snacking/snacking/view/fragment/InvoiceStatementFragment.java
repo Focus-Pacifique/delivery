@@ -15,7 +15,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import ovh.snacking.snacking.NumberToWords.FrenchNumberToWords;
 import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.controller.adapter.DolibarrInvoiceStatementAdapter;
+import ovh.snacking.snacking.controller.print.DolibarrInvoiceStatementAdapter;
 import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.model.Customer;
 import ovh.snacking.snacking.model.DolibarrInvoice;
@@ -58,18 +58,24 @@ public class InvoiceStatementFragment extends Fragment {
         TextView customer = (TextView) layout.findViewById(R.id.customer_name);
         customer.setText(mCustomer.getName());
 
-        // Invoices
-        ListView listView = (ListView) layout.findViewById(R.id.list_view_invoice_statement_lines);
-        DolibarrInvoiceStatementAdapter invoiceStatementAdapter = new DolibarrInvoiceStatementAdapter(getContext(), invoices);
-        listView.setAdapter(invoiceStatementAdapter);
 
-        // Invoice date and number
+        // Invoice statement title and date
+        TextView invoice_count = (TextView) layout.findViewById(R.id.invoice_statement_count);
+        invoice_count.setText(String.valueOf(getString(R.string.invoice_statement_title) + " (" + invoices.size() + ")"));
+
         SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy");
         TextView startDate = (TextView) layout.findViewById(R.id.invoice_statement_start_date);
         startDate.setText("du : " + simpleDate.format(mStartDate));
 
         TextView endDate = (TextView) layout.findViewById(R.id.invoice_statement_end_date);
         endDate.setText("au : " + simpleDate.format(mEndDate));
+
+
+        // Invoices
+        ListView listView = (ListView) layout.findViewById(R.id.list_view_invoice_statement_lines);
+        DolibarrInvoiceStatementAdapter invoiceStatementAdapter = new DolibarrInvoiceStatementAdapter(getContext(), invoices);
+        listView.setAdapter(invoiceStatementAdapter);
+
 
         // Total
         final TextView tot_ttc = (TextView) layout.findViewById(R.id.invoice_statement_tot_ttc);

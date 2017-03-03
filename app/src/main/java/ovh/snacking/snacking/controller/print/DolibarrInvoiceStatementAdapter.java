@@ -1,4 +1,4 @@
-package ovh.snacking.snacking.controller.adapter;
+package ovh.snacking.snacking.controller.print;
 
 import android.content.Context;
 import android.view.View;

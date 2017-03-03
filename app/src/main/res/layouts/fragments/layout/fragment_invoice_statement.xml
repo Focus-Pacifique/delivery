@@ -76,7 +76,7 @@
         <LinearLayout
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:gravity="center">
 
             <ImageButton
@@ -90,20 +90,28 @@
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/invoice_statement"
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/invoice_statement_filter_buttons"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@android:color/darker_gray"/>
+
+    <android.support.percent.PercentRelativeLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/invoice_statement_filter_buttons"
-        android:layout_marginBottom="40dip"/>
+        android:layout_below="@id/divider">
 
-    <Button
-        android:id="@+id/button_print"
-        android:layout_width="200dip"
-        android:layout_height="60dip"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/button_print"
-        android:textSize="18sp"/>
+        <FrameLayout
+            android:id="@+id/invoice_statement"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/border"
+            app:layout_aspectRatio="71%"
+            app:layout_heightPercent="95%"/>
+
+    </android.support.percent.PercentRelativeLayout>
 
 </RelativeLayout>

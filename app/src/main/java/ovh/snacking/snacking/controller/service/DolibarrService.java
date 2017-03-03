@@ -106,6 +106,9 @@ public class DolibarrService extends IntentService {
                     } catch (IOException e) {
                         e.printStackTrace();
                         res = -10;
+                    } catch (IllegalStateException ise) {
+                        ise.printStackTrace();
+                        res = -11;
                     }
                     if (res == 0) {
                         sendBroadcastMessage(R.string.post_invoices_dolibarr_success);
@@ -367,7 +370,7 @@ public class DolibarrService extends IntentService {
         return 0;
     }
 
-    private boolean getDolibarrInvoices() throws IOException {
+    private boolean getDolibarrInvoices() throws IOException, IllegalStateException {
         // Get the local last invoice id
         Integer localLastId;
         if (null != realm.where(DolibarrInvoice.class).max("id")) {
@@ -391,7 +394,7 @@ public class DolibarrService extends IntentService {
         }
     }
 
-    private Integer postInvoices() throws IOException {
+    private Integer postInvoices() throws IOException, IllegalStateException {
         // TODO Post backup invoices en async avec APIRetrofit
         /* RealmResults<InvoiceChange> invoicesBackup = realm.where(InvoiceChange.class).findAll();
         for (final InvoiceChange invvoiceBackup : invoicesBackup) {
@@ -477,7 +480,7 @@ public class DolibarrService extends IntentService {
         return 0;
     }
 
-    private boolean postInvoiceToDolibarr(final Invoice invoice) throws IOException {
+    private boolean postInvoiceToDolibarr(final Invoice invoice) throws IOException, IllegalStateException {
         if (invoiceExists(invoice.getRef(), invoice.getTotalTTC(), invoice.getCustomer().getId())) {
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
@@ -496,7 +499,7 @@ public class DolibarrService extends IntentService {
         }
     }
 
-    private Integer createInvoice(Invoice invoice) throws IOException {
+    private Integer createInvoice(Invoice invoice) throws IOException, IllegalStateException {
         Call<JsonPrimitive> call = dolibarr.createInvoiceFromJson(mAPIKKey, convertInvoice2Json(invoice));
         JsonPrimitive req = call.execute().body();
         if (req == null) {
@@ -506,7 +509,7 @@ public class DolibarrService extends IntentService {
         return req.getAsInt();
     }
 
-    private Boolean validateInvoice(final Integer fk_dolibarr_invoice, final Invoice invoice) throws IOException {
+    private Boolean validateInvoice(final Integer fk_dolibarr_invoice, final Invoice invoice) throws IOException, IllegalStateException {
         Call<JsonPrimitive> call = dolibarr.validateInvoice(fk_dolibarr_invoice, mAPIKKey);
         JsonPrimitive req = call.execute().body();
         if (req != null && req.getAsBoolean()) {
@@ -523,13 +526,13 @@ public class DolibarrService extends IntentService {
         }
     }
 
-    private Boolean setPaidAndConsume(final Integer fk_avoir_dolibarr, final Integer fk_facture_dolibarr) throws IOException {
+    private Boolean setPaidAndConsume(final Integer fk_avoir_dolibarr, final Integer fk_facture_dolibarr) throws IOException, IllegalStateException {
         Call<JsonPrimitive> call = dolibarr.setPaidAndConsumeAvoir(fk_avoir_dolibarr, fk_facture_dolibarr, mAPIKKey);
         JsonPrimitive req = call.execute().body();
         return req != null && req.getAsBoolean();
     }
 
-    private Boolean invoiceExists(final String ref_client, final Integer total_ttc, final Integer fk_soc) throws IOException {
+    private Boolean invoiceExists(final String ref_client, final Integer total_ttc, final Integer fk_soc) throws IOException, IllegalStateException {
         Call<JsonPrimitive> call = dolibarr.invoiceRefClientTotalExists(ref_client, total_ttc, fk_soc, mAPIKKey);
         JsonPrimitive req = call.execute().body();
         return req != null && req.getAsBoolean();
@@ -554,12 +557,8 @@ public class DolibarrService extends IntentService {
             } else if (Invoice.AVOIR.equals(invoice.getType())) {
                 Invoice facture_source = realm.where(Invoice.class).equalTo("id", invoice.getFk_facture_source()).findFirst();
                 obj.addProperty("note_private", "Tablette " + invoice.getUser().getName() + ", ref " + invoice.getRef() + ", facture " + facture_source.getRef());
-                if (facture_source != null && facture_source.getId_dolibarr() != null) {
-                    obj.addProperty("type", 2);  // 0=Facture de doit, 2=Facture avoir
-                    obj.addProperty("fk_facture_source", facture_source.getId_dolibarr());
-                } else {
-                    return null;
-                }
+                obj.addProperty("type", 2);  // 0=Facture de doit, 2=Facture avoir
+                obj.addProperty("fk_facture_source", facture_source.getId_dolibarr());
             }
             obj.addProperty("cond_reglement_id", 1);            // 1=A reception
 

@@ -96,7 +96,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void setLastSyncDate(Date date) {
         Preference pref = findPreference(PREF_KEY_MANUAL_SYNC);
-        SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        pref.setSummary(getString(R.string.pref_summary_manual_sync) + " " + simpleDate.format(date));
+        if (date != null) {
+            SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            pref.setSummary(getString(R.string.pref_summary_manual_sync) + " " + simpleDate.format(date));
+        } else {
+            pref.setSummary(getString(R.string.pref_summary_manual_sync) + " : jamais");
+        }
     }
 }

@@ -2,7 +2,6 @@ package ovh.snacking.snacking.controller.adapter;
 
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.model.Invoice;
-import ovh.snacking.snacking.model.Product;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -41,7 +40,7 @@ public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             groupHolder = new InvoicesExpandableListAdapter.ViewHolder();
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.expandable_list_group_item, parent, false);
+            convertView = inflater.inflate(R.layout.expandable_list_header, parent, false);
             groupHolder.icon = (ImageView) convertView.findViewById(R.id.group_img);
             groupHolder.customerName = (TextView) convertView.findViewById(R.id.group_header);
             groupHolder.expandImage = (ImageView) convertView.findViewById(R.id.group_expand);
@@ -73,7 +72,7 @@ public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
         final InvoicesExpandableListAdapter.ViewHolder viewHolder;
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.section_item_invoice, parent, false);
+            convertView = inflater.inflate(R.layout.expandable_list_invoice_item, parent, false);
             viewHolder = new InvoicesExpandableListAdapter.ViewHolder();
             viewHolder.invoiceType = (TextView) convertView.findViewById(R.id.invoice_type);
             viewHolder.customerName = (TextView) convertView.findViewById(R.id.customer_name);
@@ -167,7 +166,7 @@ public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
         ImageView expandImage;
     }
 
-    public static class ExpandableListChild {
+    /*public static class ExpandableListChild {
         private String invoiceType;
         private String customerName;
         private String datetime;
@@ -204,7 +203,7 @@ public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
         public void setInvoiceState(String invoiceState) {
             this.invoiceState = invoiceState;
         }
-    }
+    }*/
 
     public static class ExpandableListGroup {
         private String name;

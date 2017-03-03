@@ -164,7 +164,7 @@ public class PrintInvoiceFragment extends Fragment {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onPrintBack();
+                mListener.onBackToManageInvoices();
             }
         });
 
@@ -217,7 +217,7 @@ public class PrintInvoiceFragment extends Fragment {
     }
 
     public interface OnPrintListener {
-        void onPrintBack();
+        void onBackToManageInvoices();
 
         boolean onFinishInvoice(Integer invoiceId);
 

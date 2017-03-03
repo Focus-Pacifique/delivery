@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,13 +31,28 @@ import ovh.snacking.snacking.view.activity.MainActivity;
 
 /**
  * Created by Alex on 07/02/2017.
+ *
+ * Fragment to mangage customers into a group
+ *
  */
 
 public class CustomerOfGroupFragment extends Fragment {
 
+    OnCustomerOfGroupListener mListener;
     private Realm realm;
     private FloatingActionButton fab;
     private CustomerGroup mGroup;
+    private Toolbar toolbar;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mListener = (OnCustomerOfGroupListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement OnCustomerOfGroupListener");
+        }
+    }
 
     public void setCustomerGroup(CustomerGroup mGroup) {
         this.mGroup = mGroup;
@@ -75,9 +91,30 @@ public class CustomerOfGroupFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_customer_of_group) + " " + mGroup.getName());
+
+        //Title
+        ((MainActivity) getActivity()).setActionBarTitle(String.valueOf(mGroup.getName()));
+
         fab.setImageResource(R.drawable.ic_new);
         fab.show();
+
+        // Back arrow in the menu
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_back_button);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onBackPressed();
+            }
+        });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Back arrow in the menu
+        toolbar.setNavigationIcon(null);
+        toolbar.setNavigationOnClickListener(null);
     }
 
     @Override
@@ -137,16 +174,15 @@ public class CustomerOfGroupFragment extends Fragment {
     }
 
     private Integer nextCustomerAndGroupBindingId() {
-        if(null != realm.where(CustomerAndGroupBinding.class).findFirst()) {
-            Integer nextId = realm.where(CustomerAndGroupBinding.class).max("id").intValue() + 1;
-            return nextId;
-        } else {
-            return 1;
-        }
+        return realm.where(CustomerAndGroupBinding.class).findFirst() != null ? (realm.where(CustomerAndGroupBinding.class).max("id").intValue() + 1) : 1;
     }
 
     private Integer nextCustomerAndGroupBindingPosition(CustomerGroup group) {
         return realm.where(CustomerAndGroupBinding.class).equalTo("group.id", group.getId()).findAll().size();
+    }
+
+    public interface OnCustomerOfGroupListener {
+        void onBackPressed();
     }
 
     public class CustomerRecyclerViewAdapter extends RealmRecyclerViewAdapter<CustomerAndGroupBinding, CustomerRecyclerViewAdapter.ViewHolder> {
@@ -156,7 +192,7 @@ public class CustomerOfGroupFragment extends Fragment {
 
         @Override
         public CustomerRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_customer_item, parent, false);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_item_of_group, parent, false);
             return new CustomerRecyclerViewAdapter.ViewHolder(itemView);
         }
 
@@ -175,9 +211,9 @@ public class CustomerOfGroupFragment extends Fragment {
 
             public ViewHolder(View view) {
                 super(view);
-                imgItem = (ImageView) view.findViewById(R.id.recycler_view_customer_item_image);
-                customerName = (TextView) view.findViewById(R.id.recycler_view_customer_item_name);
-                customerPosition = (TextView) view.findViewById(R.id.recycler_view_customer_item_position);
+                imgItem = (ImageView) view.findViewById(R.id.customer_image);
+                customerName = (TextView) view.findViewById(R.id.customer_name);
+                customerPosition = (TextView) view.findViewById(R.id.customer_position);
                 view.setOnLongClickListener(this);
             }
 

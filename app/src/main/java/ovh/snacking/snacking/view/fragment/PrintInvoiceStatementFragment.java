@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +37,8 @@ public class PrintInvoiceStatementFragment extends Fragment {
 
     OnPrintInvoiceStatementListener mListener;
     private Realm realm;
-    private Button mButtonPrint, mButtonCustomer, mButtonStartDate, mButtonEndDate, mButtonRefresh;
+    private Button mButtonPrint, mButtonCustomer, mButtonStartDate, mButtonEndDate;
+    private ImageButton mButtonRefresh;
     private Customer mCustomer;
     private Date mStartDate, mEndDate;
 
@@ -60,7 +62,7 @@ public class PrintInvoiceStatementFragment extends Fragment {
         mButtonCustomer = (Button) layout.findViewById(R.id.button_change_customer);
         mButtonStartDate = (Button) layout.findViewById(R.id.button_change_start_date);
         mButtonEndDate = (Button) layout.findViewById(R.id.button_change_end_date);
-        mButtonRefresh = (Button) layout.findViewById(R.id.button_refresh_UI);
+        mButtonRefresh = (ImageButton) layout.findViewById(R.id.button_refresh_UI);
 
         return layout;
     }

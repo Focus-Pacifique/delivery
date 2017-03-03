@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="50dip"
+              android:layout_height="?android:attr/listPreferredItemHeight"
+              android:background="?android:attr/listChoiceBackgroundIndicator"
               android:gravity="center_vertical"
               android:orientation="horizontal"
-              android:padding="@dimen/default_padding">
+              android:padding="@dimen/default_padding"
+              android:textAppearance="?android:attr/textAppearanceListItem">
     <ImageView
-        android:id="@+id/recycler_view_customer_item_image"
+        android:id="@+id/customer_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"/>
     <TextView
-        android:id="@+id/recycler_view_customer_item_name"
+        android:id="@+id/customer_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:textSize="20sp"/>
     <TextView
-        android:id="@+id/recycler_view_customer_item_position"
+        android:id="@+id/customer_position"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 </LinearLayout>

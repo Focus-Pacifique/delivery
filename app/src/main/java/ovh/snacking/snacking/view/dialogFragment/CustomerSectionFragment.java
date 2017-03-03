@@ -1,4 +1,4 @@
-package ovh.snacking.snacking.view.fragment;
+package ovh.snacking.snacking.view.dialogFragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -137,7 +137,7 @@ public class CustomerSectionFragment extends DialogFragment {
 
         public CustomerSection(String title, List<Customer> list) {
             // call constructor with layout resources for this Section header and items
-            super(R.layout.section_header, R.layout.section_item_customer);
+            super(R.layout.section_header, R.layout.recycler_view_item_of_group);
             this.mTitle = title;
             this.mList = list;
         }
@@ -184,7 +184,6 @@ public class CustomerSectionFragment extends DialogFragment {
         }
 
 
-
         private class HeaderViewHolder extends RecyclerView.ViewHolder {
 
             private final TextView tvTitle;
@@ -204,8 +203,8 @@ public class CustomerSectionFragment extends DialogFragment {
             private ItemViewHolder(View view) {
                 super(view);
                 rootView = view;
-                imgItem = (ImageView) view.findViewById(R.id.section_item_customer_img);
-                tvItem = (TextView) view.findViewById(R.id.section_item_customer_name);
+                imgItem = (ImageView) view.findViewById(R.id.customer_image);
+                tvItem = (TextView) view.findViewById(R.id.customer_name);
             }
         }
     }

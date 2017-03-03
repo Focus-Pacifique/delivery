@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,13 +31,28 @@ import ovh.snacking.snacking.view.activity.MainActivity;
 
 /**
  * Created by Alex on 07/02/2017.
+ *
+ * Fragment to mangage products into a group
+ *
  */
 
 public class ProductOfGroupFragment extends Fragment {
 
+    OnProductOfGroupListener mListener;
     private Realm realm;
     private FloatingActionButton fab;
     private ProductGroup mGroup;
+    private Toolbar toolbar;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mListener = (OnProductOfGroupListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement OnProductOfGroupListener");
+        }
+    }
 
     public void setProductGroup(ProductGroup mGroup) {
         this.mGroup = mGroup;
@@ -75,9 +91,30 @@ public class ProductOfGroupFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_product_of_group) + " " + mGroup.getName());
+
+        // Title
+        ((MainActivity) getActivity()).setActionBarTitle(String.valueOf(mGroup.getName()));
+
         fab.setImageResource(R.drawable.ic_new);
         fab.show();
+
+        // Back arrow in the menu
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_back_button);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onBackPressed();
+            }
+        });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Back arrow in the menu
+        toolbar.setNavigationIcon(null);
+        toolbar.setNavigationOnClickListener(null);
     }
 
     @Override
@@ -137,16 +174,15 @@ public class ProductOfGroupFragment extends Fragment {
     }
 
     private Integer nextProductAndGroupBindingId() {
-        if(null != realm.where(ProductAndGroupBinding.class).findFirst()) {
-            Integer nextId = realm.where(ProductAndGroupBinding.class).max("id").intValue() + 1;
-            return nextId;
-        } else {
-            return 1;
-        }
+        return realm.where(ProductAndGroupBinding.class).findFirst() != null ? (realm.where(ProductAndGroupBinding.class).max("id").intValue() + 1) : 1;
     }
 
     private Integer nextProductAndGroupBindingPosition(ProductGroup group) {
         return realm.where(ProductAndGroupBinding.class).equalTo("group.id", group.getId()).findAll().size();
+    }
+
+    public interface OnProductOfGroupListener {
+        void onBackPressed();
     }
 
     public class ProductRecyclerViewAdapter extends RealmRecyclerViewAdapter<ProductAndGroupBinding, ProductRecyclerViewAdapter.ViewHolder> {
@@ -156,14 +192,14 @@ public class ProductOfGroupFragment extends Fragment {
 
         @Override
         public ProductRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_customer_item, parent, false);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_item_of_group, parent, false);
             return new ProductRecyclerViewAdapter.ViewHolder(itemView);
         }
 
         @Override
         public void onBindViewHolder(ProductRecyclerViewAdapter.ViewHolder holder, int position) {
             ProductAndGroupBinding bind = getData().get(position);
-            holder.imgItem.setImageResource(R.drawable.ic_person_black_24dp);
+            holder.imgItem.setImageResource(R.drawable.ic_label_black_24dp);
             holder.productName.setText(String.valueOf(bind.getProduct().getRef()));
             holder.productPosition.setText(String.valueOf(bind.getPosition()));
         }
@@ -175,9 +211,9 @@ public class ProductOfGroupFragment extends Fragment {
 
             public ViewHolder(View view) {
                 super(view);
-                imgItem = (ImageView) view.findViewById(R.id.recycler_view_customer_item_image);
-                productName = (TextView) view.findViewById(R.id.recycler_view_customer_item_name);
-                productPosition = (TextView) view.findViewById(R.id.recycler_view_customer_item_position);
+                imgItem = (ImageView) view.findViewById(R.id.customer_image);
+                productName = (TextView) view.findViewById(R.id.customer_name);
+                productPosition = (TextView) view.findViewById(R.id.customer_position);
                 view.setOnLongClickListener(this);
             }
 

@@ -29,6 +29,9 @@ import ovh.snacking.snacking.view.activity.MainActivity;
 
 /**
  * Created by Alex on 06/02/2017.
+ *
+ * Fragment to manage group of customers
+ *
  */
 
 public class GroupCustomerFragment extends Fragment {
@@ -68,6 +71,7 @@ public class GroupCustomerFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        // On fab click : new CustomerGroup
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,7 +83,7 @@ public class GroupCustomerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.manage_group_customer));
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.nav_group_customer));
         fab.setImageResource(R.drawable.ic_new);
         fab.show();
     }
@@ -151,12 +155,7 @@ public class GroupCustomerFragment extends Fragment {
     }
 
     private Integer nextCustomerGroupId() {
-        if(null != realm.where(CustomerGroup.class).findFirst()) {
-            Integer nextId = realm.where(CustomerGroup.class).max("id").intValue() + 1;
-            return nextId;
-        } else {
-            return 1;
-        }
+        return realm.where(CustomerGroup.class).findFirst() != null ? (realm.where(CustomerGroup.class).max("id").intValue() + 1) : 1;
     }
 
     private Integer nextCustomerGroupPosition() {
@@ -175,14 +174,14 @@ public class GroupCustomerFragment extends Fragment {
 
         @Override
         public GroupCustomerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_group_item, parent, false);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_group, parent, false);
             return new ViewHolder(itemView);
         }
 
         @Override
         public void onBindViewHolder(GroupCustomerAdapter.ViewHolder holder, int position) {
             CustomerGroup group = getData().get(position);
-            holder.imgItem.setImageResource(R.drawable.ic_label_black_24dp);
+            holder.imgItem.setImageResource(R.drawable.ic_people_black_24dp);
             holder.groupName.setText(String.valueOf(group.getName()));
             holder.groupPosition.setText(String.valueOf(group.getPosition()));
         }

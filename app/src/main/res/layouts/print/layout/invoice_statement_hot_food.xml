@@ -14,7 +14,7 @@
         <ImageView
             android:id="@+id/imageView"
             app:layout_aspectRatio="100%"
-            app:layout_widthPercent="25%"
+            app:layout_widthPercent="50%"
             app:srcCompat="@drawable/logo"/>
 
         <TextView
@@ -22,8 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="@string/hot_food_name"
-            app:layout_widthPercent="50%"/>
+            android:text="@string/hot_food_name"/>
 
         <TextView
             android:id="@+id/hot_food_address"

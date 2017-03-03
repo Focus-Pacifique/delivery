@@ -1,8 +1,6 @@
 package ovh.snacking.snacking.view.fragment;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
@@ -11,28 +9,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.controller.adapter.InvoiceAdapter;
 import ovh.snacking.snacking.controller.adapter.InvoicesExpandableListAdapter;
 import ovh.snacking.snacking.model.Invoice;
 import ovh.snacking.snacking.util.RealmSingleton;
-import ovh.snacking.snacking.model.Product;
-import ovh.snacking.snacking.model.ProductGroup;
 import ovh.snacking.snacking.view.activity.MainActivity;
 
 /**
@@ -268,9 +259,7 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
 
     public interface OnInvoicesExpandableListener {
         void onInvoiceSelected(Integer invoiceId);
-
         void onInvoiceLongClick(Integer invoiceId);
-
         void onNewInvoice();
     }
 }

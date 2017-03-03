@@ -67,7 +67,7 @@ public class CustomerListFragment extends Fragment {
 
         @Override
         public CustomerListFragment.CustomerRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_customer_item, parent, false);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_item_of_group, parent, false);
             return new CustomerListFragment.CustomerRecyclerViewAdapter.ViewHolder(itemView);
         }
 
@@ -84,8 +84,8 @@ public class CustomerListFragment extends Fragment {
 
             public ViewHolder(View view) {
                 super(view);
-                imgItem = (ImageView) view.findViewById(R.id.recycler_view_customer_item_image);
-                customerName = (TextView) view.findViewById(R.id.recycler_view_customer_item_name);
+                imgItem = (ImageView) view.findViewById(R.id.customer_image);
+                customerName = (TextView) view.findViewById(R.id.customer_name);
                 view.setOnClickListener(this);
             }
 

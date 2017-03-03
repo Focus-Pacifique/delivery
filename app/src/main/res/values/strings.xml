@@ -8,9 +8,10 @@
     <string name="invoice_state_terminee">TERMINEE</string>
 
     <!-- Strings related to navigation drawer -->
-    <string name="invoice_statement">Relevé de facture</string>
-    <string name="manage_group_customer">Groupes de clients</string>
-    <string name="manage_group_product">Groupes de produits</string>
+    <string name="nav_manage_invoice">Factures</string>
+    <string name="nav_invoice_statement">Relevé de facture</string>
+    <string name="nav_group_customer">Clients</string>
+    <string name="nav_group_product">Produits</string>
 
     <!-- Strings related to login activity -->
     <string name="title_activity_login">Sign in to Dolibarr server</string>

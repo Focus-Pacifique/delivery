@@ -75,17 +75,16 @@
 
         <LinearLayout
             android:layout_width="0dip"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="2"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:gravity="center">
 
-            <Button
+            <ImageButton
                 android:id="@+id/button_refresh_UI"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDark"
-                android:text="OK"/>
+                android:background="@null"
+                android:src="@drawable/ic_sync_black_24dp"/>
 
         </LinearLayout>
 

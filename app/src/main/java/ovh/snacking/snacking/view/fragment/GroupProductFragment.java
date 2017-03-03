@@ -29,10 +29,12 @@ import ovh.snacking.snacking.view.activity.MainActivity;
 
 /**
  * Created by Alex on 29/01/2017.
+ *
+ * Fragment to manage group of products
+ *
  */
 
 public class GroupProductFragment extends Fragment {
-
     OnGroupProductSelectedListener mListener;
     private Realm realm;
     private FloatingActionButton fab;
@@ -81,14 +83,14 @@ public class GroupProductFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.manage_group_product));
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.nav_group_product));
         fab.setImageResource(R.drawable.ic_new);
         fab.show();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         realm.close();
     }
 
@@ -153,12 +155,7 @@ public class GroupProductFragment extends Fragment {
     }
 
     private Integer nextProductGroupId() {
-        if(null != realm.where(ProductGroup.class).findFirst()) {
-            Integer nextId = realm.where(ProductGroup.class).max("id").intValue() + 1;
-            return nextId;
-        } else {
-            return 1;
-        }
+        return realm.where(ProductGroup.class).findFirst() != null ? (realm.where(ProductGroup.class).max("id").intValue() + 1) : 1;
     }
 
     private Integer nextProductGroupPosition() {
@@ -177,7 +174,7 @@ public class GroupProductFragment extends Fragment {
 
         @Override
         public GroupProductAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_group_item, parent, false);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_group, parent, false);
             return new ViewHolder(itemView);
         }
 

@@ -111,7 +111,7 @@ public class EditingInvoiceFragment extends Fragment {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onEditInvoiceBack();
+                mListener.onBackToManageInvoices();
             }
         });
 
@@ -229,7 +229,7 @@ public class EditingInvoiceFragment extends Fragment {
     }
 
     public interface OnEditInvoiceListener {
-        void onEditInvoiceBack();
+        void onBackToManageInvoices();
 
         void onShowInvoice(Integer invoiceId);
     }

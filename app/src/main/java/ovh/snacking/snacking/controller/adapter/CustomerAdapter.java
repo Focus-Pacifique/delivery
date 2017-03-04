@@ -12,6 +12,9 @@ import ovh.snacking.snacking.model.Customer;
 
 /**
  * Created by Alex on 21/10/2016.
+ *
+ * Adapter to get a list of the customer's names
+ *
  */
 
 public class CustomerAdapter extends RealmBaseAdapter<Customer> implements ListAdapter {

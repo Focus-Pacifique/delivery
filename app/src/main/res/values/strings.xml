@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Snacking</string>
-    <string name="action_settings">Options</string>
 
     <string name="invoice_type_facture">Facture</string>
     <string name="invoice_type_avoir">Avoir</string>

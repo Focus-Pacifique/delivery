@@ -28,6 +28,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -141,13 +142,8 @@ public class MainActivity extends AppCompatActivity
         fm = getSupportFragmentManager();
         mPrintJobs = new ArrayList<>();
 
-        /*Fragment frag = getFragment(TAG_INVOICES_EXPANDABLE_LIST);
-        if (!frag.isAdded()) {
-            fm.beginTransaction()
-                    .add(R.id.fragment_container, frag, TAG_INVOICES_EXPANDABLE_LIST)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .commit();
-        }*/
+        // Set the user name in the navigationview
+        ((TextView) navView.getHeaderView(0).findViewById(R.id.nav_header_user)).setText(mUser.getName());
     }
 
     @Override
@@ -195,10 +191,10 @@ public class MainActivity extends AppCompatActivity
 
         // Handle your other action bar items...
         switch (item.getItemId()) {
-            case R.id.action_settings:
+            /*case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
                 launchFragment(getFragment(TAG_SETTINGS_FRAGMENT), TAG_SETTINGS_FRAGMENT, true);
-                return true;
+                return true;*/
 
             default:
                 // If we got here, the user's action was not recognized.
@@ -210,7 +206,7 @@ public class MainActivity extends AppCompatActivity
     // Called whenever we call invalidateOptionsMenu()
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        //menu.findItem(R.id.action_settings).setVisible(false);
+        menu.findItem(R.id.action_settings).setVisible(false);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -221,10 +217,7 @@ public class MainActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-
     private void setupDrawerContent(NavigationView navigationView) {
-        /*TextView user = ((TextView) findViewById(R.id.nav_header_user));
-        user.setText(mUser.getName());*/
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -251,6 +244,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_manage_group_product_fragment:
                 launchFragment(getFragment(TAG_MANAGE_GROUP_PRODUCT), TAG_MANAGE_GROUP_PRODUCT, true);
+                break;
+            case R.id.nav_settings:
+                launchFragment(getFragment(TAG_SETTINGS_FRAGMENT), TAG_SETTINGS_FRAGMENT, true);
                 break;
             default:
         }

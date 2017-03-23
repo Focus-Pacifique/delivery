@@ -5,6 +5,8 @@
     <string name="nav_invoice_statement">Relevé de facture</string>
     <string name="nav_group_customer">Clients</string>
     <string name="nav_group_product">Produits</string>
+    <string name="nav_settings">Paramètres</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

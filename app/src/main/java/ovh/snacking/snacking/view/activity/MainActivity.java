@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,12 +21,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -39,9 +39,8 @@ import java.util.Date;
 
 import io.realm.Realm;
 import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.util.Constants;
 import ovh.snacking.snacking.controller.print.InvoicePrintDocumentAdapter;
-import ovh.snacking.snacking.util.RealmSingleton;
+import ovh.snacking.snacking.controller.service.DolibarrService;
 import ovh.snacking.snacking.model.Customer;
 import ovh.snacking.snacking.model.CustomerGroup;
 import ovh.snacking.snacking.model.Invoice;
@@ -49,12 +48,13 @@ import ovh.snacking.snacking.model.InvoiceChange;
 import ovh.snacking.snacking.model.ProductGroup;
 import ovh.snacking.snacking.model.User;
 import ovh.snacking.snacking.model.Value;
-import ovh.snacking.snacking.controller.service.DolibarrService;
+import ovh.snacking.snacking.util.Constants;
+import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.util.SyncUtils;
-import ovh.snacking.snacking.view.fragment.CustomerOfGroupFragment;
 import ovh.snacking.snacking.view.dialogFragment.CustomerSectionFragment;
 import ovh.snacking.snacking.view.dialogFragment.DatePickerEndFragment;
 import ovh.snacking.snacking.view.dialogFragment.DatePickerStartFragment;
+import ovh.snacking.snacking.view.fragment.CustomerOfGroupFragment;
 import ovh.snacking.snacking.view.fragment.EditingInvoiceFragment;
 import ovh.snacking.snacking.view.fragment.GroupCustomerFragment;
 import ovh.snacking.snacking.view.fragment.GroupProductFragment;
@@ -95,8 +95,16 @@ public class MainActivity extends AppCompatActivity
     private User mUser;
 
     private FragmentManager fm;
+
+    // Toolbar
+    private Toolbar mToolbar;
+
+    // Nav drawer
     private DrawerLayout mDrawerLayout;
-    private NavigationView nvDrawer;
+    private NavigationView navView;
+    private ActionBarDrawerToggle mDrawerToggle;
+
+    //Print
     private ArrayList<PrintJob> mPrintJobs;
 
     @Override
@@ -108,23 +116,38 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        nvDrawer = (NavigationView) findViewById(R.id.left_drawer);
-        setupDrawerContent(nvDrawer);
+        // Toolbar
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navView = (NavigationView) findViewById(R.id.nav_view);
+        setupDrawerContent(navView);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+            }
+        };
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 
         fm = getSupportFragmentManager();
         mPrintJobs = new ArrayList<>();
 
-        Fragment frag = getFragment(TAG_INVOICES_EXPANDABLE_LIST);
+        /*Fragment frag = getFragment(TAG_INVOICES_EXPANDABLE_LIST);
         if (!frag.isAdded()) {
             fm.beginTransaction()
                     .add(R.id.fragment_container, frag, TAG_INVOICES_EXPANDABLE_LIST)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
-        }
+        }*/
     }
 
     @Override
@@ -136,8 +159,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
+    protected void onResume() {
+        super.onResume();
+        if (getNavViewCheckedItem(navView) < 0)
+            selectDrawerItem(navView.getMenu().findItem(R.id.nav_manage_invoice_fragment));
     }
 
     @Override
@@ -147,7 +172,28 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        // Handle your other action bar items...
         switch (item.getItemId()) {
             case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
@@ -161,11 +207,17 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // Called whenever we call invalidateOptionsMenu()
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        //menu.findItem(R.id.action_settings).setVisible(false);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.app_bar_actions, menu);
+        getMenuInflater().inflate(R.menu.app_bar_actions, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -184,8 +236,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-
-        //cleanFragmentManager();
+        // First uncheck all the navView menu items
+        uncheckAllNavViewItems(navView);
 
         switch(menuItem.getItemId()) {
             case R.id.nav_invoice_statement_fragment:
@@ -212,6 +264,27 @@ public class MainActivity extends AppCompatActivity
         // Close the navigation drawer
         mDrawerLayout.closeDrawers();
     }
+
+    private int getNavViewCheckedItem(NavigationView navigationView) {
+        final Menu menu = navigationView.getMenu();
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            if (item.isChecked()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private void uncheckAllNavViewItems(NavigationView navigationView) {
+        final Menu menu = navigationView.getMenu();
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            item.setChecked(false);
+        }
+    }
+
+
 
     private Integer createInvoice(final Integer customerId, final Integer invoiceType, final Integer factureSourceId) {
         final Integer newInvoiceId = nextInvoiceId();

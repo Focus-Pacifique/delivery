@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_manage_invoice_fragment"
-            android:icon="@drawable/ic_create_black_24dp"
-            android:title="@string/nav_manage_invoice"/>
-        <item
-            android:id="@+id/nav_invoice_statement_fragment"
-            android:icon="@drawable/ic_money_black_24dp"
-            android:title="@string/nav_invoice_statement"/>
-    </group>
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_manage_group_product_fragment"
-            android:icon="@drawable/ic_label_black_24dp"
-            android:title="@string/nav_group_product"/>
-        <item
-            android:id="@+id/nav_manage_group_customer_fragment"
-            android:icon="@drawable/ic_people_black_24dp"
-            android:title="@string/nav_group_customer"/>
-    </group>
+    <item
+        android:id="@+id/nav_manage_invoice_fragment"
+        android:icon="@drawable/ic_create_black_24dp"
+        android:title="@string/nav_manage_invoice"/>
+    <item
+        android:id="@+id/nav_invoice_statement_fragment"
+        android:icon="@drawable/ic_money_black_24dp"
+        android:title="@string/nav_invoice_statement"/>
+    <item
+        android:id="@+id/nav_manage_group_product_fragment"
+        android:icon="@drawable/ic_label_black_24dp"
+        android:title="@string/nav_group_product"/>
+    <item
+        android:id="@+id/nav_manage_group_customer_fragment"
+        android:icon="@drawable/ic_people_black_24dp"
+        android:title="@string/nav_group_customer"/>
+    <item
+        android:id="@+id/nav_preference"
+        android:icon="@drawable/ic_people_black_24dp"
+        android:title="@string/nav_group_customer"/>
 </menu>

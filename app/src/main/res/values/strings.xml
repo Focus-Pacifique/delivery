@@ -7,12 +7,6 @@
     <string name="invoice_state_en_cours">EN COURS</string>
     <string name="invoice_state_terminee">TERMINEE</string>
 
-    <!-- Strings related to navigation drawer -->
-    <string name="nav_manage_invoice">Factures</string>
-    <string name="nav_invoice_statement">Relevé de facture</string>
-    <string name="nav_group_customer">Clients</string>
-    <string name="nav_group_product">Produits</string>
-
     <!-- Strings related to login activity -->
     <string name="title_activity_login">Sign in to Dolibarr server</string>
     <string name="prompt_server_url">Dolibarr server url</string>
@@ -149,10 +143,6 @@
         <item>360</item>
         <item>-1</item>
     </string-array>
-
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 
 
 </resources>

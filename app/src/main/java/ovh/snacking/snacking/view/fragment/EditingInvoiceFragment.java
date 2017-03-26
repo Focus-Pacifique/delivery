@@ -3,16 +3,14 @@ package ovh.snacking.snacking.view.fragment;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,11 +21,11 @@ import android.widget.Toast;
 
 import io.realm.Realm;
 import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.model.Invoice;
 import ovh.snacking.snacking.model.Line;
 import ovh.snacking.snacking.model.Product;
 import ovh.snacking.snacking.model.ProductCustomerPriceDolibarr;
+import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.view.activity.MainActivity;
 
 public class EditingInvoiceFragment extends Fragment {
@@ -39,7 +37,7 @@ public class EditingInvoiceFragment extends Fragment {
     private Invoice mInvoice;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private FloatingActionButton fab;
-    private Toolbar toolbar;
+    //private Toolbar toolbar;
 
     public Integer getInvoiceId() {
         return invoiceId;
@@ -106,14 +104,14 @@ public class EditingInvoiceFragment extends Fragment {
         mInvoice = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
 
         // Back arrow in the menu
-        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        /*toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_back_button);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onBackToManageInvoices();
             }
-        });
+        });*/
 
         // fab to print the print_invoice
         fab.setImageResource(R.drawable.ic_action_print);
@@ -126,8 +124,8 @@ public class EditingInvoiceFragment extends Fragment {
     public void onPause() {
         super.onPause();
         // Back arrow in the menu
-        toolbar.setNavigationIcon(null);
-        toolbar.setNavigationOnClickListener(null);
+        //toolbar.setNavigationIcon(null);
+        //toolbar.setNavigationOnClickListener(null);
     }
 
     @Override
@@ -229,7 +227,7 @@ public class EditingInvoiceFragment extends Fragment {
     }
 
     public interface OnEditInvoiceListener {
-        void onBackToManageInvoices();
+        //void onBackToManageInvoices();
 
         void onShowInvoice(Integer invoiceId);
     }

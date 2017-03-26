@@ -2,6 +2,7 @@ package ovh.snacking.snacking.view.fragment;
 
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -80,6 +81,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_settings));
         mValue.addChangeListener(callback);
         setLastSyncDate(mValue.getLastSync());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((FloatingActionButton) getActivity().findViewById(R.id.fab)).hide();
     }
 
     @Override

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +17,8 @@ import io.realm.Realm;
 import ovh.snacking.snacking.NumberToWords.FrenchNumberToWords;
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.controller.print.PrintInvoiceAdapter;
-import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.model.Invoice;
+import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.view.activity.MainActivity;
 
 /**
@@ -31,7 +30,7 @@ public class PrintInvoiceFragment extends Fragment {
     OnPrintListener mListener;
     private Integer invoiceId = 0;
     private Invoice mInvoice;
-    private Toolbar toolbar;
+    //private Toolbar toolbar;
     private Realm realm;
 
     @Override
@@ -159,14 +158,14 @@ public class PrintInvoiceFragment extends Fragment {
     public void onResume() {
         super.onResume();
         // Back arrow in the menu
-        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        /*toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_back_button);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onBackToManageInvoices();
             }
-        });
+        });*/
 
         ((FloatingActionButton) getActivity().findViewById(R.id.fab)).hide();
 
@@ -187,8 +186,8 @@ public class PrintInvoiceFragment extends Fragment {
     public void onPause() {
         super.onPause();
         // Back arrow in the menu
-        toolbar.setNavigationIcon(null);
-        toolbar.setNavigationOnClickListener(null);
+        //toolbar.setNavigationIcon(null);
+        //toolbar.setNavigationOnClickListener(null);
     }
 
     @Override
@@ -217,7 +216,7 @@ public class PrintInvoiceFragment extends Fragment {
     }
 
     public interface OnPrintListener {
-        void onBackToManageInvoices();
+        //void onBackToManageInvoices();
 
         boolean onFinishInvoice(Integer invoiceId);
 

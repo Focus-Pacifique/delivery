@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +22,10 @@ import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.controller.adapter.CustomerAdapter;
-import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.model.Customer;
 import ovh.snacking.snacking.model.CustomerAndGroupBinding;
 import ovh.snacking.snacking.model.CustomerGroup;
+import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.view.activity.MainActivity;
 
 /**
@@ -38,13 +37,13 @@ import ovh.snacking.snacking.view.activity.MainActivity;
 
 public class CustomerOfGroupFragment extends Fragment {
 
-    OnCustomerOfGroupListener mListener;
+    //OnCustomerOfGroupListener mListener;
     private Realm realm;
     private FloatingActionButton fab;
     private CustomerGroup mGroup;
-    private Toolbar toolbar;
+    //private Toolbar toolbar;
 
-    @Override
+    /*@Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
@@ -52,7 +51,7 @@ public class CustomerOfGroupFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement OnCustomerOfGroupListener");
         }
-    }
+    }*/
 
     public void setCustomerGroup(CustomerGroup mGroup) {
         this.mGroup = mGroup;
@@ -99,22 +98,22 @@ public class CustomerOfGroupFragment extends Fragment {
         fab.show();
 
         // Back arrow in the menu
-        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        /*toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_back_button);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onBackPressed();
             }
-        });
+        });*/
     }
 
     @Override
     public void onPause() {
         super.onPause();
         // Back arrow in the menu
-        toolbar.setNavigationIcon(null);
-        toolbar.setNavigationOnClickListener(null);
+        //toolbar.setNavigationIcon(null);
+        //toolbar.setNavigationOnClickListener(null);
     }
 
     @Override
@@ -181,9 +180,9 @@ public class CustomerOfGroupFragment extends Fragment {
         return realm.where(CustomerAndGroupBinding.class).equalTo("group.id", group.getId()).findAll().size();
     }
 
-    public interface OnCustomerOfGroupListener {
+    /*public interface OnCustomerOfGroupListener {
         void onBackPressed();
-    }
+    }*/
 
     public class CustomerRecyclerViewAdapter extends RealmRecyclerViewAdapter<CustomerAndGroupBinding, CustomerRecyclerViewAdapter.ViewHolder> {
         public CustomerRecyclerViewAdapter(Context context, OrderedRealmCollection<CustomerAndGroupBinding> realmResults) {

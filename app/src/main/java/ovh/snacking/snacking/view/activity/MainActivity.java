@@ -75,9 +75,7 @@ public class MainActivity extends AppCompatActivity
         GroupCustomerFragment.OnGroupCustomerSelectedListener,
         GroupProductFragment.OnGroupProductSelectedListener,
         DatePickerStartFragment.OnDatePickerStartFragment,
-        DatePickerEndFragment.OnDatePickerEndFragment,
-        CustomerOfGroupFragment.OnCustomerOfGroupListener,
-        ProductOfGroupFragment.OnProductOfGroupListener {
+        DatePickerEndFragment.OnDatePickerEndFragment {
 
     public static final String TAG_CUSTOMER_SELECT = "ovh.snacking.snacking.view.dialogFragment.CustomerSectionFragment";
     public static final String TAG_EDITING_INVOICE = "ovh.snacking.snacking.view.fragment.EditingInvoiceFragment";
@@ -137,9 +135,11 @@ public class MainActivity extends AppCompatActivity
                 invalidateOptionsMenu();
             }
         };
+        mDrawerToggle.syncState();
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
         fm = getSupportFragmentManager();
+
         mPrintJobs = new ArrayList<>();
 
         // Set the user name in the navigationview
@@ -429,10 +429,10 @@ public class MainActivity extends AppCompatActivity
     /****************************/
     /**  Editing invoice part  **/
     /****************************/
-    @Override
+    /*@Override
     public void onBackToManageInvoices() {
         launchFragment(getFragment(TAG_INVOICES_EXPANDABLE_LIST), TAG_INVOICES_EXPANDABLE_LIST, true);
-    }
+    }*/
 
     @Override
     public void onShowInvoice(Integer invoiceId) {

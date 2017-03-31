@@ -92,10 +92,14 @@ public class RealmSingleton {
                     oldVersion = 3;
                 }
 
-                /*if (oldVersion == 3) {
-                    schema.get("User")
-                            .addField("initialValues", Integer.class);
-                }*/
+                if (oldVersion == 3) {
+                    schema.get("Product")
+                            .addField("localtax1_tx", Float.class);
+                    schema.get("Line")
+                            .addField("total_tgc", Integer.class);
+
+                    oldVersion = 4;
+                }
             }
         };
 

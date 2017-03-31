@@ -16,7 +16,16 @@ public class Line extends RealmObject {
     private Integer qty;
     private Integer total_ht;
     private Integer total_tva;
+    private Integer total_tgc;
     private Integer total_ttc;
+
+    public Integer getTotal_tgc() {
+        return total_tgc;
+    }
+
+    public void setTotal_tgc(Integer total_tgc) {
+        this.total_tgc = total_tgc;
+    }
 
     public Integer getId() {
         return id;
@@ -77,7 +86,8 @@ public class Line extends RealmObject {
     public void updatePrices() {
         this.total_ht = qty * subprice;
         this.total_tva = Math.round(total_ht * (prod.getTva_tx()/100) );
-        this.total_ttc = total_ht + total_tva;
+        this.total_tgc = Math.round(total_ht * (prod.getLocaltax1_tx()/100) );
+        this.total_ttc = total_ht + total_tva + total_tgc;
     }
 
     public void addQuantity(Integer quantity) {

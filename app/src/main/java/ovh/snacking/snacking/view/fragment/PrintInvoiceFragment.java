@@ -94,6 +94,7 @@ public class PrintInvoiceFragment extends Fragment {
         // Total
         final TextView tot_ht = (TextView) layout.findViewById(R.id.tot_ht);
         final TextView tss = (TextView) layout.findViewById(R.id.tss);
+        final TextView tgc = (TextView) layout.findViewById(R.id.tgc025);
         final TextView tot_ttc = (TextView) layout.findViewById(R.id.tot_ttc);
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -101,14 +102,17 @@ public class PrintInvoiceFragment extends Fragment {
 
                 Integer TOT_HT = mInvoice.getTotalHT();
                 Integer TSS = mInvoice.getTotalTSS();
+                Integer TGC = mInvoice.getTotalTGC();
                 Integer TOT_TTC = mInvoice.getTotalTTC();
                 if (Invoice.AVOIR.equals(mInvoice.getType())) {
                     TOT_HT = -TOT_HT;
                     TSS = -TSS;
+                    TGC = -TGC;
                     TOT_TTC = -TOT_TTC;
                 }
                 tot_ht.setText(String.format("%,d", TOT_HT) + " XPF");
                 tss.setText(String.format("%,d", TSS) + " XPF");
+                tgc.setText(String.format("%,d", TGC) + " XPF");
                 tot_ttc.setText(String.format("%,d", TOT_TTC) + " XPF");
 
                 // Convert number to words

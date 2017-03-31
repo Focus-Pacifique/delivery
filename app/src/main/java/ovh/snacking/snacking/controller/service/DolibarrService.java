@@ -582,20 +582,24 @@ public class DolibarrService extends IntentService {
                 Integer subprice = line.getSubprice();
                 Integer total_ht = line.getTotal_ht();
                 Integer total_tss = line.getTotal_tva();
+                Integer total_tgc = line.getTotal_tgc();
                 Integer total_ttc = line.getTotal_ttc();
                 if (Invoice.AVOIR.equals(invoice.getType())) {
                     subprice = -subprice;
                     total_ht = -total_ht;
                     total_tss = -total_tss;
+                    total_tgc = -total_tgc;
                     total_ttc = -total_ttc;
                 }
                 lineJson.addProperty("subprice", subprice);
                 lineJson.addProperty("total_ht", total_ht);
                 lineJson.addProperty("total_tva", total_tss);
+                lineJson.addProperty("total_localtax1", total_tgc);
                 lineJson.addProperty("total_ttc", total_ttc);
 
                 lineJson.addProperty("qty", line.getQty());
                 lineJson.addProperty("tva_tx", line.getProd().getTva_tx());
+                lineJson.addProperty("localtax1_tx", line.getProd().getLocaltax1_tx());
                 lineJson.addProperty("rang", rang);
                 array.add(lineJson);
 

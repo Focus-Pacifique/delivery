@@ -102,7 +102,8 @@
     <string name="hot_food_tel">Erick 78 90 14</string>
     <string name="hot_food_email">hotfood.sarl@gmail.com</string>
     <string name="tot_ht">TOTAL HT</string>
-    <string name="tss">TSS</string>
+    <string name="tss">TSS(5%)</string>
+    <string name="tgc025">TGC(0.25%)</string>
     <string name="tot_ttc">TOTAL TTC</string>
     <string name="tot_letter">Arrêtée la présente facture à la somme de :</string>
     <string name="rcs">RCS NOUMEA 2013 B 1 196 666</string>

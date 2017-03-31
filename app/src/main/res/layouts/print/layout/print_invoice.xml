@@ -152,6 +152,20 @@
                     android:layout_width="80dip"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/tss"
+                    android:layout_toStartOf="@+id/tgc025"
+                    android:text="@string/tgc025"/>
+                <TextView
+                    android:id="@+id/tgc025"
+                    android:layout_width="120dip"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@id/tss"
+                    android:gravity="end"/>
+
+                <TextView
+                    android:layout_width="80dip"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tgc025"
                     android:layout_toStartOf="@+id/tot_ttc"
                     android:text="@string/tot_ttc"/>
                 <TextView
@@ -159,7 +173,7 @@
                     android:layout_width="120dip"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_below="@id/tss"
+                    android:layout_below="@id/tgc025"
                     android:gravity="end"/>
 
             </RelativeLayout>

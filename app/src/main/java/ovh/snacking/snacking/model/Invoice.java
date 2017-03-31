@@ -81,6 +81,14 @@ public class Invoice extends RealmObject {
         return total_tss;
     }
 
+    public Integer getTotalTGC() {
+        Integer total_tgc = 0;
+        for (Line line : lines) {
+            total_tgc += line.getTotal_tgc();
+        }
+        return total_tgc;
+    }
+
     public Integer getTotalTTC() {
         Integer total_ttc = 0;
         for (Line line : lines) {

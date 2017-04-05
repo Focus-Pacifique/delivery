@@ -140,8 +140,7 @@ public class PrintInvoiceStatementFragment extends Fragment {
     private void dialogChooseCustomer() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Set the dialog title
-        builder.setTitle(R.string.dialog_choose_customer)
-                .setAdapter(new CustomerAdapter(getContext(), realm.where(Customer.class).findAll()), null);
+        builder.setAdapter(new CustomerAdapter(getContext(), realm.where(Customer.class).findAll()), null);
 
         final AlertDialog ad = builder.create();
         ad.getListView().setItemsCanFocus(false);

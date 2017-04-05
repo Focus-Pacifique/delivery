@@ -1,10 +1,10 @@
 package ovh.snacking.snacking.view.dialogFragment;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.app.DatePickerDialog;
+import android.support.v7.app.AppCompatDialogFragment;
 import android.widget.DatePicker;
 
 import java.util.Calendar;
@@ -13,7 +13,7 @@ import java.util.Calendar;
  * Created by ACER on 08/02/2017.
  */
 
-public class DatePickerEndFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+public class DatePickerEndFragment extends AppCompatDialogFragment implements DatePickerDialog.OnDateSetListener {
     OnDatePickerEndFragment mListener;
 
     @Override

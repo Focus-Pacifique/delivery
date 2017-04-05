@@ -2,8 +2,7 @@ package ovh.snacking.snacking.view.dialogFragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,16 +19,16 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.model.Customer;
 import ovh.snacking.snacking.model.CustomerAndGroupBinding;
 import ovh.snacking.snacking.model.CustomerGroup;
+import ovh.snacking.snacking.util.RealmSingleton;
 
 /**
  * Created by Alex on 17/11/2016.
  */
 
-public class CustomerSectionFragment extends DialogFragment {
+public class CustomerSectionFragment extends AppCompatDialogFragment {
 
     OnCustomerDialogListener mListener;
     private Realm realm;
@@ -60,7 +59,7 @@ public class CustomerSectionFragment extends DialogFragment {
         // Set up your RecyclerView with the SectionedRecyclerViewAdapter
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), LinearLayoutManager.VERTICAL));
+        //mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         mRecyclerView.setAdapter(mSectionAdapter);
         return view;
     }
@@ -112,12 +111,6 @@ public class CustomerSectionFragment extends DialogFragment {
                 mListener.onCustomerSelected(((Customer) parent.getItemAtPosition(position)).getId());
             }
         });*/
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getDialog().setTitle(getString(R.string.title_customer_select));
     }
 
     @Override

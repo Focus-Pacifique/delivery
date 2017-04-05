@@ -125,8 +125,7 @@ public class ProductOfGroupFragment extends Fragment {
     private void dialogAddProductToGroup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Set the dialog title
-        builder.setTitle(R.string.dialog_choose_products)
-                .setAdapter(new ProductTwoLinesListAdapter(getContext(), realm.where(Product.class).findAll()), null);
+        builder.setAdapter(new ProductTwoLinesListAdapter(getContext(), realm.where(Product.class).findAll()), null);
 
         AlertDialog ad = builder.create();
         ad.getListView().setItemsCanFocus(false);

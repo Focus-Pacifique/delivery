@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.pdf.PdfDocument;
@@ -142,7 +143,8 @@ public class MainActivity extends AppCompatActivity
 
         mPrintJobs = new ArrayList<>();
 
-        // Set the user name in the navigationview
+        // Set user name and app infos in the navigationview
+        ((TextView) navView.getHeaderView(0).findViewById(R.id.nav_header_app_infos)).setText(getString(R.string.app_name) + " (" + getVersionInfo() + ")");
         ((TextView) navView.getHeaderView(0).findViewById(R.id.nav_header_user)).setText(mUser.getName());
     }
 
@@ -741,12 +743,7 @@ public class MainActivity extends AppCompatActivity
     private boolean isBluetoothEnabled() {
         boolean bluetoothEnabled;
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null) {
-            // Device does not support Bluetooth
-            bluetoothEnabled = false;
-        } else {
-            bluetoothEnabled = mBluetoothAdapter.isEnabled();
-        }
+        bluetoothEnabled = mBluetoothAdapter!=null && mBluetoothAdapter.isEnabled();
         return bluetoothEnabled;
     }
 
@@ -863,5 +860,17 @@ public class MainActivity extends AppCompatActivity
                 SyncUtils.removePeriodicSync(getApplicationContext());
             }
         }
+    }
+
+    public String getVersionInfo() {
+        String strVersion = "v";
+        PackageInfo packageInfo;
+        try {
+            packageInfo = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0);
+            strVersion += packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            strVersion += "unknown";
+        }
+        return strVersion;
     }
 }

@@ -24,19 +24,18 @@
 
     </PreferenceCategory>
 
-    <!--<PreferenceCategory
-        android:title="@string/pref_header_invoice">
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/pref_invoice_statement_period"
-            android:entryValues="@array/pref_invoice_statement_period_values"
+    <!--
+
+    <PreferenceCategory
+        android:title="@string/pref_header_general">
+        <Preference
             android:key="pref_key_invoice_statement_period"
             android:summary="%s"
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:title="@string/pref_title_invoice_statement_period" />
         <Preference android:title="@string/pref_title_invoice_statement"
-                    android:key="pref_key_invoice_statement" />
+            android:key="pref_key_invoice_statement" />
 
     </PreferenceCategory>
 

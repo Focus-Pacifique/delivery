@@ -1,12 +1,5 @@
 package ovh.snacking.snacking.controller.adapter;
 
-import io.realm.OrderedRealmCollection;
-import io.realm.Realm;
-import io.realm.RealmBaseAdapter;
-import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.util.RealmSingleton;
-import ovh.snacking.snacking.model.Line;
-
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +7,13 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+
+import io.realm.OrderedRealmCollection;
+import io.realm.Realm;
+import io.realm.RealmBaseAdapter;
+import ovh.snacking.snacking.R;
+import ovh.snacking.snacking.model.Line;
+import ovh.snacking.snacking.util.RealmSingleton;
 
 /**
  * Created by Alex on 11/11/2016.
@@ -40,6 +40,7 @@ public class LineAdapter extends RealmBaseAdapter<Line> implements ListAdapter {
             viewHolder.quantity = (TextView) convertView.findViewById(R.id.quantity);
             viewHolder.product_name = (TextView) convertView.findViewById(R.id.product_name);
             viewHolder.product_price = (TextView) convertView.findViewById(R.id.product_price);
+            viewHolder.product_taxes = (TextView) convertView.findViewById(R.id.product_taxes);
             viewHolder.delete = (ImageButton) convertView.findViewById(R.id.delete_btn);
             convertView.setTag(viewHolder);
         } else {
@@ -52,7 +53,9 @@ public class LineAdapter extends RealmBaseAdapter<Line> implements ListAdapter {
 
         viewHolder.quantity.setText(String.valueOf(item.getQty().toString() + " "));
         viewHolder.product_name.setText(String.valueOf(item.getProd().getRef() + " "));
-        viewHolder.product_price.setText(String.valueOf("(" + item.getSubprice() + " HT)"));
+        viewHolder.product_price.setText(String.valueOf("(" + item.getSubprice() + " HT) "));
+        Double taxes = item.getProd().getTva_tx() + item.getProd().getLocaltax1_tx();
+        viewHolder.product_taxes.setText(String.format("%.2f", taxes)  + "%");
 
         // Handle plus button
         viewHolder.plus.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +109,7 @@ public class LineAdapter extends RealmBaseAdapter<Line> implements ListAdapter {
         TextView quantity;
         TextView product_name;
         TextView product_price;
+        TextView product_taxes;
         Button plus;
         Button minus;
         ImageButton delete;

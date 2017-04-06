@@ -17,7 +17,7 @@ public class ProductCustomerPriceDolibarr extends RealmObject {
     @Expose @PrimaryKey private Integer id;
     @Expose private Integer fk_product;
     @Expose private Integer fk_soc;
-    @Expose private Float price;
+    @Expose private Integer price;
     @Index
     private Date modifiedDate;
 
@@ -53,11 +53,11 @@ public class ProductCustomerPriceDolibarr extends RealmObject {
         this.fk_soc = fk_soc;
     }
 
-    public Float getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(Float price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 

@@ -201,9 +201,9 @@ public class EditingInvoiceFragment extends Fragment {
                         // Add custom price if exist
                         ProductCustomerPriceDolibarr customProdPrice = realm.where(ProductCustomerPriceDolibarr.class).equalTo("fk_soc", mInvoice.getCustomer().getId()).equalTo("fk_product", prod.getId()).findFirst();
                         if (customProdPrice != null) {
-                            line.setSubprice(customProdPrice.getPrice().intValue());
+                            line.setSubprice(customProdPrice.getPrice());
                         } else {
-                            line.setSubprice(prod.getPrice().intValue());
+                            line.setSubprice(prod.getPrice());
                         }
 
                         // Compute ht, tss and ttc

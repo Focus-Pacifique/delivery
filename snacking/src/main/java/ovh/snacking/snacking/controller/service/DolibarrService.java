@@ -380,7 +380,8 @@ public class DolibarrService extends IntentService {
         }
 
         // Create or update DolibarrInvoice into Realm
-        final List<DolibarrInvoice> dolibarrInvoices = dolibarr.getInvoices(localLastId, mAPIKKey).execute().body();
+        //TODO pour le moment, on recharge toute les factures, car si une facture a été changée dans dolibarr, on a plus la mise à jour
+        final List<DolibarrInvoice> dolibarrInvoices = dolibarr.getInvoices(0, mAPIKKey).execute().body();
         if (null != dolibarrInvoices && !dolibarrInvoices.isEmpty()) {
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
@@ -532,7 +533,7 @@ public class DolibarrService extends IntentService {
         return req != null && req.getAsBoolean();
     }
 
-    private Boolean invoiceExists(final String ref_client, final Integer total_ttc, final Integer fk_soc) throws IOException, IllegalStateException {
+    private Boolean invoiceExists(final String ref_client, final int total_ttc, final Integer fk_soc) throws IOException, IllegalStateException {
         Call<JsonPrimitive> call = dolibarr.invoiceRefClientTotalExists(ref_client, total_ttc, fk_soc, mAPIKKey);
         JsonPrimitive req = call.execute().body();
         return req != null && req.getAsBoolean();
@@ -556,7 +557,11 @@ public class DolibarrService extends IntentService {
                 obj.addProperty("note_private", "Tablette " + invoice.getUser().getName() + ", ref " + invoice.getRef());
             } else if (Invoice.AVOIR.equals(invoice.getType())) {
                 Invoice facture_source = realm.where(Invoice.class).equalTo("id", invoice.getFk_facture_source()).findFirst();
-                obj.addProperty("note_private", "Tablette " + invoice.getUser().getName() + ", ref " + invoice.getRef() + ", facture " + facture_source.getRef());
+                obj.addProperty("note_private", "Tablette "
+                        + invoice.getUser().getName()
+                        + ", ref " + invoice.getRef()
+                        + ", factureTab " + facture_source.getRef()
+                        + ", factureDoliId " + facture_source.getId_dolibarr());
                 obj.addProperty("type", 2);  // 0=Facture de doit, 2=Facture avoir
                 obj.addProperty("fk_facture_source", facture_source.getId_dolibarr());
             }

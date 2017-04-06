@@ -93,10 +93,27 @@ public class RealmSingleton {
                 }
 
                 if (oldVersion == 3) {
+                    if(schema.get("Product").hasField("localtax1_tx")) {
+                        schema.get("Product")
+                                .removeField("localtax1_tx");
+                    }
                     schema.get("Product")
-                            .addField("localtax1_tx", Float.class);
+                            .addField("localtax1_tx", Double.class)
+                            .removeField("price")
+                            .addField("price", Integer.class)
+                            .removeField("tva_tx")
+                            .addField("tva_tx", Double.class);
+
+                    if(schema.get("Line").hasField("total_tgc")) {
+                        schema.get("Line")
+                                .removeField("total_tgc");
+                    }
                     schema.get("Line")
                             .addField("total_tgc", Integer.class);
+
+                    schema.get("ProductCustomerPriceDolibarr")
+                            .removeField("price")
+                            .addField("price", Integer.class);
 
                     oldVersion = 4;
                 }

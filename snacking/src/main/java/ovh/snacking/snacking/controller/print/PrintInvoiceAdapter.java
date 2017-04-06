@@ -1,18 +1,18 @@
 package ovh.snacking.snacking.controller.print;
 
-import io.realm.OrderedRealmCollection;
-import io.realm.Realm;
-import io.realm.RealmBaseAdapter;
-import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.util.RealmSingleton;
-import ovh.snacking.snacking.model.Invoice;
-import ovh.snacking.snacking.model.Line;
-
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+
+import io.realm.OrderedRealmCollection;
+import io.realm.Realm;
+import io.realm.RealmBaseAdapter;
+import ovh.snacking.snacking.R;
+import ovh.snacking.snacking.model.Invoice;
+import ovh.snacking.snacking.model.Line;
+import ovh.snacking.snacking.util.RealmSingleton;
 
 /**
  * Created by Pc on 21/11/2016.

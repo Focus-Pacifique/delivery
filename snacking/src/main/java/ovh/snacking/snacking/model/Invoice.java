@@ -73,6 +73,10 @@ public class Invoice extends RealmObject {
         return total_ht;
     }
 
+    /*public Integer getTotalHTRound() {
+        return (int) Math.round(getTotalHT());
+    }*/
+
     public Integer getTotalTSS() {
         Integer total_tss = 0;
         for (Line line : lines) {
@@ -81,6 +85,10 @@ public class Invoice extends RealmObject {
         return total_tss;
     }
 
+    /*public Integer getTotalTSSRound() {
+        return (int) Math.round(getTotalTSS());
+    }*/
+
     public Integer getTotalTGC() {
         Integer total_tgc = 0;
         for (Line line : lines) {
@@ -88,6 +96,10 @@ public class Invoice extends RealmObject {
         }
         return total_tgc;
     }
+
+    /*public Integer getTotalTGCRound() {
+        return (int) Math.round(getTotalTGC());
+    }*/
 
     public Integer getTotalTTC() {
         Integer total_ttc = 0;

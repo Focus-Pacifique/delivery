@@ -85,8 +85,8 @@ public class Line extends RealmObject {
 
     public void updatePrices() {
         this.total_ht = qty * subprice;
-        this.total_tva = Math.round(total_ht * (prod.getTva_tx()/100) );
-        this.total_tgc = Math.round(total_ht * (prod.getLocaltax1_tx()/100) );
+        this.total_tva = (int) Math.round(total_ht * (prod.getTva_tx()/100));
+        this.total_tgc = (int) Math.round(total_ht * (prod.getLocaltax1_tx()/100));
         this.total_ttc = total_ht + total_tva + total_tgc;
     }
 

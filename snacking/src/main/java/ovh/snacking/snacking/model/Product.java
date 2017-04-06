@@ -18,21 +18,21 @@ public class Product extends RealmObject {
     @Expose private String ref;
     @Expose private String label;
     @Expose private Integer type;
-    @Expose private Float price;
-    @Expose private Float tva_tx;
-    @Expose private Float localtax1_tx;
+    @Expose private Integer price;
+    @Expose private Double tva_tx;
+    @Expose private Double localtax1_tx;
     @Index private Date modifiedDate;
 
     public Product() {
         super();
-        this.localtax1_tx = Float.valueOf(0);
+        this.localtax1_tx = Double.valueOf(0);
     }
 
-    public Float getLocaltax1_tx() {
+    public Double getLocaltax1_tx() {
         return localtax1_tx;
     }
 
-    public void setLocaltax1_tx(Float localtax1_tx) {
+    public void setLocaltax1_tx(Double localtax1_tx) {
         this.localtax1_tx = localtax1_tx;
     }
 
@@ -76,19 +76,19 @@ public class Product extends RealmObject {
         this.type = type;
     }
 
-    public Float getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(Float price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
-    public Float getTva_tx() {
+    public Double getTva_tx() {
         return tva_tx;
     }
 
-    public void setTva_tx(Float tva_tx) {
+    public void setTva_tx(Double tva_tx) {
         this.tva_tx = tva_tx;
     }
 

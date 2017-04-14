@@ -4,27 +4,30 @@
                 android:layout_height="?android:attr/listPreferredItemHeight"
                 android:background="#F3F3F3">
 
-    <!-- Title -->
+    <!-- First icon -->
     <ImageView
-        android:id="@+id/group_img"
+        android:id="@+id/header_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"/>
+    <!-- Title -->
     <TextView
-        android:id="@+id/group_header"
+        android:id="@+id/header_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_centerVertical="true"
         android:textSize="@dimen/big_text_size"
         android:textStyle="bold"/>
-
+    <!-- Arrow expand -->
     <ImageView
-        android:id="@+id/group_expand"
+        android:id="@+id/header_expand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"/>
 
 </RelativeLayout>

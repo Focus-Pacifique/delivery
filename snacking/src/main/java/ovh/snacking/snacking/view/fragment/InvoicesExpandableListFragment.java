@@ -39,7 +39,7 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
     private long mLastClickTime = 0;
     private InvoicesExpandableListAdapter mAdapter;
     private ExpandableListView mList;
-    private ArrayList<InvoicesExpandableListAdapter.ExpandableListGroup> mListItems;
+    private ArrayList<InvoicesExpandableListAdapter.Group> mListItems;
     private FloatingActionButton fab;
 
     @Override
@@ -209,39 +209,39 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         return invoices;
     }
 
-    private ArrayList<InvoicesExpandableListAdapter.ExpandableListGroup> setListItems() {
-        ArrayList<InvoicesExpandableListAdapter.ExpandableListGroup> listGroups = new ArrayList<>();
+    private ArrayList<InvoicesExpandableListAdapter.Group> setListItems() {
+        ArrayList<InvoicesExpandableListAdapter.Group> listGroups = new ArrayList<>();
 
-        InvoicesExpandableListAdapter.ExpandableListGroup group;
+        InvoicesExpandableListAdapter.Group group;
         ArrayList<Invoice> invoices;
 
         // Invoice state = EN COURS
         invoices = getTodayEnCoursInvoices();
-        group = new InvoicesExpandableListAdapter.ExpandableListGroup();
-        group.setName(getString(R.string.expandable_list_group_encours) + " (" + invoices.size() + ")");
+        group = new InvoicesExpandableListAdapter.Group();
+        group.setHeaderLabel(getString(R.string.expandable_list_group_encours) + " (" + invoices.size() + ")");
         group.setItems(invoices);
         listGroups.add(group);
 
         // Invoice state = TERMINEE
         invoices = getTodayTermineeInvoices();
-        group = new InvoicesExpandableListAdapter.ExpandableListGroup();
-        group.setName(getString(R.string.expandable_list_group_terminee) + " (" + invoices.size() + ")");
+        group = new InvoicesExpandableListAdapter.Group();
+        group.setHeaderLabel(getString(R.string.expandable_list_group_terminee) + " (" + invoices.size() + ")");
         group.setItems(invoices);
         listGroups.add(group);
 
         // Yesterday
         invoices = getYesterdayInvoices();
-        group = new InvoicesExpandableListAdapter.ExpandableListGroup();
+        group = new InvoicesExpandableListAdapter.Group();
         group.setIcon(R.drawable.ic_calendar_black_24dp);
-        group.setName(getString(R.string.expandable_list_group_yesterday) + " (" + invoices.size() + ")");
+        group.setHeaderLabel(getString(R.string.expandable_list_group_yesterday) + " (" + invoices.size() + ")");
         group.setItems(invoices);
         listGroups.add(group);
 
         // Week
         invoices = getWeekInvoices();
-        group = new InvoicesExpandableListAdapter.ExpandableListGroup();
+        group = new InvoicesExpandableListAdapter.Group();
         group.setIcon(R.drawable.ic_calendar_black_24dp);
-        group.setName(getString(R.string.expandable_list_group_lastweek) + " (" + invoices.size() + ")");
+        group.setHeaderLabel(getString(R.string.expandable_list_group_lastweek) + " (" + invoices.size() + ")");
         group.setItems(invoices);
         listGroups.add(group);
 

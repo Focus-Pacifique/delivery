@@ -1,8 +1,5 @@
 package ovh.snacking.snacking.controller.adapter;
 
-import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.model.Invoice;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -16,6 +13,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import ovh.snacking.snacking.R;
+import ovh.snacking.snacking.model.Invoice;
+
 /**
  * Created by Alex on 29/01/2017.
  *
@@ -25,25 +25,25 @@ import java.util.Locale;
 public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context mContext;
-    private ArrayList<ExpandableListGroup> mGroups;
+    private ArrayList<Group> mGroups;
 
-    public InvoicesExpandableListAdapter(Context context, ArrayList<ExpandableListGroup> groups) {
+    public InvoicesExpandableListAdapter(Context context, ArrayList<Group> groups) {
         this.mGroups = groups;
         this.mContext = context;
     }
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        ExpandableListGroup group = (ExpandableListGroup) getGroup(groupPosition);
+        Group group = (Group) getGroup(groupPosition);
 
         final InvoicesExpandableListAdapter.ViewHolder groupHolder;
         if (convertView == null) {
             groupHolder = new InvoicesExpandableListAdapter.ViewHolder();
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.expandable_list_header, parent, false);
-            groupHolder.icon = (ImageView) convertView.findViewById(R.id.group_img);
-            groupHolder.customerName = (TextView) convertView.findViewById(R.id.group_header);
-            groupHolder.expandImage = (ImageView) convertView.findViewById(R.id.group_expand);
+            groupHolder.icon = (ImageView) convertView.findViewById(R.id.header_img);
+            groupHolder.customerName = (TextView) convertView.findViewById(R.id.header_title);
+            groupHolder.expandImage = (ImageView) convertView.findViewById(R.id.header_expand);
             convertView.setTag(groupHolder);
         } else {
             groupHolder = (InvoicesExpandableListAdapter.ViewHolder) convertView.getTag();
@@ -54,13 +54,13 @@ public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
             groupHolder.icon.setImageResource(group.getIcon());
 
         // Group name
-        groupHolder.customerName.setText(String.valueOf(group.getName()));
+        groupHolder.customerName.setText(String.valueOf(group.getHeaderLabel()));
 
         // Expand icon
         if (isExpanded) {
-            groupHolder.expandImage.setImageResource(R.drawable.ic_expand_more_black_24dp);
-        } else {
             groupHolder.expandImage.setImageResource(R.drawable.ic_expand_less_black_24dp);
+        } else {
+            groupHolder.expandImage.setImageResource(R.drawable.ic_expand_more_black_24dp);
         }
 
         return convertView;
@@ -166,56 +166,22 @@ public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
         ImageView expandImage;
     }
 
-    /*public static class ExpandableListChild {
-        private String invoiceType;
-        private String customerName;
-        private String datetime;
-        private String invoiceState;
-
-        public String getInvoiceType() {
-            return invoiceType;
-        }
-
-        public void setInvoiceType(String invoiceType) {
-            this.invoiceType = invoiceType;
-        }
-
-        public String getCustomerName() {
-            return customerName;
-        }
-
-        public void setCustomerName(String customerName) {
-            this.customerName = customerName;
-        }
-
-        public String getDatetime() {
-            return datetime;
-        }
-
-        public void setDatetime(String datetime) {
-            this.datetime = datetime;
-        }
-
-        public String getInvoiceState() {
-            return invoiceState;
-        }
-
-        public void setInvoiceState(String invoiceState) {
-            this.invoiceState = invoiceState;
-        }
-    }*/
-
-    public static class ExpandableListGroup {
-        private String name;
+    public static class Group {
         private int icon;
+        private String headerLabel;
         private ArrayList items;
 
-        public String getName() {
-            return name;
+        public Group() {
+            headerLabel = "Header";
+            items = new ArrayList();
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public String getHeaderLabel() {
+            return headerLabel;
+        }
+
+        public void setHeaderLabel(String headerLabel) {
+            this.headerLabel = headerLabel;
         }
 
         public int getIcon() {
@@ -233,5 +199,6 @@ public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
         public void setItems(ArrayList items) {
             this.items = items;
         }
+
     }
 }

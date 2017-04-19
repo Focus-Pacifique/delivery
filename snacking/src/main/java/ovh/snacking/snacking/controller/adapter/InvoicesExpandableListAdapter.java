@@ -40,7 +40,7 @@ public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             groupHolder = new InvoicesExpandableListAdapter.ViewHolder();
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.expandable_list_header, parent, false);
+            convertView = inflater.inflate(R.layout.section_header_expandable, parent, false);
             groupHolder.icon = (ImageView) convertView.findViewById(R.id.header_img);
             groupHolder.customerName = (TextView) convertView.findViewById(R.id.header_title);
             groupHolder.expandImage = (ImageView) convertView.findViewById(R.id.header_expand);
@@ -72,7 +72,7 @@ public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
         final InvoicesExpandableListAdapter.ViewHolder viewHolder;
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.expandable_list_invoice_item, parent, false);
+            convertView = inflater.inflate(R.layout.section_item_invoice, parent, false);
             viewHolder = new InvoicesExpandableListAdapter.ViewHolder();
             viewHolder.invoiceType = (TextView) convertView.findViewById(R.id.invoice_type);
             viewHolder.customerName = (TextView) convertView.findViewById(R.id.customer_name);

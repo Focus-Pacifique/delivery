@@ -24,7 +24,7 @@
     <!-- Manage invoices -->
     <!--                 -->
     <!-- Header text size -->
-    <dimen name="expandable_header_padding">40dp</dimen>
+    <dimen name="expandable_header_padding">32dp</dimen>
     <dimen name="expandable_item_padding">16dp</dimen>
 
     <!-- Print dimensions -->

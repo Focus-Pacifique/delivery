@@ -54,6 +54,10 @@ public class ExpandableInvoicesSection extends StatelessSection {
     public void removeItem(int position) {
         mList.remove(position);
     }
+    public void addItem(Invoice invoice) {
+        mList.add(invoice);
+    }
+
 
     @Override
     public int getContentItemsTotal() {

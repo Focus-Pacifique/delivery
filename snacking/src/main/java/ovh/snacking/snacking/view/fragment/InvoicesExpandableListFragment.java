@@ -26,6 +26,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.controller.adapter.ExpandableInvoicesSection;
+import ovh.snacking.snacking.model.Customer;
 import ovh.snacking.snacking.model.Invoice;
 import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.view.activity.MainActivity;
@@ -70,9 +71,10 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
 
         // Populate adapter
-        mAdapter = new SectionedRecyclerViewAdapter();
-        populateAdapter();
-
+        if(mAdapter == null) {
+            mAdapter = new SectionedRecyclerViewAdapter();
+            populateAdapter();
+        }
 
         // Set adapter to recycler view
         RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.recycler_view);
@@ -319,7 +321,11 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
                         .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                mListener.createAvoir(invoice);
+                                Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
+                                Invoice invoiceCreated = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
+                                ((ExpandableInvoicesSection) mAdapter.getSectionForPosition(adapterPosition)).addItem(invoiceCreated);
+                                mAdapter.notifyItemRemoved(adapterPosition);
+                                mListener.goToInvoice(invoiceCreated);
                             }
                         })
                         .setNegativeButton("Non", new DialogInterface.OnClickListener() {
@@ -368,6 +374,31 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
             ad.show();
         }
     }
+
+    private Integer createInvoice(final Integer customerId, final Integer invoiceType, final Integer factureSourceId) {
+        final Integer newInvoiceId = nextInvoiceId();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Customer customer = realm.where(Customer.class).equalTo("id", customerId).findFirst();
+                Invoice invoice = realm.createObject(Invoice.class, newInvoiceId);
+                invoice.setCustomer(customer);
+                invoice.setUser(((MainActivity) getActivity()).getUser());
+                invoice.setType(invoiceType);
+                invoice.setFk_facture_source(factureSourceId);
+            }
+        });
+        return newInvoiceId;
+    }
+    private Integer nextInvoiceId() {
+        if(null != realm.where(Invoice.class).findFirst()) {
+            Integer nextId = realm.where(Invoice.class).max("id").intValue() + 1;
+            return nextId;
+        } else {
+            return 1;
+        }
+    }
+
 
     public interface OnInvoicesExpandableListener {
         void goToInvoice(Invoice invoice);

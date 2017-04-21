@@ -105,6 +105,10 @@ public class MainActivity extends AppCompatActivity
     //Print
     private ArrayList<PrintJob> mPrintJobs;
 
+    public User getUser() {
+        return mUser;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -326,10 +330,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void createAvoir(Invoice invoice) {
         final EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
-        Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
-        setTitle("Nouvel AVOIR : " + invoice.getCustomer().getName());
-        frag.setInvoiceId(invoiceId);
-        launchFragment(frag, TAG_EDITING_INVOICE, true);
+        //Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
+        //setTitle("Nouvel AVOIR : " + invoice.getCustomer().getName());
+        //frag.setInvoiceId(invoiceId);
+        //launchFragment(frag, TAG_EDITING_INVOICE, true);
     }
 
     /**********************************/

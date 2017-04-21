@@ -73,7 +73,7 @@ public class PrintInvoiceFragment extends Fragment {
         invoice_title.setText(getTitle(mInvoice));
 
         TextView invoice_number = (TextView) layout.findViewById(R.id.invoice_number);
-        if (Invoice.TERMINEE.equals(mInvoice.getState())) {
+        if (Invoice.FINISHED.equals(mInvoice.getState())) {
             invoice_number.setText(mInvoice.getRef());
         } else {
             invoice_number.setText(mInvoice.computeRef(0));
@@ -143,7 +143,7 @@ public class PrintInvoiceFragment extends Fragment {
         });
 
         Button btnChangeInvoice = (Button) layout.findViewById(R.id.button_change_last_invoice);
-        if (!mInvoice.isPOSTToDolibarr() && mInvoice.getId() == realm.where(Invoice.class).max("id").intValue() && Invoice.TERMINEE.equals(mInvoice.getState())) {
+        if (!mInvoice.isPOSTToDolibarr() && mInvoice.getId() == realm.where(Invoice.class).max("id").intValue() && Invoice.FINISHED.equals(mInvoice.getState())) {
             btnChangeInvoice.setVisibility(View.VISIBLE);
             btnChangeInvoice.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -58,9 +58,9 @@ public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
 
         // Expand icon
         if (isExpanded) {
-            groupHolder.expandImage.setImageResource(R.drawable.ic_expand_less_black_24dp);
+            groupHolder.expandImage.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
         } else {
-            groupHolder.expandImage.setImageResource(R.drawable.ic_expand_more_black_24dp);
+            groupHolder.expandImage.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
         }
 
         return convertView;
@@ -104,10 +104,10 @@ public class InvoicesExpandableListAdapter extends BaseExpandableListAdapter {
         viewHolder.datetime.setText(simpleDate.format(child.getDate()));
 
         //Invoice state part
-        if (Invoice.EN_COURS.equals(child.getState())) {
+        if (Invoice.ONGOING.equals(child.getState())) {
             viewHolder.invoiceState.setText(R.string.invoice_state_en_cours);
             viewHolder.invoiceState.setTextColor(Color.YELLOW);
-        } else if (Invoice.TERMINEE.equals(child.getState())) {
+        } else if (Invoice.FINISHED.equals(child.getState())) {
             viewHolder.invoiceState.setText(R.string.invoice_state_terminee);
             viewHolder.invoiceState.setTextColor(Color.GREEN);
         }

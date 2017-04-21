@@ -61,10 +61,10 @@ public class InvoiceAdapter extends RealmBaseAdapter<Invoice> implements ListAda
         }
 
         //Invoice state part
-        if (Invoice.EN_COURS.equals(item.getState())) {
+        if (Invoice.ONGOING.equals(item.getState())) {
             viewHolder.invoice_state.setText(R.string.invoice_state_en_cours);
             viewHolder.invoice_state.setTextColor(Color.YELLOW);
-        } else if (Invoice.TERMINEE.equals(item.getState())){
+        } else if (Invoice.FINISHED.equals(item.getState())){
             viewHolder.invoice_state.setText(R.string.invoice_state_terminee);
             viewHolder.invoice_state.setTextColor(Color.GREEN);
         }

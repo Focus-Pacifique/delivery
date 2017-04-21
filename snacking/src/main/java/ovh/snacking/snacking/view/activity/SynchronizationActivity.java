@@ -88,7 +88,7 @@ public class SynchronizationActivity extends AppCompatActivity {
         mValue.addChangeListener(callback);
 
         // Register the invoice to post callback
-        invoicesToPost = realm.where(Invoice.class).equalTo("state", Invoice.TERMINEE).equalTo("isPOSTToDolibarr", false).findAll();
+        invoicesToPost = realm.where(Invoice.class).equalTo("state", Invoice.FINISHED).equalTo("isPOSTToDolibarr", false).findAll();
         invoicesToPost.addChangeListener(callbackInvoice);
 
         // Show the current user
@@ -200,7 +200,7 @@ public class SynchronizationActivity extends AppCompatActivity {
         final TextView invoiceToPost = (TextView) findViewById(R.id.invoice_to_post);
 
         // Show the invoices status (POST to dolibarr, not POST, etc...)
-        RealmResults<Invoice> invoices = realm.where(Invoice.class).equalTo("state", Invoice.TERMINEE).equalTo("isPOSTToDolibarr", false).findAll();
+        RealmResults<Invoice> invoices = realm.where(Invoice.class).equalTo("state", Invoice.FINISHED).equalTo("isPOSTToDolibarr", false).findAll();
 
         if (invoices.size() == 0) {
             // TODO changer etat des boutons pour pas qu'on puisse mettre à jour sans avoir poster les factures

@@ -251,7 +251,7 @@ public class DolibarrService extends IntentService {
         try {
             //Prevent incoherence into the database, IMPORTANT
             // DO NOT DELETE ANYTHING BEFORE INVOICE POSTED
-            if(realm.where(Invoice.class).equalTo("state", Invoice.TERMINEE).equalTo("isPOSTToDolibarr", false).findAll().size() > 0) {
+            if(realm.where(Invoice.class).equalTo("state", Invoice.FINISHED).equalTo("isPOSTToDolibarr", false).findAll().size() > 0) {
                 return -1;
             }
 
@@ -411,7 +411,7 @@ public class DolibarrService extends IntentService {
 
 
         // First, post the avoirs and their corresponding facture
-        RealmResults<Invoice> avoirs = realm.where(Invoice.class).equalTo("state", Invoice.TERMINEE).equalTo("isPOSTToDolibarr", false).equalTo("type", Invoice.AVOIR).findAll();
+        RealmResults<Invoice> avoirs = realm.where(Invoice.class).equalTo("state", Invoice.FINISHED).equalTo("isPOSTToDolibarr", false).equalTo("type", Invoice.AVOIR).findAll();
         for (final Invoice avoir : avoirs) {
 
             // Get the corresponding facture
@@ -467,9 +467,9 @@ public class DolibarrService extends IntentService {
 
 
         // Then post the rest of the factures
-        RealmResults<Invoice> invoices = realm.where(Invoice.class).equalTo("state", Invoice.TERMINEE).equalTo("isPOSTToDolibarr", false).findAll();
+        RealmResults<Invoice> invoices = realm.where(Invoice.class).equalTo("state", Invoice.FINISHED).equalTo("isPOSTToDolibarr", false).findAll();
         for (final Invoice facture : invoices) {
-            if (Invoice.TERMINEE.equals(facture.getState()) && !facture.isPOSTToDolibarr() && Invoice.FACTURE.equals(facture.getType())) {
+            if (Invoice.FINISHED.equals(facture.getState()) && !facture.isPOSTToDolibarr() && Invoice.FACTURE.equals(facture.getType())) {
 
                 if (!postInvoiceToDolibarr(facture)) {
                     return -6;

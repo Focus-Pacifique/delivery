@@ -20,6 +20,13 @@
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
 
+    <!--                 -->
+    <!-- Manage invoices -->
+    <!--                 -->
+    <!-- Header text size -->
+    <dimen name="expandable_header_padding">40dp</dimen>
+    <dimen name="expandable_item_padding">16dp</dimen>
+
     <!-- Print dimensions -->
     <dimen name="print_text_size_customer">13sp</dimen>
     <dimen name="print_text_size_default">8sp</dimen>

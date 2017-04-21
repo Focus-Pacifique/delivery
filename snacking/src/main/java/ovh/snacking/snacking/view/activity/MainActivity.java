@@ -1,9 +1,7 @@
 package ovh.snacking.snacking.view.activity;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -308,90 +306,30 @@ public class MainActivity extends AppCompatActivity
     /**  InvoiceExpandableList frag  **/
     /**********************************/
     @Override
-    public void onNewInvoice() {
+    public void newInvoice() {
         launchFragment(getFragment(TAG_CUSTOMER_SELECT), TAG_CUSTOMER_SELECT, true);
     }
 
     @Override
-    public void onInvoiceSelected(Integer invoiceId) {
-        Invoice invoice = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
-
-        if (Invoice.EN_COURS.equals(invoice.getState())) {
+    public void goToInvoice(Invoice invoice) {
+        if (Invoice.ONGOING.equals(invoice.getState())) {
             EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
-            frag.setInvoiceId(invoiceId);
+            frag.setInvoiceId(invoice.getId());
             launchFragment(frag, TAG_EDITING_INVOICE, true);
-
-        } else if (Invoice.TERMINEE.equals(invoice.getState())) {
+        } else if (Invoice.FINISHED.equals(invoice.getState())) {
             PrintInvoiceFragment frag = (PrintInvoiceFragment) getFragment(MainActivity.TAG_PRINT_INVOICE);
-            frag.setInvoiceId(invoiceId);
+            frag.setInvoiceId(invoice.getId());
             launchFragment(frag, TAG_PRINT_INVOICE, true);
         }
     }
 
     @Override
-    public void onInvoiceLongClick(Integer invoiceId) {
-        final Invoice invoice = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
-
-        if (Invoice.TERMINEE.equals(invoice.getState())) {
-            if (Invoice.FACTURE.equals(invoice.getType())) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle(R.string.dialog_title_create_avoir)
-                        .setMessage("Voulez-vous créer un avoir pour " + invoice.getCustomer().getName() + " (Facture n°" + invoice.getRef() + ") ?")
-                        .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                final EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
-                                Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
-                                setTitle("Nouvel AVOIR : " + invoice.getCustomer().getName());
-                                frag.setInvoiceId(invoiceId);
-                                launchFragment(frag, TAG_EDITING_INVOICE, true);
-
-                            }
-                        })
-                        .setNegativeButton("Non", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                AlertDialog ad = builder.create();
-                ad.show();
-
-            } else {
-                Toast.makeText(getApplicationContext(), "Impossible de créer un avoir sur un avoir", Toast.LENGTH_LONG).show();
-            }
-        } else if (Invoice.EN_COURS.equals(invoice.getState())){
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            if (Invoice.FACTURE.equals(invoice.getType())) {
-                builder.setTitle("Supprimer la facture");
-            } else if (Invoice.AVOIR.equals(invoice.getType())) {
-                builder.setTitle("Supprimer l'avoir");
-            } else {
-                builder.setTitle("Supprimer");
-            }
-
-            builder.setMessage("Etes-vous sur ?")
-                    .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            realm.executeTransaction(new Realm.Transaction() {
-                                @Override
-                                public void execute(Realm realm) {
-                                    invoice.deleteFromRealm();
-                                }
-                            });
-                            ((InvoicesExpandableListFragment) getFragment(MainActivity.TAG_INVOICES_EXPANDABLE_LIST)).refreshAdapter();
-                        }
-                    })
-                    .setNegativeButton("Non", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            AlertDialog ad = builder.create();
-            ad.show();
-        }
+    public void createAvoir(Invoice invoice) {
+        final EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
+        Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
+        setTitle("Nouvel AVOIR : " + invoice.getCustomer().getName());
+        frag.setInvoiceId(invoiceId);
+        launchFragment(frag, TAG_EDITING_INVOICE, true);
     }
 
     /**********************************/
@@ -453,10 +391,10 @@ public class MainActivity extends AppCompatActivity
         boolean isFinished;
 
         // Finish the invoice
-        if (invoice.getLines().size() > 0 && Invoice.EN_COURS.equals(invoice.getState())) {
+        if (invoice.getLines().size() > 0 && Invoice.ONGOING.equals(invoice.getState())) {
             finishInvoice(invoice);
             isFinished = true;
-        } else if (invoice.getLines().size() > 0 && Invoice.TERMINEE.equals(invoice.getState())) {
+        } else if (invoice.getLines().size() > 0 && Invoice.FINISHED.equals(invoice.getState())) {
             isFinished = true;
         } else {
             Toast.makeText(getApplicationContext(), "Impossible de terminer, il n'y a aucun produits dans la facture", Toast.LENGTH_LONG).show();
@@ -769,7 +707,7 @@ public class MainActivity extends AppCompatActivity
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                invoice.setState(Invoice.TERMINEE);
+                invoice.setState(Invoice.FINISHED);
 
                 // Save the number into the database
                 Integer next = nextNumber(invoice);

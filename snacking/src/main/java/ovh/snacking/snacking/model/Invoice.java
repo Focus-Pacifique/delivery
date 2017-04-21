@@ -14,8 +14,8 @@ import io.realm.annotations.PrimaryKey;
 
 public class Invoice extends RealmObject {
 
-    public static final Integer EN_COURS = 0;
-    public static final Integer TERMINEE = 1;
+    public static final Integer ONGOING = 0;
+    public static final Integer FINISHED = 1;
 
     public static final Integer FACTURE = 0;
     public static final Integer AVOIR = 1;
@@ -41,7 +41,7 @@ public class Invoice extends RealmObject {
         this.type = FACTURE;
         this.number = 0;
         this.date = new Date();
-        this.state = EN_COURS;
+        this.state = ONGOING;
         this.lines = new RealmList<>();
         this.ref = "0000";
         this.isPOSTToDolibarr = false;

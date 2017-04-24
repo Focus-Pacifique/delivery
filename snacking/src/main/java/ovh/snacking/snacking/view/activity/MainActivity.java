@@ -284,8 +284,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-
     private Integer createInvoice(final Integer customerId, final Integer invoiceType, final Integer factureSourceId) {
         final Integer newInvoiceId = nextInvoiceId();
         realm.executeTransaction(new Realm.Transaction() {
@@ -327,14 +325,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
+    /*@Override
     public void createAvoir(Invoice invoice) {
         final EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
         //Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
         //setTitle("Nouvel AVOIR : " + invoice.getCustomer().getName());
         //frag.setInvoiceId(invoiceId);
         //launchFragment(frag, TAG_EDITING_INVOICE, true);
-    }
+    }*/
 
     /**********************************/
     /**  Group Customer select part  **/
@@ -365,8 +363,15 @@ public class MainActivity extends AppCompatActivity
     public void onCustomerSelected(final Integer customerId) {
         final EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
         Integer invoiceId = createInvoice(customerId, Invoice.FACTURE);
+        Invoice invoiceCreated = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
         frag.setInvoiceId(invoiceId);
         launchFragment(frag, TAG_EDITING_INVOICE, true);
+
+        // Add invoice to the adapter in InvoicesExpandableListFragment
+        /*InvoicesExpandableListFragment fragInvoicesExpandable = ((InvoicesExpandableListFragment) getFragment(MainActivity.TAG_INVOICES_EXPANDABLE_LIST));
+        ((ExpandableInvoicesSection) fragInvoicesExpandable.getAdapter().getSection(InvoicesExpandableListFragment.SECTION_ONGOING)).insertItem(invoiceCreated);
+        fragInvoicesExpandable.getAdapter().notifyItemInsertedInSection(InvoicesExpandableListFragment.SECTION_ONGOING, 0);
+        fragInvoicesExpandable.getAdapter().notifyDataSetChanged();*/
     }
 
 
@@ -578,11 +583,20 @@ public class MainActivity extends AppCompatActivity
     /***************/
     /**  Methods  **/
     /***************/
-
     @Override
     public void onBackPressed() {
         if (fm.getBackStackEntryCount() > 0) {
-            fm.popBackStack();
+            int index = fm.getBackStackEntryCount() - 1;
+            String tagCallingFrag = fm.getBackStackEntryAt(index).getName();
+            String tagPreviousFrag = fm.getBackStackEntryAt(index - 1).getName();
+
+            // If the calling tag is printinvoicefragment, we shouldn't be able to edit again the invoice
+            if(tagCallingFrag.equals(TAG_PRINT_INVOICE) && tagPreviousFrag.equals(TAG_EDITING_INVOICE)) {
+                fm.popBackStack();
+                fm.popBackStack();
+            } else {
+                fm.popBackStack();
+            }
         } else {
             super.onBackPressed();
         }
@@ -601,7 +615,7 @@ public class MainActivity extends AppCompatActivity
                 if (addToBackStack) {
                     fm.beginTransaction()
                             .replace(R.id.fragment_container, fragment, tag)
-                            .addToBackStack(null)
+                            .addToBackStack(tag)
                             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                             .commit();
                 } else {

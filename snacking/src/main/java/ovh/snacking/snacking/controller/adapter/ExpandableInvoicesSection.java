@@ -2,6 +2,7 @@ package ovh.snacking.snacking.controller.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -24,6 +25,7 @@ import ovh.snacking.snacking.model.Invoice;
 public class ExpandableInvoicesSection extends StatelessSection {
     private ExpandableInvoicesSectionListener mListener;
     private Context mContext;
+    private long mLastClickTime = 0;
     private SectionedRecyclerViewAdapter mSectionAdapter;
     private boolean mExpanded;
     private String mTitle;
@@ -32,7 +34,7 @@ public class ExpandableInvoicesSection extends StatelessSection {
 
     public interface ExpandableInvoicesSectionListener {
         void onInvoiceSelected(Invoice invoice);
-        void onInvoiceLongClick(Invoice invoice, int adapterPosition, int positionInSection);
+        void onInvoiceLongClick(Invoice invoice);
     }
 
     public ExpandableInvoicesSection(SectionedRecyclerViewAdapter sectionAdapter, String title, ArrayList<Invoice> list, Fragment frag, boolean expanded) {
@@ -51,13 +53,9 @@ public class ExpandableInvoicesSection extends StatelessSection {
         this.mImgHeader = imgHeader;
     }
 
-    public void removeItem(int position) {
-        mList.remove(position);
+    public void setList(ArrayList<Invoice> invoices) {
+        mList = invoices;
     }
-    public void addItem(Invoice invoice) {
-        mList.add(invoice);
-    }
-
 
     @Override
     public int getContentItemsTotal() {
@@ -87,7 +85,7 @@ public class ExpandableInvoicesSection extends StatelessSection {
             itemHolder.invoiceType.setTextColor(Color.DKGRAY);
         }
 
-        //Customer ref
+        // Customer ref
         if (null != invoice.getCustomer()) {
             itemHolder.customerName.setText(String.valueOf(invoice.getCustomer().getName()));
         } else {
@@ -112,12 +110,8 @@ public class ExpandableInvoicesSection extends StatelessSection {
            public boolean onLongClick(View v) {
                int adapterPosition = itemHolder.getAdapterPosition();
                if (adapterPosition != RecyclerView.NO_POSITION) {
-                   int positionInSection = mSectionAdapter.getPositionInSection(adapterPosition);
-                   mListener.onInvoiceLongClick(invoice, adapterPosition, positionInSection);//, mSectionAdapter.getPositionInSection());
+                   mListener.onInvoiceLongClick(invoice);
                }
-
-
-
                return true;
            }
        });
@@ -125,6 +119,10 @@ public class ExpandableInvoicesSection extends StatelessSection {
         itemHolder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
                 mListener.onInvoiceSelected(invoice);
             }
         });
@@ -140,7 +138,7 @@ public class ExpandableInvoicesSection extends StatelessSection {
         final HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
 
         // Title
-        headerHolder.tvTitle.setText(mTitle);
+        headerHolder.tvTitle.setText(String.format("%s (%s)", mTitle, mList.size()));
 
         // Icon
         if (mImgHeader != 0)
@@ -171,7 +169,7 @@ public class ExpandableInvoicesSection extends StatelessSection {
         private final TextView tvTitle;
         private final ImageView imgExpand;
 
-        public HeaderViewHolder(View view) {
+        private HeaderViewHolder(View view) {
             super(view);
             rootView = view;
             imgHeader = (ImageView) view.findViewById(R.id.header_img);

@@ -30,7 +30,6 @@ public class PrintInvoiceFragment extends Fragment {
     OnPrintListener mListener;
     private Integer invoiceId = 0;
     private Invoice mInvoice;
-    //private Toolbar toolbar;
     private Realm realm;
 
     @Override
@@ -39,7 +38,7 @@ public class PrintInvoiceFragment extends Fragment {
         try {
             mListener = (OnPrintListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnInvoiceSelectedListener");
+            throw new ClassCastException(context.toString() + " must implement OnPrintListener");
         }
     }
 

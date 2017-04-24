@@ -47,10 +47,7 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
 
     OnInvoicesExpandableListener mListener;
     private Realm realm;
-    private long mLastClickTime = 0;
     private SectionedRecyclerViewAdapter mAdapter;
-//    private ExpandableListView mList;
-//    private ArrayList<InvoicesExpandableListAdapter.Group> mListItems;
     private FloatingActionButton fab;
 
     @Override
@@ -63,6 +60,10 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         }
     }
 
+    public SectionedRecyclerViewAdapter getAdapter() {
+        return mAdapter;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_recycler_view, container, false);
@@ -73,7 +74,6 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         // Populate adapter
         if(mAdapter == null) {
             mAdapter = new SectionedRecyclerViewAdapter();
-            populateAdapter();
         }
 
         // Set adapter to recycler view
@@ -81,46 +81,12 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(mAdapter);
 
-        //mAdapter = new InvoicesExpandableListAdapter(getContext(), mListItems);
-        //mList.setAdapter(mAdapter);
-
         return layout;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
-        // On invoice click : go to edit the invoice
-        /*mList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
-                    return false;
-                }
-                mLastClickTime = SystemClock.elapsedRealtime();
-                final Integer invoiceId = ((Invoice) parent.getExpandableListAdapter().getChild(groupPosition, childPosition)).getId();
-                mListener.goToInvoice(invoiceId);
-                return true;
-            }
-        });*/
-
-
-        // On long click : remove the print_invoice
-        /*mList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-                    int groupPosition = ExpandableListView.getPackedPositionGroup(id);
-                    int childPosition = ExpandableListView.getPackedPositionChild(id);
-
-                    final Integer invoiceId = ((Invoice) ((ExpandableListView) parent).getExpandableListAdapter().getChild(groupPosition, childPosition)).getId();
-                    mListener.onInvoiceLongClick(invoiceId);
-                    return true;
-                }
-                return false;
-            }
-        });*/
 
         // On fab click : new Invoice
         fab.setOnClickListener(new View.OnClickListener() {
@@ -135,6 +101,11 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_manage_invoices_fragment));
+
+        // Refresh data into adapter
+        populateAdapter();
+        mAdapter.notifyDataSetChanged();
+
         fab.setImageResource(R.drawable.ic_new);
         fab.show();
     }
@@ -233,77 +204,47 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
 
         // Section invoice state = ONGOING
         ArrayList<Invoice> invoices = getTodayEnCoursInvoices();
-        String headerOngoing = String.format("%s (%s)", getString(R.string.invoices_ongoing), invoices.size());
-        Section sectionEnCours = new ExpandableInvoicesSection(mAdapter, headerOngoing, invoices, this, true);
-        mAdapter.addSection(SECTION_ONGOING, sectionEnCours);
+        Section sectionEnCours = mAdapter.getSection(SECTION_ONGOING);
+        if(sectionEnCours == null) {
+            sectionEnCours = new ExpandableInvoicesSection(mAdapter, getString(R.string.invoices_ongoing), invoices, this, true);
+            mAdapter.addSection(SECTION_ONGOING, sectionEnCours);
+        } else {
+            ((ExpandableInvoicesSection) sectionEnCours).setList(invoices);
+        }
 
         // Invoice state = FINISHED
         invoices = getTodayTermineeInvoices();
-        String headerFinished = String.format("%s (%s)", getString(R.string.invoices_finished), invoices.size());
-        Section sectionFinished = new ExpandableInvoicesSection(mAdapter, headerFinished, invoices, this, false);
-        mAdapter.addSection(SECTION_FINISHED, sectionFinished);
+        Section sectionFinished = mAdapter.getSection(SECTION_FINISHED);
+        if(sectionFinished == null) {
+            sectionFinished = new ExpandableInvoicesSection(mAdapter, getString(R.string.invoices_finished), invoices, this, false);
+            mAdapter.addSection(SECTION_FINISHED, sectionFinished);
+        } else {
+            ((ExpandableInvoicesSection) sectionFinished).setList(invoices);
+        }
+
 
         // Yesterday
         invoices = getYesterdayInvoices();
-        String headerYesterday = String.format("%s (%s)", getString(R.string.invoices_yesterday), invoices.size());
-        Section sectionYesterday = new ExpandableInvoicesSection(mAdapter, headerYesterday, invoices, this, false);
+        Section sectionYesterday = mAdapter.getSection(SECTION_YESTERDAY);
+        if(sectionYesterday == null) {
+            sectionYesterday = new ExpandableInvoicesSection(mAdapter, getString(R.string.invoices_yesterday), invoices, this, false);
+            mAdapter.addSection(SECTION_YESTERDAY, sectionYesterday);
+        } else {
+            ((ExpandableInvoicesSection) sectionYesterday).setList(invoices);
+        }
         ((ExpandableInvoicesSection) sectionYesterday).setImgHeader(R.drawable.ic_calendar_black_24dp);
-        mAdapter.addSection(SECTION_YESTERDAY, sectionYesterday);
+
 
         // Week
         invoices = getLastWeekInvoices();
-        String headerLastWeek = String.format("%s (%s)", getString(R.string.invoices_last_week), invoices.size());
-        Section sectionLastWeek = new ExpandableInvoicesSection(mAdapter, headerLastWeek, invoices, this, false);
+        Section sectionLastWeek = mAdapter.getSection(SECTION_LASTWEEK);
+        if(sectionLastWeek == null) {
+            sectionLastWeek = new ExpandableInvoicesSection(mAdapter, getString(R.string.invoices_last_week), invoices, this, false);
+            mAdapter.addSection(SECTION_LASTWEEK, sectionLastWeek);
+        } else {
+            ((ExpandableInvoicesSection) sectionLastWeek).setList(invoices);
+        }
         ((ExpandableInvoicesSection) sectionLastWeek).setImgHeader(R.drawable.ic_calendar_black_24dp);
-        mAdapter.addSection(SECTION_LASTWEEK, sectionLastWeek);
-    }
-
-    /*private ArrayList<InvoicesExpandableListAdapter.Group> setListItems() {
-        ArrayList<InvoicesExpandableListAdapter.Group> listGroups = new ArrayList<>();
-
-        InvoicesExpandableListAdapter.Group group;
-        ArrayList<Invoice> invoices;
-
-        // Invoice state = EN COURS
-        invoices = getTodayEnCoursInvoices();
-        group = new InvoicesExpandableListAdapter.Group();
-        group.setHeaderLabel(getString(R.string.invoices_ongoing) + " (" + invoices.size() + ")");
-        group.setItems(invoices);
-        listGroups.add(group);
-
-        // Invoice state = FINISHED
-        invoices = getTodayTermineeInvoices();
-        group = new InvoicesExpandableListAdapter.Group();
-        group.setHeaderLabel(getString(R.string.invoices_finished) + " (" + invoices.size() + ")");
-        group.setItems(invoices);
-        listGroups.add(group);
-
-        // Yesterday
-        invoices = getYesterdayInvoices();
-        group = new InvoicesExpandableListAdapter.Group();
-        group.setIcon(R.drawable.ic_calendar_black_24dp);
-        group.setHeaderLabel(getString(R.string.invoices_yesterday) + " (" + invoices.size() + ")");
-        group.setItems(invoices);
-        listGroups.add(group);
-
-        // Week
-        invoices = getLastWeekInvoices();
-        group = new InvoicesExpandableListAdapter.Group();
-        group.setIcon(R.drawable.ic_calendar_black_24dp);
-        group.setHeaderLabel(getString(R.string.invoices_last_week) + " (" + invoices.size() + ")");
-        group.setItems(invoices);
-        listGroups.add(group);
-
-        return listGroups;
-    }*/
-
-    public void refreshAdapter() {
-        /*mListItems = setListItems();
-        mAdapter = new InvoicesExpandableListAdapter(getContext(), mListItems);
-        mList.setAdapter(mAdapter);
-
-        // Expand the header groups by default
-        mList.expandGroup(0, true);*/
     }
 
     @Override
@@ -312,56 +253,31 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
     }
 
     @Override
-    public void onInvoiceLongClick(final Invoice invoice, final int adapterPosition, final int positionInSection) {
+    public void onInvoiceLongClick(final Invoice invoice) {
+        // If the invoice is FINISHED
         if (Invoice.FINISHED.equals(invoice.getState())) {
-            if (Invoice.FACTURE.equals(invoice.getType())) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.dialog_title_create_avoir)
-                        .setMessage("Voulez-vous créer un avoir pour " + invoice.getCustomer().getName() + " (Facture n°" + invoice.getRef() + ") ?")
-                        .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
-                                Invoice invoiceCreated = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
-                                ((ExpandableInvoicesSection) mAdapter.getSectionForPosition(adapterPosition)).addItem(invoiceCreated);
-                                mAdapter.notifyItemRemoved(adapterPosition);
-                                mListener.goToInvoice(invoiceCreated);
-                            }
-                        })
-                        .setNegativeButton("Non", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                AlertDialog ad = builder.create();
-                ad.show();
+            displayDialogCreateAvoir(invoice);
+        }
 
-            } else {
-                Toast.makeText(getActivity(), "Impossible de créer un avoir sur un avoir", Toast.LENGTH_LONG).show();
-            }
-        } else if (Invoice.ONGOING.equals(invoice.getState())){
+        // If the invoice is ONGOING
+        else if (Invoice.ONGOING.equals(invoice.getState())){
+            displayDialogRemoveInvoice(invoice);
+        }
+    }
+
+    private void displayDialogCreateAvoir(final Invoice invoice) {
+        if (Invoice.FACTURE.equals(invoice.getType())) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            if (Invoice.FACTURE.equals(invoice.getType())) {
-                builder.setTitle("Supprimer la facture");
-            } else if (Invoice.AVOIR.equals(invoice.getType())) {
-                builder.setTitle("Supprimer l'avoir");
-            } else {
-                builder.setTitle("Supprimer");
-            }
-
-            builder.setMessage("Etes-vous sur ?")
+            builder.setTitle(R.string.dialog_title_create_avoir)
+                    .setMessage("Voulez-vous créer un avoir pour " + invoice.getCustomer().getName() + " (Facture n°" + invoice.getRef() + ") ?")
                     .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            realm.executeTransaction(new Realm.Transaction() {
-                                @Override
-                                public void execute(Realm realm) {
-                                    invoice.deleteFromRealm();
-                                }
-                            });
-                            ((ExpandableInvoicesSection) mAdapter.getSectionForPosition(adapterPosition)).removeItem(positionInSection);
-                            mAdapter.notifyItemRemoved(adapterPosition);
+                            Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
+                            Invoice invoiceCreated = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
+                            populateAdapter();
+                            mAdapter.notifyDataSetChanged();
+                            mListener.goToInvoice(invoiceCreated);
                         }
                     })
                     .setNegativeButton("Non", new DialogInterface.OnClickListener() {
@@ -372,11 +288,48 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
                     });
             AlertDialog ad = builder.create();
             ad.show();
+
+        } else {
+            Toast.makeText(getActivity(), "Impossible de créer un avoir sur un avoir", Toast.LENGTH_LONG).show();
         }
     }
 
+    private void displayDialogRemoveInvoice(final Invoice invoice) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        if (Invoice.FACTURE.equals(invoice.getType())) {
+            builder.setTitle("Supprimer la facture");
+        } else if (Invoice.AVOIR.equals(invoice.getType())) {
+            builder.setTitle("Supprimer l'avoir");
+        } else {
+            builder.setTitle("Supprimer");
+        }
+
+        builder.setMessage("Etes-vous sur ?")
+                .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        realm.executeTransaction(new Realm.Transaction() {
+                            @Override
+                            public void execute(Realm realm) {
+                                invoice.deleteFromRealm();
+                            }
+                        });
+                        populateAdapter();
+                        mAdapter.notifyDataSetChanged();
+                    }
+                })
+                .setNegativeButton("Non", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog ad = builder.create();
+        ad.show();
+    }
+
     private Integer createInvoice(final Integer customerId, final Integer invoiceType, final Integer factureSourceId) {
-        final Integer newInvoiceId = nextInvoiceId();
+        final Integer newInvoiceId = RealmSingleton.getInstance(getContext()).nextInvoiceId();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -390,19 +343,9 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         });
         return newInvoiceId;
     }
-    private Integer nextInvoiceId() {
-        if(null != realm.where(Invoice.class).findFirst()) {
-            Integer nextId = realm.where(Invoice.class).max("id").intValue() + 1;
-            return nextId;
-        } else {
-            return 1;
-        }
-    }
-
 
     public interface OnInvoicesExpandableListener {
         void goToInvoice(Invoice invoice);
-        void createAvoir(Invoice invoice);
         void newInvoice();
     }
 }

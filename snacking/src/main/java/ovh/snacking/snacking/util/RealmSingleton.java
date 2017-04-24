@@ -10,6 +10,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmMigration;
 import io.realm.RealmSchema;
+import ovh.snacking.snacking.model.Invoice;
 
 /**
  * Created by Alex on 20/10/2016.
@@ -23,6 +24,26 @@ public class RealmSingleton {
 
         Realm.init(context);
 
+        // TODO Améliorer migration, a changer pour la prod, https://realm.io/docs/java/latest/#migrations
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
+                .schemaVersion(3)
+                .migration(realmMigration())
+                .build();
+        Realm.setDefaultConfiguration(realmConfiguration);
+    }
+
+    public static synchronized RealmSingleton getInstance(Context context) {
+        if (mInstance == null) {
+            mInstance = new RealmSingleton(context);
+        }
+        return mInstance;
+    }
+
+    public Realm getRealm() {
+        return Realm.getDefaultInstance();
+    }
+
+    private RealmMigration realmMigration() {
         RealmMigration migration = new RealmMigration() {
             @Override
             public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -120,22 +141,15 @@ public class RealmSingleton {
             }
         };
 
-        // TODO Améliorer migration, a changer pour la prod, https://realm.io/docs/java/latest/#migrations
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
-                .schemaVersion(3)
-                .migration(migration)
-                .build();
-        Realm.setDefaultConfiguration(realmConfiguration);
+        return migration;
     }
 
-    public static synchronized RealmSingleton getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new RealmSingleton(context);
+    public Integer nextInvoiceId() {
+        if(null != getRealm().where(Invoice.class).findFirst()) {
+            Integer nextId = getRealm().where(Invoice.class).max("id").intValue() + 1;
+            return nextId;
+        } else {
+            return 1;
         }
-        return mInstance;
-    }
-
-    public Realm getRealm() {
-        return Realm.getDefaultInstance();
     }
 }

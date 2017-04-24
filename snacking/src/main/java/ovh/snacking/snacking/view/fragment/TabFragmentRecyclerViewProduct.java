@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -95,17 +96,18 @@ public class TabFragmentRecyclerViewProduct extends Fragment {
 
         String mTitle;
         List<Product> mList;
+        private boolean mExpanded = true;
 
         public ProductSection(String title, List<Product> list) {
             // call constructor with layout resources for this Section header and items
-            super(R.layout.section_header, R.layout.card_view_product_item);
+            super(R.layout.section_header_expandable, R.layout.section_item_product);
             this.mTitle = title;
             this.mList = list;
         }
 
         @Override
         public int getContentItemsTotal() {
-            return mList.size(); // number of items of this section
+            return mExpanded ? mList.size() : 0;
         }
 
         @Override
@@ -117,7 +119,7 @@ public class TabFragmentRecyclerViewProduct extends Fragment {
         @Override
         public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-            final ProductSection.ItemViewHolder itemHolder = (ProductSection.ItemViewHolder) holder;
+            final ItemViewHolder itemHolder = (ItemViewHolder) holder;
 
             // bind your view here
             final Product selectedProduct = mList.get(position);
@@ -134,24 +136,47 @@ public class TabFragmentRecyclerViewProduct extends Fragment {
 
         @Override
         public RecyclerView.ViewHolder getHeaderViewHolder(View view) {
-            return new ProductSection.HeaderViewHolder(view);
+            return new HeaderViewHolder(view);
         }
 
         @Override
         public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder) {
-            ProductSection.HeaderViewHolder headerHolder = (ProductSection.HeaderViewHolder) holder;
-            headerHolder.tvTitle.setText(mTitle);
+            final HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
+
+            // Title
+            headerHolder.tvTitle.setText(String.format("%s (%s)", mTitle, mList.size()));
+
+            // Arrow expand/collapse
+            headerHolder.imgExpand.setImageResource(
+                    mExpanded ? R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp
+            );
+
+            // Handle the expand event
+            headerHolder.rootView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mExpanded = !mExpanded;
+                    headerHolder.imgExpand.setImageResource(
+                            mExpanded ? R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp
+                    );
+                    mSectionAdapter.notifyDataSetChanged();
+                }
+            });
         }
 
 
 
         private class HeaderViewHolder extends RecyclerView.ViewHolder {
 
+            private final View rootView;
             private final TextView tvTitle;
+            private final ImageView imgExpand;
 
-            public HeaderViewHolder(View view) {
+            private HeaderViewHolder(View view) {
                 super(view);
-                tvTitle = (TextView) view.findViewById(R.id.section_header_title);
+                rootView = view;
+                tvTitle = (TextView) view.findViewById(R.id.header_title);
+                imgExpand = (ImageView) view.findViewById(R.id.header_expand);
             }
         }
 

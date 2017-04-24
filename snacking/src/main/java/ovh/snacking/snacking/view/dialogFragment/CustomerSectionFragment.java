@@ -30,7 +30,7 @@ import ovh.snacking.snacking.util.RealmSingleton;
 
 public class CustomerSectionFragment extends AppCompatDialogFragment {
 
-    OnCustomerDialogListener mListener;
+    CustomerSectionFragmentListener mListener;
     private Realm realm;
     private RecyclerView mRecyclerView;
     private SectionedRecyclerViewAdapter mSectionAdapter;
@@ -39,9 +39,9 @@ public class CustomerSectionFragment extends AppCompatDialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mListener = (OnCustomerDialogListener) context;
+            mListener = (CustomerSectionFragmentListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnCustomerDialogListener");
+            throw new ClassCastException(context.toString() + " must implement CustomerSectionFragmentListener");
         }
     }
 
@@ -61,6 +61,7 @@ public class CustomerSectionFragment extends AppCompatDialogFragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         //mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         mRecyclerView.setAdapter(mSectionAdapter);
+
         return view;
     }
 
@@ -103,41 +104,31 @@ public class CustomerSectionFragment extends AppCompatDialogFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        /*getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(final AdapterView<?> parent, View view, final int position, long id) {
-                mListener.onCustomerSelected(((Customer) parent.getItemAtPosition(position)).getId());
-            }
-        });*/
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         realm.close();
     }
 
-    public interface OnCustomerDialogListener {
+    public interface CustomerSectionFragmentListener {
         void onCustomerSelected(Integer customerId);
     }
 
     private class CustomerSection extends StatelessSection {
 
-        String mTitle;
-        List<Customer> mList;
+        private String mTitle;
+        private List<Customer> mList;
+        private boolean mExpanded = true;
 
         public CustomerSection(String title, List<Customer> list) {
             // call constructor with layout resources for this Section header and items
-            super(R.layout.section_header, R.layout.recycler_view_item_of_group);
+            super(R.layout.section_header_expandable, R.layout.section_item_customer);
             this.mTitle = title;
             this.mList = list;
         }
 
         @Override
         public int getContentItemsTotal() {
-            return mList.size(); // number of items of this section
+            return mExpanded ? mList.size() : 0;
         }
 
         @Override
@@ -172,18 +163,41 @@ public class CustomerSectionFragment extends AppCompatDialogFragment {
 
         @Override
         public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder) {
-            CustomerSection.HeaderViewHolder headerHolder = (CustomerSection.HeaderViewHolder) holder;
-            headerHolder.tvTitle.setText(mTitle);
+            final HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
+
+            // Title
+            headerHolder.tvTitle.setText(String.format("%s (%s)", mTitle, mList.size()));
+
+            // Arrow expand/collapse
+            headerHolder.imgExpand.setImageResource(
+                    mExpanded ? R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp
+            );
+
+            // Handle the expand event
+            headerHolder.rootView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mExpanded = !mExpanded;
+                    headerHolder.imgExpand.setImageResource(
+                            mExpanded ? R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp
+                    );
+                    mSectionAdapter.notifyDataSetChanged();
+                }
+            });
         }
 
 
         private class HeaderViewHolder extends RecyclerView.ViewHolder {
 
+            private final View rootView;
             private final TextView tvTitle;
+            private final ImageView imgExpand;
 
-            public HeaderViewHolder(View view) {
+            private HeaderViewHolder(View view) {
                 super(view);
-                tvTitle = (TextView) view.findViewById(R.id.section_header_title);
+                rootView = view;
+                tvTitle = (TextView) view.findViewById(R.id.header_title);
+                imgExpand = (ImageView) view.findViewById(R.id.header_expand);
             }
         }
 

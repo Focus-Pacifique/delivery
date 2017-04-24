@@ -190,7 +190,7 @@ public class CustomerOfGroupFragment extends Fragment {
 
         @Override
         public CustomerRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_item_of_group, parent, false);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.section_item_customer, parent, false);
             return new CustomerRecyclerViewAdapter.ViewHolder(itemView);
         }
 

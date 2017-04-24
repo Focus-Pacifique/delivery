@@ -67,7 +67,7 @@ import ovh.snacking.snacking.view.fragment.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity
         implements InvoicesExpandableListFragment.OnInvoicesExpandableListener,
-        CustomerSectionFragment.OnCustomerDialogListener,
+        CustomerSectionFragment.CustomerSectionFragmentListener,
         EditingInvoiceFragment.OnEditInvoiceListener,
         PrintInvoiceFragment.OnPrintListener,
         PrintInvoiceStatementFragment.OnPrintInvoiceStatementListener,

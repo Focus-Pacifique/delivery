@@ -325,14 +325,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /*@Override
-    public void createAvoir(Invoice invoice) {
-        final EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
-        //Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
-        //setTitle("Nouvel AVOIR : " + invoice.getCustomer().getName());
-        //frag.setInvoiceId(invoiceId);
-        //launchFragment(frag, TAG_EDITING_INVOICE, true);
-    }*/
 
     /**********************************/
     /**  Group Customer select part  **/
@@ -363,26 +355,14 @@ public class MainActivity extends AppCompatActivity
     public void onCustomerSelected(final Integer customerId) {
         final EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
         Integer invoiceId = createInvoice(customerId, Invoice.FACTURE);
-        Invoice invoiceCreated = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
         frag.setInvoiceId(invoiceId);
         launchFragment(frag, TAG_EDITING_INVOICE, true);
-
-        // Add invoice to the adapter in InvoicesExpandableListFragment
-        /*InvoicesExpandableListFragment fragInvoicesExpandable = ((InvoicesExpandableListFragment) getFragment(MainActivity.TAG_INVOICES_EXPANDABLE_LIST));
-        ((ExpandableInvoicesSection) fragInvoicesExpandable.getAdapter().getSection(InvoicesExpandableListFragment.SECTION_ONGOING)).insertItem(invoiceCreated);
-        fragInvoicesExpandable.getAdapter().notifyItemInsertedInSection(InvoicesExpandableListFragment.SECTION_ONGOING, 0);
-        fragInvoicesExpandable.getAdapter().notifyDataSetChanged();*/
     }
 
 
     /****************************/
     /**  Editing invoice part  **/
     /****************************/
-    /*@Override
-    public void onBackToManageInvoices() {
-        launchFragment(getFragment(TAG_INVOICES_EXPANDABLE_LIST), TAG_INVOICES_EXPANDABLE_LIST, true);
-    }*/
-
     @Override
     public void onShowInvoice(Integer invoiceId) {
         PrintInvoiceFragment frag = (PrintInvoiceFragment) getFragment(MainActivity.TAG_PRINT_INVOICE);
@@ -641,9 +621,6 @@ public class MainActivity extends AppCompatActivity
                 case TAG_EDITING_INVOICE:
                     frag = new EditingInvoiceFragment();
                     break;
-                /*case TAG_MANAGING_INVOICE:
-                    frag =  new ManageInvoiceFragment();
-                    break;*/
                 case TAG_PRINT_INVOICE:
                     frag =  new PrintInvoiceFragment();
                     break;

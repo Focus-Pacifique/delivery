@@ -104,7 +104,6 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
 
         // Refresh data into adapter
         populateAdapter();
-        mAdapter.notifyDataSetChanged();
 
         fab.setImageResource(R.drawable.ic_new);
         fab.show();
@@ -245,6 +244,8 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
             ((ExpandableInvoicesSection) sectionLastWeek).setList(invoices);
         }
         ((ExpandableInvoicesSection) sectionLastWeek).setImgHeader(R.drawable.ic_calendar_black_24dp);
+
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -276,7 +277,6 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
                             Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
                             Invoice invoiceCreated = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
                             populateAdapter();
-                            mAdapter.notifyDataSetChanged();
                             mListener.goToInvoice(invoiceCreated);
                         }
                     })
@@ -315,7 +315,6 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
                             }
                         });
                         populateAdapter();
-                        mAdapter.notifyDataSetChanged();
                     }
                 })
                 .setNegativeButton("Non", new DialogInterface.OnClickListener() {

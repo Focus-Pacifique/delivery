@@ -161,6 +161,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        // If no fragment is selected (start of the activity, we go on the first fragment
         if (getNavViewCheckedItem(navView) < 0)
             selectDrawerItem(navView.getMenu().findItem(R.id.nav_manage_invoice_fragment));
     }
@@ -234,17 +235,17 @@ public class MainActivity extends AppCompatActivity
 
     public void selectDrawerItem(MenuItem menuItem) {
         // First uncheck all the navView menu items
-        uncheckAllNavViewItems(navView);
+        uncheckAllNavViewItems();
 
         switch(menuItem.getItemId()) {
+            case R.id.nav_manage_invoice_fragment:
+                launchFragment(getFragment(TAG_INVOICES_EXPANDABLE_LIST), TAG_INVOICES_EXPANDABLE_LIST, true);
+                break;
             case R.id.nav_invoice_statement_fragment:
                 launchFragment(getFragment(TAG_PRINT_INVOICE_STATEMENT), TAG_PRINT_INVOICE_STATEMENT, true);
                 break;
             case R.id.nav_manage_group_customer_fragment:
                 launchFragment(getFragment(TAG_MANAGE_GROUP_CUSTOMER), TAG_MANAGE_GROUP_CUSTOMER, true);
-                break;
-            case R.id.nav_manage_invoice_fragment:
-                launchFragment(getFragment(TAG_INVOICES_EXPANDABLE_LIST), TAG_INVOICES_EXPANDABLE_LIST, true);
                 break;
             case R.id.nav_manage_group_product_fragment:
                 launchFragment(getFragment(TAG_MANAGE_GROUP_PRODUCT), TAG_MANAGE_GROUP_PRODUCT, true);
@@ -265,6 +266,23 @@ public class MainActivity extends AppCompatActivity
         mDrawerLayout.closeDrawers();
     }
 
+    private int getMenuItemId(String TAG) {
+        switch(TAG) {
+            case TAG_INVOICES_EXPANDABLE_LIST:
+                return R.id.nav_manage_invoice_fragment;
+            case TAG_PRINT_INVOICE_STATEMENT:
+                return R.id.nav_invoice_statement_fragment;
+            case TAG_MANAGE_GROUP_CUSTOMER:
+                return R.id.nav_manage_group_customer_fragment;
+            case TAG_MANAGE_GROUP_PRODUCT:
+                return R.id.nav_manage_group_product_fragment;
+            case TAG_SETTINGS_FRAGMENT:
+                return R.id.nav_settings;
+            default:
+                return R.id.nav_manage_invoice_fragment;
+        }
+    }
+
     private int getNavViewCheckedItem(NavigationView navigationView) {
         final Menu menu = navigationView.getMenu();
         for (int i = 0; i < menu.size(); i++) {
@@ -276,8 +294,8 @@ public class MainActivity extends AppCompatActivity
         return -1;
     }
 
-    private void uncheckAllNavViewItems(NavigationView navigationView) {
-        final Menu menu = navigationView.getMenu();
+    private void uncheckAllNavViewItems() {
+        final Menu menu = navView.getMenu();
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
             item.setChecked(false);
@@ -565,10 +583,19 @@ public class MainActivity extends AppCompatActivity
     /***************/
     @Override
     public void onBackPressed() {
-        if (fm.getBackStackEntryCount() > 0) {
-            int index = fm.getBackStackEntryCount() - 1;
+        int index = fm.getBackStackEntryCount() - 1;
+
+        if (index == 0) {
+            fm.popBackStack();
+        } else if(index > 0) {
             String tagCallingFrag = fm.getBackStackEntryAt(index).getName();
             String tagPreviousFrag = fm.getBackStackEntryAt(index - 1).getName();
+
+            // Update navdrawer and title
+            uncheckAllNavViewItems();
+            MenuItem item = navView.getMenu().findItem(getMenuItemId(tagPreviousFrag));
+            item.setChecked(true);
+            setTitle(item.getTitle());
 
             // If the calling tag is printinvoicefragment, we shouldn't be able to edit again the invoice
             if(tagCallingFrag.equals(TAG_PRINT_INVOICE) && tagPreviousFrag.equals(TAG_EDITING_INVOICE)) {

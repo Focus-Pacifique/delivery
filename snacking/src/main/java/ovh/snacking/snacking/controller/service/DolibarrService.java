@@ -429,42 +429,7 @@ public class DolibarrService extends IntentService {
             } else {
                 return -5;
             }
-
-            /*final Integer fk_facture_source = createInvoice(facture_source);
-            if (fk_facture_source != 0) {
-
-                // Validate the previous facture
-                if (validateInvoice(fk_facture_source, facture_source)) {
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            //avoir.setFk_facture_source(fk_facture_source);
-                            avoir.setFk_facture_source_dolibarr(fk_facture_source);
-                        }
-                    });
-
-                    // POST the avoir
-                    Integer fk_avoir = createInvoice(avoir);
-                    if (fk_avoir != 0) {
-                        // Validate the avoir
-                        if (validateInvoice(fk_avoir, avoir)) {
-                            if (!setPaidAndConsume(fk_avoir, fk_facture_source)) {
-                                return -5;
-                            }
-                        } else {
-                            return -4;
-                        }
-                    } else {
-                        return -3;
-                    }
-                } else {
-                    return -2;
-                }
-            } else {
-                return -1;
-            }*/
         }
-
 
         // Then post the rest of the factures
         RealmResults<Invoice> invoices = realm.where(Invoice.class).equalTo("state", Invoice.FINISHED).equalTo("isPOSTToDolibarr", false).findAll();

@@ -29,6 +29,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public static final String PREF_KEY_AUTO_SYNC = "pref_key_auto_sync";
     public static final String PREF_KEY_MANUAL_SYNC = "pref_key_manual_sync";
 
+    DolibarrBroadcastReceiver mSyncReceiver;
     private Realm realm;
     private Value mValue;
     private RealmChangeListener<Value> callback = new RealmChangeListener<Value>() {
@@ -71,7 +72,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         //Filter to get the synchronisation status with broadcast notification
         IntentFilter mStatusIntentFilter = new IntentFilter(Constants.BROADCAST_MESSAGE_INTENT);
-        DolibarrBroadcastReceiver mSyncReceiver = new DolibarrBroadcastReceiver();
+        mSyncReceiver = new DolibarrBroadcastReceiver();
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mSyncReceiver, mStatusIntentFilter);
     }
 
@@ -99,6 +100,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onDestroy() {
         super.onDestroy();
         realm.close();
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mSyncReceiver);
     }
 
     private void setLastSyncDate(Date date) {

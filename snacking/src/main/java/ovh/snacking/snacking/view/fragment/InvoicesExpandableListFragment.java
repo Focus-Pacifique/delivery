@@ -43,7 +43,8 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
     public static final String SECTION_ONGOING = "SectionOngoing";
     public static final String SECTION_FINISHED = "SectionFinished";
     public static final String SECTION_YESTERDAY = "SectionYesterday";
-    public static final String SECTION_LASTWEEK = "SectionLastWekk";
+    public static final String SECTION_LASTWEEK = "SectionLastWeek";
+    public static final String SECTION_NINETY_DAYS = "SectionArchives";
 
     OnInvoicesExpandableListener mListener;
     private Realm realm;
@@ -176,13 +177,29 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
     private ArrayList<Invoice> getLastWeekInvoices() {
         try {
             final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            final String strLastWeek = dateFormat.format(new Date(System.currentTimeMillis() - 7 * 1000 * 60 * 60 * 24));
+            final String strLastWeek = dateFormat.format(new Date( (System.currentTimeMillis()/1000 - 7 * 60 * 60 * 24) * 1000) );
             final Date lastWeek = dateFormat.parse(strLastWeek);
 
-            final String strYesterday = dateFormat.format(new Date(System.currentTimeMillis() - 1000 * 60 * 60 * 24));
+            final String strYesterday = dateFormat.format(new Date( (System.currentTimeMillis()/1000 - 60 * 60 * 24) * 1000) );
             final Date yesterday = dateFormat.parse(strYesterday);
 
             return getInvoiceBetweenDates(lastWeek, yesterday);
+        } catch (ParseException e) {
+            Date now = new Date();
+            return getInvoiceBetweenDates(now, now);
+        }
+    }
+
+    private ArrayList<Invoice> getNinetyDaysInvoices() {
+        try {
+            final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            final String strLastWeek = dateFormat.format(new Date( (System.currentTimeMillis()/1000 - 7 * 60 * 60 * 24) * 1000) );
+            final Date lastWeek = dateFormat.parse(strLastWeek);
+
+            final String strNinetyDays = dateFormat.format(new Date( (System.currentTimeMillis()/1000 - 90 * 60 * 60 * 24) * 1000) );
+            final Date ninetyDays = dateFormat.parse(strNinetyDays);
+
+            return getInvoiceBetweenDates(lastWeek, ninetyDays);
         } catch (ParseException e) {
             Date now = new Date();
             return getInvoiceBetweenDates(now, now);
@@ -231,7 +248,6 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         } else {
             ((ExpandableInvoicesSection) sectionYesterday).setList(invoices);
         }
-        ((ExpandableInvoicesSection) sectionYesterday).setImgHeader(R.drawable.ic_calendar_black_24dp);
 
 
         // Week
@@ -244,6 +260,17 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
             ((ExpandableInvoicesSection) sectionLastWeek).setList(invoices);
         }
         ((ExpandableInvoicesSection) sectionLastWeek).setImgHeader(R.drawable.ic_calendar_black_24dp);
+
+        // 90 days
+        invoices = getNinetyDaysInvoices();
+        Section sectionNinetyDays = mAdapter.getSection(SECTION_NINETY_DAYS);
+        if(sectionNinetyDays == null) {
+            sectionNinetyDays = new ExpandableInvoicesSection(mAdapter, getString(R.string.invoices_ninety_days), invoices, this, false);
+            mAdapter.addSection(SECTION_NINETY_DAYS, sectionNinetyDays);
+        } else {
+            ((ExpandableInvoicesSection) sectionNinetyDays).setList(invoices);
+        }
+        ((ExpandableInvoicesSection) sectionNinetyDays).setImgHeader(R.drawable.ic_calendar_black_24dp);
 
         mAdapter.notifyDataSetChanged();
     }

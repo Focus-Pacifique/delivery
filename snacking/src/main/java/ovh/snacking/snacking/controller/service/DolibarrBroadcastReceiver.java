@@ -18,9 +18,9 @@ public class DolibarrBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         int message = intent.getIntExtra(Constants.BROADCAST_MESSAGE_SEND, 0);
         if (message != 0) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(context, R.string.service_dolibarr_error, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.service_dolibarr_error, Toast.LENGTH_SHORT).show();
         }
     }
 }

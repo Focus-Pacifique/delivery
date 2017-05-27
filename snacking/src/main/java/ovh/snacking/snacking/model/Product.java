@@ -18,7 +18,7 @@ public class Product extends RealmObject {
     @Expose private String ref;
     @Expose private String label;
     @Expose private Integer type;
-    @Expose private Integer price;
+    @Expose private Double price;
     @Expose private Double tva_tx;
     @Expose private Double localtax1_tx;
     @Index private Date modifiedDate;
@@ -76,11 +76,11 @@ public class Product extends RealmObject {
         this.type = type;
     }
 
-    public Integer getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

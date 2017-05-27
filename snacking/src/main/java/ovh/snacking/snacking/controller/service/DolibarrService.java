@@ -549,11 +549,11 @@ public class DolibarrService extends IntentService {
                 lineJson.addProperty("product_type", line.getProd().getType());
 
                 // Handle negative price
-                Integer subprice = line.getSubprice();
-                Integer total_ht = line.getTotal_ht();
-                Integer total_tss = line.getTotal_tva();
-                Integer total_tgc = line.getTotal_tgc();
-                Integer total_ttc = line.getTotal_ttc();
+                Double subprice = line.getSubprice();
+                Integer total_ht = line.getTotal_ht_round();
+                Integer total_tss = line.getTotal_tva_round();
+                Integer total_tgc = line.getTotal_tgc_round();
+                Integer total_ttc = line.getTotal_ttc_round();
                 if (Invoice.AVOIR.equals(invoice.getType())) {
                     subprice = -subprice;
                     total_ht = -total_ht;

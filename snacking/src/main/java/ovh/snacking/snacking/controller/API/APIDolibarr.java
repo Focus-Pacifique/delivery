@@ -13,7 +13,6 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -24,35 +23,39 @@ import retrofit2.http.Query;
 public interface APIDolibarr {
 
     @GET(".")
-    Call<JsonObject> getAPIServerStatus(@Query("api_key") String apiKey);
+    Call<JsonObject> getAPIServerStatus(@Query("DOLAPIKEY") String DOLAPIKEY);
 
     @GET("login")
     Call<JsonObject> getAPIKey(@Query("login") String login, @Query("password") String password);
 
-    @GET("product/list")
-    Call<List<Product>> getAllProducts(@Query("api_key") String apiKey);
+    // Products
+    @GET("products")
+    Call<List<Product>> getAllProducts(@Query("DOLAPIKEY") String DOLAPIKEY);
 
-    @GET("productcustomerprice/list")
-    Call<List<ProductCustomerPriceDolibarr>> getAllProductsCustomerPrice(@Query("api_key") String apiKey);
+    // ProductCustomerPrice
+    @GET("productcustomerprices")
+    Call<List<ProductCustomerPriceDolibarr>> getAllProductsCustomerPrice(@Query("DOLAPIKEY") String DOLAPIKEY);
 
+    // Customer
     @GET("customer/list")
-    Call<List<Customer>> getAllCustomers(@Query("api_key") String apiKey);
+    Call<List<Customer>> getAllCustomers(@Query("DOLAPIKEY") String DOLAPIKEY);
 
-    @GET("invoice/summarylist")
-    Call<List<DolibarrInvoice>> getInvoices(@Query("lastid") Integer lastId, @Query("api_key") String apiKey);
+    //Invoices
+    @GET("invoices/summarylist")
+    Call<List<DolibarrInvoice>> getInvoices(@Query("lastid") Integer lastId, @Query("DOLAPIKEY") String DOLAPIKEY);
 
-    @POST("invoice")
-    Call<JsonPrimitive> createInvoiceFromJson(@Query("api_key") String apiKey, @Body JsonObject jsonObject);
+    @POST("invoices")
+    Call<JsonPrimitive> createInvoiceFromJson(@Query("DOLAPIKEY") String DOLAPIKEY, @Body JsonObject jsonObject);
 
-    @PUT("invoice/{id}/validate")
-    Call<JsonPrimitive> validateInvoice(@Path("id") Integer id, @Query("api_key") String apiKey);
+    @GET("invoices/validateinvoice/{id}")
+    Call<JsonPrimitive> validateInvoice(@Path("id") Integer id, @Query("DOLAPIKEY") String DOLAPIKEY);
 
-    @PUT("invoice/{idavoir}/setpaid/{idinvoice}")
-    Call<JsonPrimitive> setPaidAndConsumeAvoir(@Path("idavoir") Integer idavoir, @Path("idinvoice") Integer idinvoice, @Query("api_key") String apiKey);
+    @GET("invoices/setpaidandconsumeavoir")
+    Call<JsonPrimitive> setPaidAndConsumeAvoir(@Query("idavoir") Integer idavoir, @Query("idinvoice") Integer idinvoice, @Query("DOLAPIKEY") String DOLAPIKEY);
 
-    @GET("invoice/refclient")
+    @GET("invoices/invoicerefclienttotalexists")
     Call<JsonPrimitive> invoiceRefClientTotalExists(@Query("ref_client") String ref_client,
                                                     @Query("total_ttc") Integer total_ttc,
                                                     @Query("fk_soc") Integer fk_soc,
-                                                    @Query("api_key") String apiKey);
+                                                    @Query("DOLAPIKEY") String DOLAPIKEY);
 }

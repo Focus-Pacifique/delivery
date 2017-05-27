@@ -6,6 +6,9 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmBaseAdapter;
@@ -49,17 +52,17 @@ public class PrintInvoiceAdapter extends RealmBaseAdapter<Line> implements ListA
 
         Invoice invoice = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
 
-        Integer prodPriceHT = item.getSubprice();
+        NumberFormat nf = new DecimalFormat("#,###.##");
+        Double prodPriceHT = item.getSubprice();
         Integer qty = item.getQty();
         if (Invoice.AVOIR.equals(invoice.getType())) {
             prodPriceHT = -prodPriceHT;
         }
-        Integer tot_ht = qty*prodPriceHT;
 
         viewHolder.product.setText(String.valueOf(item.getProd().getLabel()));
-        viewHolder.price_ht.setText(String.format("%,d", prodPriceHT));
+        viewHolder.price_ht.setText(nf.format(prodPriceHT));
         viewHolder.qty.setText(String.format("%,d", item.getQty()));
-        viewHolder.tot_ht.setText(String.format("%,d", tot_ht));
+        viewHolder.tot_ht.setText(String.valueOf(item.getTotal_ht_round()));
 
         realm.close();
 

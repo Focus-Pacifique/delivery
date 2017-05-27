@@ -24,9 +24,8 @@ public class RealmSingleton {
 
         Realm.init(context);
 
-        // TODO Améliorer migration, a changer pour la prod, https://realm.io/docs/java/latest/#migrations
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
-                .schemaVersion(3)
+                .schemaVersion(4)
                 .migration(realmMigration())
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
@@ -115,9 +114,9 @@ public class RealmSingleton {
 
                 if (oldVersion == 3) {
                     if(schema.get("Product").hasField("localtax1_tx")) {
-                        schema.get("Product")
-                                .removeField("localtax1_tx");
+                        schema.get("Product").removeField("localtax1_tx");
                     }
+
                     schema.get("Product")
                             .addField("localtax1_tx", Double.class)
                             .removeField("price")
@@ -125,18 +124,53 @@ public class RealmSingleton {
                             .removeField("tva_tx")
                             .addField("tva_tx", Double.class);
 
-                    if(schema.get("Line").hasField("total_tgc")) {
-                        schema.get("Line")
-                                .removeField("total_tgc");
-                    }
+                    if(schema.get("Line").hasField("total_tgc"))
+                        schema.get("Line").removeField("total_tgc");
                     schema.get("Line")
                             .addField("total_tgc", Integer.class);
 
-                    schema.get("ProductCustomerPriceDolibarr")
-                            .removeField("price")
-                            .addField("price", Integer.class);
+                    if(schema.get("ProductCustomerPriceDolibarr").hasField("price"))
+                        schema.get("ProductCustomerPriceDolibarr").removeField("price");
+                    schema.get("ProductCustomerPriceDolibarr").addField("price", Integer.class);
 
                     oldVersion = 4;
+                }
+
+                if (oldVersion == 4) {
+                    if(schema.get("DolibarrInvoice").hasField("total_ttc"))
+                        schema.get("DolibarrInvoice").removeField("total_ttc");
+                    schema.get("DolibarrInvoice")
+                            .addField("total_ttc", Integer.class);
+
+                    if(schema.get("Line").hasField("subprice"))
+                        schema.get("Line").removeField("subprice");
+                    if(schema.get("Line").hasField("total_ht"))
+                        schema.get("Line").removeField("total_ht");
+                    if(schema.get("Line").hasField("total_tva"))
+                        schema.get("Line").removeField("total_tva");
+                    if(schema.get("Line").hasField("total_tgc"))
+                        schema.get("Line").removeField("total_tgc");
+                    if(schema.get("Line").hasField("total_ttc"))
+                        schema.get("Line").removeField("total_ttc");
+                    schema.get("Line").addField("subprice", Double.class);
+                    schema.get("Line").addField("total_ht", Double.class);
+                    schema.get("Line").addField("total_tva", Double.class);
+                    schema.get("Line").addField("total_tgc", Double.class);
+                    schema.get("Line").addField("total_ttc", Double.class);
+
+                    if(schema.get("Product").hasField("price"))
+                        schema.get("Product").removeField("price");
+                    schema.get("Product")
+                            .addField("price", Double.class);
+
+                    if(schema.get("ProductCustomerPriceDolibarr").hasField("price"))
+                        schema.get("ProductCustomerPriceDolibarr").removeField("price");
+
+                    if(schema.get("ProductCustomerPriceDolibarr").hasField("price_HT"))
+                        schema.get("ProductCustomerPriceDolibarr").removeField("price_HT");
+                    schema.get("ProductCustomerPriceDolibarr").addField("price_HT", Double.class);
+
+                    oldVersion = 5;
                 }
             }
         };

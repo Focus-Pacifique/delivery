@@ -2,7 +2,6 @@ package ovh.snacking.snacking.model;
 
 import com.google.gson.annotations.Expose;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import io.realm.RealmObject;
@@ -20,7 +19,7 @@ public class DolibarrInvoice extends RealmObject {
     @Expose private String ref_client;
     @Expose private Date date;
     @Expose private Integer socid;
-    @Expose private Float total_ttc;
+    @Expose private Integer total_ttc;
 
     public Integer getId() {
         return id;
@@ -62,11 +61,11 @@ public class DolibarrInvoice extends RealmObject {
         this.socid = socid;
     }
 
-    public Float getTotal_ttc() {
+    public Integer getTotal_ttc() {
         return total_ttc;
     }
 
-    public void setTotal_ttc(Float total_ttc) {
+    public void setTotal_ttc(Integer total_ttc) {
         this.total_ttc = total_ttc;
     }
 }

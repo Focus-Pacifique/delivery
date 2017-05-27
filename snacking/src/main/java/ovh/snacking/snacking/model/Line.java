@@ -12,18 +12,34 @@ public class Line extends RealmObject {
     @PrimaryKey
     private Integer id;
     private Product prod;
-    private Integer subprice;
+    private Double subprice;
     private Integer qty;
-    private Integer total_ht;
-    private Integer total_tva;
-    private Integer total_tgc;
-    private Integer total_ttc;
+    private Double total_ht;
+    private Double total_tva;
+    private Double total_tgc;
+    private Double total_ttc;
 
-    public Integer getTotal_tgc() {
-        return total_tgc;
+    public Integer getTotal_ht_round() {
+        return (int) Math.round(total_ht);
     }
 
-    public void setTotal_tgc(Integer total_tgc) {
+    public Integer getTotal_tva_round() {
+        return (int) Math.round(total_tva);
+    }
+
+    public Integer getTotal_tgc_round() {
+        return (int) Math.round(total_tgc);
+    }
+
+    public Integer getTotal_ttc_round() {
+        // vrai montant
+        // return (int) Math.round(total_ttc);
+
+        // arrondi
+        return getTotal_ht_round() + getTotal_tva_round() + getTotal_tgc_round();
+    }
+
+    public void setTotal_tgc(Double total_tgc) {
         this.total_tgc = total_tgc;
     }
 
@@ -51,42 +67,30 @@ public class Line extends RealmObject {
         this.prod = prod;
     }
 
-    public Integer getSubprice() {
+    public Double getSubprice() {
         return subprice;
     }
 
-    public void setSubprice(Integer subprice) {
+    public void setSubprice(Double subprice) {
         this.subprice = subprice;
     }
 
-    public Integer getTotal_ht() {
-        return total_ht;
-    }
-
-    public void setTotal_ht(Integer total_ht) {
+    public void setTotal_ht(Double total_ht) {
         this.total_ht = total_ht;
     }
 
-    public Integer getTotal_tva() {
-        return total_tva;
-    }
-
-    public void setTotal_tva(Integer total_tva) {
+    public void setTotal_tva(Double total_tva) {
         this.total_tva = total_tva;
     }
 
-    public Integer getTotal_ttc() {
-        return total_ttc;
-    }
-
-    public void setTotal_ttc(Integer total_ttc) {
+    public void setTotal_ttc(Double total_ttc) {
         this.total_ttc = total_ttc;
     }
 
     public void updatePrices() {
         this.total_ht = qty * subprice;
-        this.total_tva = (int) Math.round(total_ht * (prod.getTva_tx()/100));
-        this.total_tgc = (int) Math.round(total_ht * (prod.getLocaltax1_tx()/100));
+        this.total_tva = total_ht * (prod.getTva_tx()/100);
+        this.total_tgc = total_ht * (prod.getLocaltax1_tx()/100);
         this.total_ttc = total_ht + total_tva + total_tgc;
     }
 

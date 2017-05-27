@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -72,25 +74,31 @@ public class ExpandableInvoicesSection extends StatelessSection {
     public void onBindItemViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
         final ItemViewHolder itemHolder = (ItemViewHolder) holder;
+        NumberFormat nf = new DecimalFormat("#,###.##");
 
         // bind your view here
         final Invoice invoice = mList.get(position);
 
-        // Invoice type part
+        // Invoice type & totalTTC
         if (Invoice.FACTURE.equals(invoice.getType())) {
             itemHolder.invoiceType.setText(R.string.invoice_type_facture);
             itemHolder.invoiceType.setTextColor(Color.BLUE);
+
+            itemHolder.invoiceTotalTTC.setText(String.valueOf(nf.format(invoice.getTotalTTC()) + " TTC"));
         } else {
             itemHolder.invoiceType.setText(R.string.invoice_type_avoir);
             itemHolder.invoiceType.setTextColor(Color.DKGRAY);
+
+            itemHolder.invoiceTotalTTC.setText(String.valueOf(nf.format(-invoice.getTotalTTC()) + " TTC"));
         }
 
-        // Customer ref
+        // Customer ref & totalTTC
         if (null != invoice.getCustomer()) {
             itemHolder.customerName.setText(String.valueOf(invoice.getCustomer().getName()));
         } else {
             itemHolder.customerName.setText(String.valueOf("Problème dans la base"));
         }
+
 
         //Datetime
         SimpleDateFormat simpleDate = new SimpleDateFormat("HH:mm  dd/MM", Locale.FRANCE);
@@ -104,6 +112,9 @@ public class ExpandableInvoicesSection extends StatelessSection {
             itemHolder.invoiceState.setText(R.string.invoice_state_terminee);
             itemHolder.invoiceState.setTextColor(Color.GREEN);
         }
+
+        // Invoice ref
+        itemHolder.invoiceRef.setText(String.valueOf(invoice.getRef()));
 
         itemHolder.rootView.setOnLongClickListener(new View.OnLongClickListener() {
            @Override
@@ -182,7 +193,9 @@ public class ExpandableInvoicesSection extends StatelessSection {
 
         private final View rootView;
         private final TextView invoiceType;
+        private final TextView invoiceRef;
         private final TextView customerName;
+        private final TextView invoiceTotalTTC;
         private final TextView datetime;
         private final TextView invoiceState;
 
@@ -190,7 +203,9 @@ public class ExpandableInvoicesSection extends StatelessSection {
             super(view);
             rootView = view;
             invoiceType = (TextView) view.findViewById(R.id.invoice_type);
+            invoiceRef = (TextView) view.findViewById(R.id.invoice_ref);
             customerName = (TextView) view.findViewById(R.id.customer_name);
+            invoiceTotalTTC = (TextView) view.findViewById(R.id.invoice_total_ttc);
             datetime = (TextView) view.findViewById(R.id.invoice_datetime);
             invoiceState = (TextView) view.findViewById(R.id.invoice_state);
         }

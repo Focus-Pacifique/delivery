@@ -511,9 +511,6 @@ public class DolibarrService extends IntentService {
         /****************************************/
         JsonObject obj = new JsonObject();
         try {
-            // TODO Important, it's to say to www/dolibarr/htdocs/compta/facture/class/facture.class.php that we came from tablet
-            //TODO mais je vais le virer après, quand on passera directement des objets InvoiceLignes pour avoir un fichier facture propre sans modif de ma part
-            obj.addProperty("fromTablet", 1);
             obj.addProperty("socid", invoice.getCustomer().getId());
             Long date = invoice.getDate().getTime() / 1000;
             obj.addProperty("date", date.intValue());

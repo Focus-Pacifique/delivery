@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity
 
         // Set user name and app infos in the navigationview
         ((TextView) navView.getHeaderView(0).findViewById(R.id.nav_header_app_infos)).setText(getString(R.string.app_name) + " (" + getVersionInfo() + ")");
-        ((TextView) navView.getHeaderView(0).findViewById(R.id.nav_header_user)).setText(mUser.getName());
+        ((TextView) navView.getHeaderView(0).findViewById(R.id.nav_header_user)).setText("user " + mUser.getName());
     }
 
     @Override

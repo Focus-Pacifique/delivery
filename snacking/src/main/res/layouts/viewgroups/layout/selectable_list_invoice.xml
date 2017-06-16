@@ -36,9 +36,6 @@
                 android:id="@+id/invoice_datetime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            <Space
-                android:layout_width="@dimen/default_horizontal_space"
-                android:layout_height="@dimen/default_vertical_space" />
             <TextView
                 android:id="@+id/invoice_state"
                 android:layout_width="wrap_content"

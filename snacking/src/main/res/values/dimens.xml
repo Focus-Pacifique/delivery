@@ -9,7 +9,6 @@
     <dimen name="big_text_size">28sp</dimen>
 
     <dimen name="default_padding">8dp</dimen>
-    <dimen name="default_horizontal_space">8dp</dimen>
     <dimen name="default_vertical_space">0dp</dimen>
 
     <dimen name="grid_view_item_height">60dp</dimen>

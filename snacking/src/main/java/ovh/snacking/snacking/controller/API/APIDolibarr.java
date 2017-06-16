@@ -36,7 +36,7 @@ public interface APIDolibarr {
     @GET("productcustomerprices")
     Call<List<ProductCustomerPriceDolibarr>> getAllProductsCustomerPrice(@Query("DOLAPIKEY") String DOLAPIKEY);
 
-    // Customer
+    // Customers
     @GET("customer/list")
     Call<List<Customer>> getAllCustomers(@Query("DOLAPIKEY") String DOLAPIKEY);
 

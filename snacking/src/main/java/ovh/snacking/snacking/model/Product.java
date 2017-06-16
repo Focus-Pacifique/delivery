@@ -1,6 +1,7 @@
 package ovh.snacking.snacking.model;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
@@ -19,21 +20,21 @@ public class Product extends RealmObject {
     @Expose private String label;
     @Expose private Integer type;
     @Expose private Double price;
-    @Expose private Double tva_tx;
-    @Expose private Double localtax1_tx;
+    @SerializedName("tva_tx") @Expose private Double taxRate;
+    @SerializedName("localtax1_tx") @Expose private Double secondTaxRate;
     @Index private Date modifiedDate;
 
     public Product() {
         super();
-        this.localtax1_tx = Double.valueOf(0);
+        this.secondTaxRate = 0.0;
     }
 
-    public Double getLocaltax1_tx() {
-        return localtax1_tx;
+    public Double getSecondTaxRate() {
+        return secondTaxRate;
     }
 
-    public void setLocaltax1_tx(Double localtax1_tx) {
-        this.localtax1_tx = localtax1_tx;
+    public void setSecondTaxRate(Double secondTaxRate) {
+        this.secondTaxRate = secondTaxRate;
     }
 
     public Date getModifiedDate() {
@@ -84,12 +85,12 @@ public class Product extends RealmObject {
         this.price = price;
     }
 
-    public Double getTva_tx() {
-        return tva_tx;
+    public Double getTaxRate() {
+        return taxRate;
     }
 
-    public void setTva_tx(Double tva_tx) {
-        this.tva_tx = tva_tx;
+    public void setTaxRate(Double taxRate) {
+        this.taxRate = taxRate;
     }
 
 }

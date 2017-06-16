@@ -1,7 +1,9 @@
 package ovh.snacking.snacking.view.activity;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -37,8 +39,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 import io.realm.Realm;
 import ovh.snacking.snacking.R;
+import ovh.snacking.snacking.controller.adapter.ExpandableInvoicesSection;
 import ovh.snacking.snacking.controller.print.InvoicePrintDocumentAdapter;
 import ovh.snacking.snacking.controller.service.DolibarrService;
 import ovh.snacking.snacking.model.Customer;
@@ -50,7 +54,7 @@ import ovh.snacking.snacking.model.User;
 import ovh.snacking.snacking.model.Value;
 import ovh.snacking.snacking.util.Constants;
 import ovh.snacking.snacking.util.RealmSingleton;
-import ovh.snacking.snacking.util.SyncUtils;
+import ovh.snacking.snacking.util.LibUtil;
 import ovh.snacking.snacking.view.dialogFragment.CustomerSectionFragment;
 import ovh.snacking.snacking.view.dialogFragment.DatePickerEndFragment;
 import ovh.snacking.snacking.view.dialogFragment.DatePickerStartFragment;
@@ -74,7 +78,8 @@ public class MainActivity extends AppCompatActivity
         GroupCustomerFragment.OnGroupCustomerSelectedListener,
         GroupProductFragment.OnGroupProductSelectedListener,
         DatePickerStartFragment.OnDatePickerStartFragment,
-        DatePickerEndFragment.OnDatePickerEndFragment {
+        DatePickerEndFragment.OnDatePickerEndFragment,
+        ExpandableInvoicesSection.ExpandableInvoicesSectionListener {
 
     public static final String TAG_CUSTOMER_SELECT = "ovh.snacking.snacking.view.dialogFragment.CustomerSectionFragment";
     public static final String TAG_EDITING_INVOICE = "ovh.snacking.snacking.view.fragment.EditingInvoiceFragment";
@@ -212,14 +217,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_settings).setVisible(false);
-        return super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.action_search).setVisible(false);
+        return true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
         getMenuInflater().inflate(R.menu.app_bar_actions, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -303,7 +309,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private Integer createInvoice(final Integer customerId, final Integer invoiceType, final Integer factureSourceId) {
-        final Integer newInvoiceId = nextInvoiceId();
+        final Integer newInvoiceId = RealmSingleton.getInstance(MainActivity.this).nextInvoiceId();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -707,15 +713,6 @@ public class MainActivity extends AppCompatActivity
         return bluetoothEnabled;
     }
 
-    private Integer nextInvoiceId() {
-        if(null != realm.where(Invoice.class).findFirst()) {
-            Integer nextId = realm.where(Invoice.class).max("id").intValue() + 1;
-            return nextId;
-        } else {
-            return 1;
-        }
-    }
-
     private Integer nextInvoiceChangeId() {
         if(null != realm.where(InvoiceChange.class).findFirst()) {
             Integer nextId = realm.where(InvoiceChange.class).max("id").intValue() + 1;
@@ -815,9 +812,9 @@ public class MainActivity extends AppCompatActivity
 
             // Check and set the alarm
             if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsFragment.PREF_KEY_AUTO_SYNC, true)) {
-                SyncUtils.schedulePeriodicSync(getApplicationContext());
+                LibUtil.schedulePeriodicSync(getApplicationContext());
             } else {
-                SyncUtils.removePeriodicSync(getApplicationContext());
+                LibUtil.removePeriodicSync(getApplicationContext());
             }
         }
     }
@@ -832,5 +829,78 @@ public class MainActivity extends AppCompatActivity
             strVersion += "unknown";
         }
         return strVersion;
+    }
+
+    /**
+     * ExpandableInvoicesSection listener
+     */
+    @Override
+    public void onInvoiceSelected(Invoice invoice) {
+        goToInvoice(invoice);
+    }
+
+    @Override
+    public void deleteInvoice(final Invoice invoice, ExpandableInvoicesSection section) {
+        displayDialogDeleteInvoice(invoice, section);
+    }
+
+    @Override
+    public void createAvoirFromFacture(Invoice invoice, SectionedRecyclerViewAdapter adapter) {
+        displayDialogCreateAvoir(invoice, adapter);
+    }
+
+    private void displayDialogCreateAvoir(final Invoice invoice, final SectionedRecyclerViewAdapter adapter) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.dialog_title_create_avoir)
+                .setMessage(invoice.getCustomer().getName() + "\n" +
+                        "(Facture n°" + invoice.getRef() + ")")
+                .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
+                        Invoice invoiceCreated = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
+
+                        // Notify and insert invoice into adapter
+                        ((ExpandableInvoicesSection) adapter.getSection(InvoicesExpandableListFragment.SECTION_ONGOING)).insert(invoiceCreated);
+
+                        goToInvoice(invoiceCreated);
+                    }
+                })
+                .setNegativeButton("Non", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog ad = builder.create();
+        ad.show();
+    }
+
+    private void displayDialogDeleteInvoice(final Invoice invoice, final ExpandableInvoicesSection section) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Supprimer ?")
+                .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // First delete from adapter
+                        section.remove(invoice);
+
+                        // Then delete it from realm
+                        realm.executeTransaction(new Realm.Transaction() {
+                            @Override
+                            public void execute(Realm realm) {
+                                invoice.deleteFromRealm();
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton("Non", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog ad = builder.create();
+        ad.show();
     }
 }

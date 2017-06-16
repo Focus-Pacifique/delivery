@@ -1,17 +1,17 @@
 package ovh.snacking.snacking.view.fragment;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -26,7 +26,6 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.controller.adapter.ExpandableInvoicesSection;
-import ovh.snacking.snacking.model.Customer;
 import ovh.snacking.snacking.model.Invoice;
 import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.view.activity.MainActivity;
@@ -37,19 +36,20 @@ import ovh.snacking.snacking.view.activity.MainActivity;
  * Fragment to display invoices by date
  */
 
-public class InvoicesExpandableListFragment extends android.support.v4.app.Fragment
-        implements ExpandableInvoicesSection.ExpandableInvoicesSectionListener {
+public class InvoicesExpandableListFragment extends android.support.v4.app.Fragment implements SearchView.OnQueryTextListener {
 
-    public static final String SECTION_ONGOING = "SectionOngoing";
-    public static final String SECTION_FINISHED = "SectionFinished";
-    public static final String SECTION_YESTERDAY = "SectionYesterday";
-    public static final String SECTION_LASTWEEK = "SectionLastWeek";
-    public static final String SECTION_NINETY_DAYS = "SectionArchives";
+    public static final String SECTION_ONGOING      = "En cours";
+    public static final String SECTION_FINISHED     = "Terminées";
+    public static final String SECTION_YESTERDAY    = "Hier";
+    public static final String SECTION_LASTWEEK     = "Semaine dernière";
+    public static final String SECTION_NINETY_DAYS  = "90 jours";
 
     OnInvoicesExpandableListener mListener;
     private Realm realm;
     private SectionedRecyclerViewAdapter mAdapter;
     private FloatingActionButton fab;
+    private SearchView mSearchView;                 // SearchView
+    private String mQuery = "";                     // Search query
 
     @Override
     public void onAttach(Context context) {
@@ -67,6 +67,9 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Show the menu
+        setHasOptionsMenu(true);
+
         View layout = inflater.inflate(R.layout.fragment_recycler_view, container, false);
         realm = RealmSingleton.getInstance(getContext()).getRealm();
 
@@ -108,6 +111,41 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
 
         fab.setImageResource(R.drawable.ic_new);
         fab.show();
+    }
+
+    /**
+     *  Menu
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        mSearchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+
+        // Configure the search info and add any event listeners
+        mSearchView.setQueryHint(getString(R.string.hint_search_customer));
+        mSearchView.setOnQueryTextListener(this);
+
+        // Set the old search query
+        mSearchView.setQuery(mQuery, false);
+
+        // Display the search icon or the query if it is not empty
+        if (mQuery.isEmpty()) {
+            mSearchView.setIconified(true);
+        } else
+            mSearchView.setIconified(false);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_search).setVisible(true);
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // To hide the soft keyboard
+        mSearchView.clearFocus();
     }
 
     @Override
@@ -222,7 +260,7 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         ArrayList<Invoice> invoices = getTodayEnCoursInvoices();
         Section sectionEnCours = mAdapter.getSection(SECTION_ONGOING);
         if(sectionEnCours == null) {
-            sectionEnCours = new ExpandableInvoicesSection(mAdapter, getString(R.string.invoices_ongoing), invoices, this, true);
+            sectionEnCours = new ExpandableInvoicesSection(mAdapter, SECTION_ONGOING, invoices, this, true);
             mAdapter.addSection(SECTION_ONGOING, sectionEnCours);
         } else {
             ((ExpandableInvoicesSection) sectionEnCours).setList(invoices);
@@ -232,7 +270,7 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         invoices = getTodayTermineeInvoices();
         Section sectionFinished = mAdapter.getSection(SECTION_FINISHED);
         if(sectionFinished == null) {
-            sectionFinished = new ExpandableInvoicesSection(mAdapter, getString(R.string.invoices_finished), invoices, this, false);
+            sectionFinished = new ExpandableInvoicesSection(mAdapter, SECTION_FINISHED, invoices, this, false);
             mAdapter.addSection(SECTION_FINISHED, sectionFinished);
         } else {
             ((ExpandableInvoicesSection) sectionFinished).setList(invoices);
@@ -243,7 +281,7 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         invoices = getYesterdayInvoices();
         Section sectionYesterday = mAdapter.getSection(SECTION_YESTERDAY);
         if(sectionYesterday == null) {
-            sectionYesterday = new ExpandableInvoicesSection(mAdapter, getString(R.string.invoices_yesterday), invoices, this, false);
+            sectionYesterday = new ExpandableInvoicesSection(mAdapter, SECTION_YESTERDAY, invoices, this, false);
             mAdapter.addSection(SECTION_YESTERDAY, sectionYesterday);
         } else {
             ((ExpandableInvoicesSection) sectionYesterday).setList(invoices);
@@ -254,7 +292,7 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         invoices = getLastWeekInvoices();
         Section sectionLastWeek = mAdapter.getSection(SECTION_LASTWEEK);
         if(sectionLastWeek == null) {
-            sectionLastWeek = new ExpandableInvoicesSection(mAdapter, getString(R.string.invoices_last_week), invoices, this, false);
+            sectionLastWeek = new ExpandableInvoicesSection(mAdapter, SECTION_LASTWEEK, invoices, this, false);
             mAdapter.addSection(SECTION_LASTWEEK, sectionLastWeek);
         } else {
             ((ExpandableInvoicesSection) sectionLastWeek).setList(invoices);
@@ -265,7 +303,7 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         invoices = getNinetyDaysInvoices();
         Section sectionNinetyDays = mAdapter.getSection(SECTION_NINETY_DAYS);
         if(sectionNinetyDays == null) {
-            sectionNinetyDays = new ExpandableInvoicesSection(mAdapter, getString(R.string.invoices_ninety_days), invoices, this, false);
+            sectionNinetyDays = new ExpandableInvoicesSection(mAdapter, SECTION_NINETY_DAYS, invoices, this, false);
             mAdapter.addSection(SECTION_NINETY_DAYS, sectionNinetyDays);
         } else {
             ((ExpandableInvoicesSection) sectionNinetyDays).setList(invoices);
@@ -275,103 +313,32 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         mAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void onInvoiceSelected(Invoice invoice) {
-        mListener.goToInvoice(invoice);
-    }
-
-    @Override
-    public void onInvoiceLongClick(final Invoice invoice) {
-        // If the invoice is FINISHED
-        if (Invoice.FINISHED.equals(invoice.getState())) {
-            displayDialogCreateAvoir(invoice);
-        }
-
-        // If the invoice is ONGOING
-        else if (Invoice.ONGOING.equals(invoice.getState())){
-            displayDialogRemoveInvoice(invoice);
-        }
-    }
-
-    private void displayDialogCreateAvoir(final Invoice invoice) {
-        if (Invoice.FACTURE.equals(invoice.getType())) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(R.string.dialog_title_create_avoir)
-                    .setMessage("Voulez-vous créer un avoir pour " + invoice.getCustomer().getName() + " (Facture n°" + invoice.getRef() + ") ?")
-                    .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
-                            Invoice invoiceCreated = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
-                            populateAdapter();
-                            mListener.goToInvoice(invoiceCreated);
-                        }
-                    })
-                    .setNegativeButton("Non", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            AlertDialog ad = builder.create();
-            ad.show();
-
-        } else {
-            Toast.makeText(getActivity(), "Impossible de créer un avoir sur un avoir", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void displayDialogRemoveInvoice(final Invoice invoice) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        if (Invoice.FACTURE.equals(invoice.getType())) {
-            builder.setTitle("Supprimer la facture");
-        } else if (Invoice.AVOIR.equals(invoice.getType())) {
-            builder.setTitle("Supprimer l'avoir");
-        } else {
-            builder.setTitle("Supprimer");
-        }
-
-        builder.setMessage("Etes-vous sur ?")
-                .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        realm.executeTransaction(new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm) {
-                                invoice.deleteFromRealm();
-                            }
-                        });
-                        populateAdapter();
-                    }
-                })
-                .setNegativeButton("Non", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        AlertDialog ad = builder.create();
-        ad.show();
-    }
-
-    private Integer createInvoice(final Integer customerId, final Integer invoiceType, final Integer factureSourceId) {
-        final Integer newInvoiceId = RealmSingleton.getInstance(getContext()).nextInvoiceId();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Customer customer = realm.where(Customer.class).equalTo("id", customerId).findFirst();
-                Invoice invoice = realm.createObject(Invoice.class, newInvoiceId);
-                invoice.setCustomer(customer);
-                invoice.setUser(((MainActivity) getActivity()).getUser());
-                invoice.setType(invoiceType);
-                invoice.setFk_facture_source(factureSourceId);
-            }
-        });
-        return newInvoiceId;
-    }
 
     public interface OnInvoicesExpandableListener {
         void goToInvoice(Invoice invoice);
         void newInvoice();
+    }
+
+    public interface FilterableSection {
+        void filter(String query);
+    }
+
+    /**
+     * Listen for events on SearchView item. Called in 'onCreateOptionsMenu()'.
+     */
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+    @Override
+    public boolean onQueryTextChange(String query) {
+        mQuery = query;
+        for (Section section : mAdapter.getSectionsMap().values()) {
+            if (section instanceof FilterableSection) {
+                ((FilterableSection) section).filter(query);
+            }
+        }
+        mAdapter.notifyDataSetChanged();
+        return true;
     }
 }

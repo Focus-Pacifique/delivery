@@ -3,9 +3,4 @@
     <!-- Strings related to ManageInvoiceFragment -->
     <string name="title_manage_invoices_fragment">Gérer les factures</string>
     <string name="dialog_title_create_avoir">Créer un avoir</string>
-    <string name="invoices_ongoing">En cours</string>
-    <string name="invoices_finished">Terminées</string>
-    <string name="invoices_yesterday">Hier</string>
-    <string name="invoices_last_week">Semaine dernière</string>
-    <string name="invoices_ninety_days">90 jours</string>
 </resources>

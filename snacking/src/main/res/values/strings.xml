@@ -7,33 +7,6 @@
     <string name="invoice_state_terminee">TERMINEE</string>
 
 
-    <!-- Strings related to Sync activity -->
-    <string name="title_activity_synchronization">Synchronisation avec Dolibarr</string>
-    <string name="synchronization_service_name">Synchronisation en cours</string>
-    <string name="tablet_name">Choisir la tablette</string>
-    <string name="current_tablet">Tablette</string>
-    <string name="last_sync_text">Dernière mise à jour des données de la tablette (produits, prix, clients, etc&#8230;) :</string>
-    <string name="last_sync_date">vide</string>
-    <string name="button_update">Mise à jour</string>
-    <string name="invoice_to_post">Toutes les factures/avoirs de la tablette sont postées dans Dolibarr</string>
-    <string name="button_post_invoice">Poster maintenant</string>
-    <string name="network_error_activity_sync">Impossible de synchroniser, vous n\'êtes pas connecté à internet</string>
-    <string name="dialog_title_activity_sync">Erreur de réseau</string>
-    <string name="update_data_dolibarr_success">Données mises à jour avec succès</string>
-    <string name="update_data_dolibarr_fail">Echec de la mise à jour</string>
-    <string name="update_data_dolibarr_fail_1">Vous devez d\'abord poster toutes les factures avant de pouvoir mettre à jour les données</string>
-    <string name="update_data_dolibarr_fail_5">La récupération des factures de dolibarr a échoué</string>
-    <string name="post_invoices_dolibarr_success">Factures/Avoirs postés avec succès</string>
-    <string name="post_invoices_dolibarr_fail">Echec lors de l\'envoi au serveur des factures/avoirs</string>
-    <string name="login_dolibarr_credentials_empty">Impossible de se connecter au serveur</string>
-    <string name="login_dolibarr_fail">Echec de la connexion au serveur</string>
-    <string name="login_dolibarr_success">Connecté</string>
-    <string name="sync_dolibarr_fail">Echec de la synchronisation</string>
-    <string name="service_dolibarr_error">Erreur du service de synchronisation</string>
-    <string name="service_dolibarr_start">Début de la synchronisation</string>
-    <string name="service_dolibarr_end">Fin du service de synchronisation</string>
-
-
 
     <!-- Strings related to CustomerSectionFragment -->
     <string name="title_customer_select">Sélectionnez un client</string>
@@ -68,8 +41,9 @@
     <string name="hot_food_tel">Erick 78 90 14</string>
     <string name="hot_food_email">hotfood.sarl@gmail.com</string>
     <string name="tot_ht">TOTAL HT</string>
-    <string name="tss">TSS(5%)</string>
-    <string name="tgc025">TGC(0.25%)</string>
+    <string name="taxLabel">TGC</string>
+    <string name="tax2Label">TSS (5%)</string>
+    <string name="xpf">XPF</string>
     <string name="tot_ttc">TOTAL TTC</string>
     <string name="tot_letter">Arrêtée la présente facture à la somme de :</string>
     <string name="rcs">RCS NOUMEA 2013 B 1 196 666</string>

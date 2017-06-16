@@ -15,7 +15,6 @@ public class Value extends RealmObject {
     private Integer lastNumberAvoir;
     private Integer currentYear;
     private Date lastSync;
-    private Integer tss = 5; //En %
 
     public Value() {
         initialize();
@@ -71,10 +70,6 @@ public class Value extends RealmObject {
 
     public void setLastSync(Date lastSync) {
         this.lastSync = lastSync;
-    }
-
-    public Integer getTss() {
-        return tss;
     }
 
 }

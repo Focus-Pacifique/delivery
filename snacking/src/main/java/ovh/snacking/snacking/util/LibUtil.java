@@ -4,7 +4,12 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 
+import java.text.Normalizer;
 import java.util.Calendar;
 
 import ovh.snacking.snacking.controller.service.DolibarrService;
@@ -13,7 +18,7 @@ import ovh.snacking.snacking.controller.service.DolibarrService;
  * Created by alex on 25/02/17.
  */
 
-public class SyncUtils {
+public class LibUtil {
 
     public static void schedulePeriodicSync(Context context) {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -43,6 +48,34 @@ public class SyncUtils {
         if (alarmIntent != null) {
             alarmMgr.cancel(alarmIntent);
             alarmIntent.cancel();
+        }
+    }
+
+    public static CharSequence highlight(String search, String originalText, int color) {
+        // ignore case and accents
+        // the same thing should have been done for the search text
+        String normalizedText = Normalizer.normalize(originalText, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "").toLowerCase();
+        search = search.toLowerCase();
+
+        int start = normalizedText.indexOf(search);
+        if (start < 0) {
+            // not found, nothing to to
+            return originalText;
+        } else {
+            // highlight each appearance in the original text
+            // while searching in normalized text
+            SpannableStringBuilder highlighted = new SpannableStringBuilder(originalText);
+            while (start >= 0) {
+                int spanStart = Math.min(start, originalText.length());
+                int spanEnd = Math.min(start + search.length(), originalText.length());
+
+                highlighted.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), spanStart, spanEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                highlighted.setSpan(new ForegroundColorSpan(color), spanStart, spanEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                start = normalizedText.indexOf(search, spanEnd);
+            }
+
+            return highlighted;
         }
     }
 }

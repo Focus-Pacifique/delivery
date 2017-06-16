@@ -17,7 +17,7 @@ import ovh.snacking.snacking.util.Constants;
 import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.model.Value;
 import ovh.snacking.snacking.controller.service.DolibarrBroadcastReceiver;
-import ovh.snacking.snacking.util.SyncUtils;
+import ovh.snacking.snacking.util.LibUtil;
 import ovh.snacking.snacking.view.activity.MainActivity;
 
 /**
@@ -55,9 +55,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 if ((Boolean) newValue) {
-                    SyncUtils.schedulePeriodicSync(getContext());
+                    LibUtil.schedulePeriodicSync(getContext());
                 } else {
-                    SyncUtils.removePeriodicSync(getContext());
+                    LibUtil.removePeriodicSync(getContext());
                 }
                 return true;
             }

@@ -2,6 +2,7 @@ package ovh.snacking.snacking.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -73,20 +74,30 @@ public class Invoice extends RealmObject {
         return total_ht;
     }
 
-    public Integer getTotalTSS() {
-        Integer total_tss = 0;
-        for (Line line : lines) {
-            total_tss += line.getTotal_tva_round();
+    public HashMap<Double, Integer> getTotalTaxes() {
+        HashMap<Double, Integer> totalTaxes = new HashMap<>();
+
+        // First compute the total of each tax rate
+        for(Line line : lines) {
+            Double taxRate = line.getProd().getTaxRate();
+            if (totalTaxes.containsKey(taxRate)) {
+                int currentTaxAmount = totalTaxes.get(taxRate);
+                totalTaxes.remove(taxRate);
+                totalTaxes.put(taxRate, currentTaxAmount + line.getTotal_tax_round());
+            } else {
+                totalTaxes.put(line.getProd().getTaxRate(), line.getTotal_tax_round());
+            }
         }
-        return total_tss;
+
+        return totalTaxes;
     }
 
-    public Integer getTotalTGC() {
-        Integer total_tgc = 0;
+    public Integer getTotalTax2() {
+        Integer total_tax2 = 0;
         for (Line line : lines) {
-            total_tgc += line.getTotal_tgc_round();
+            total_tax2 += line.getTotal_tax2_round();
         }
-        return total_tgc;
+        return total_tax2;
     }
 
     public Integer getTotalTTC() {

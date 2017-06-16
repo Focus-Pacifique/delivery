@@ -54,7 +54,7 @@ public class LineAdapter extends RealmBaseAdapter<Line> implements ListAdapter {
         viewHolder.quantity.setText(String.valueOf(item.getQty().toString() + " "));
         viewHolder.product_name.setText(String.valueOf(item.getProd().getRef() + " "));
         viewHolder.product_price.setText(String.valueOf("(" + item.getSubprice() + " HT) "));
-        Double taxes = item.getProd().getTva_tx() + item.getProd().getLocaltax1_tx();
+        Double taxes = item.getProd().getTaxRate() + item.getProd().getSecondTaxRate();
         viewHolder.product_taxes.setText(String.format("%.2f", taxes)  + "%");
 
         // Handle plus button

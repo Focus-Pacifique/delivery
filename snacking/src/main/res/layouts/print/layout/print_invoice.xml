@@ -118,65 +118,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dip" />
 
-            <RelativeLayout
+            <!-- Handle multiple tax rates -->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerViewTaxes"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-
-                <TextView
-                    android:layout_width="80dip"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/tot_ht"
-                    android:text="@string/tot_ht"/>
-                <TextView
-                    android:id="@+id/tot_ht"
-                    android:layout_width="120dip"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:gravity="end"/>
-
-                <TextView
-                    android:layout_width="80dip"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/tot_ht"
-                    android:layout_toStartOf="@+id/tss"
-                    android:text="@string/tss"/>
-                <TextView
-                    android:id="@+id/tss"
-                    android:layout_width="120dip"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_below="@id/tot_ht"
-                    android:gravity="end"/>
-
-                <TextView
-                    android:layout_width="80dip"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/tss"
-                    android:layout_toStartOf="@+id/tgc025"
-                    android:text="@string/tgc025"/>
-                <TextView
-                    android:id="@+id/tgc025"
-                    android:layout_width="120dip"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_below="@id/tss"
-                    android:gravity="end"/>
-
-                <TextView
-                    android:layout_width="80dip"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/tgc025"
-                    android:layout_toStartOf="@+id/tot_ttc"
-                    android:text="@string/tot_ttc"/>
-                <TextView
-                    android:id="@+id/tot_ttc"
-                    android:layout_width="120dip"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_below="@id/tgc025"
-                    android:gravity="end"/>
-
-            </RelativeLayout>
+                android:layout_height="wrap_content"
+                android:divider="@null" />
 
             <Space
                 android:layout_width="match_parent"

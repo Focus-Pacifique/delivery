@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +13,18 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import io.realm.Realm;
 import ovh.snacking.snacking.NumberToWords.FrenchNumberToWords;
 import ovh.snacking.snacking.R;
+import ovh.snacking.snacking.controller.adapter.TaxAdapter;
 import ovh.snacking.snacking.controller.print.PrintInvoiceAdapter;
 import ovh.snacking.snacking.model.Invoice;
 import ovh.snacking.snacking.util.RealmSingleton;
@@ -48,9 +57,7 @@ public class PrintInvoiceFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         realm = RealmSingleton.getInstance(getContext()).getRealm();
-
         final View layout = inflater.inflate(R.layout.print_invoice, container, false);
 
         // Set up the invoice lines adapter
@@ -90,43 +97,7 @@ public class PrintInvoiceFragment extends Fragment {
             facture_source_number.setVisibility(View.INVISIBLE);
         }
 
-        // Total
-        final TextView tot_ht = (TextView) layout.findViewById(R.id.tot_ht);
-        final TextView tss = (TextView) layout.findViewById(R.id.tss);
-        final TextView tgc = (TextView) layout.findViewById(R.id.tgc025);
-        final TextView tot_ttc = (TextView) layout.findViewById(R.id.tot_ttc);
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-
-                Integer TOT_HT = mInvoice.getTotalHT();
-                Integer TSS = mInvoice.getTotalTSS();
-                Integer TGC = mInvoice.getTotalTGC();
-                Integer TOT_TTC = mInvoice.getTotalTTC();
-                if (Invoice.AVOIR.equals(mInvoice.getType())) {
-                    TOT_HT = -TOT_HT;
-                    TSS = -TSS;
-                    TGC = -TGC;
-                    TOT_TTC = -TOT_TTC;
-                }
-                tot_ht.setText(String.format("%,d", TOT_HT) + " XPF");
-                tss.setText(String.format("%,d", TSS) + " XPF");
-                tgc.setText(String.format("%,d", TGC) + " XPF");
-                tot_ttc.setText(String.format("%,d", TOT_TTC) + " XPF");
-
-                // Convert number to words
-                TextView tot_words = (TextView) layout.findViewById(R.id.tot_words);
-                String total_in_words;
-                if (Invoice.AVOIR.equals(mInvoice.getType())) {
-                    total_in_words = "- (moins) " + FrenchNumberToWords.convert(-TOT_TTC);
-                } else {
-                    total_in_words = FrenchNumberToWords.convert(TOT_TTC);
-                }
-                total_in_words += " francs CFP";
-                tot_words.setText(total_in_words);
-            }
-        });
-
+        setTOTALViews(layout);
 
         // Listeners
         Button btnPrint = (Button) layout.findViewById(R.id.button_print);
@@ -160,37 +131,11 @@ public class PrintInvoiceFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Back arrow in the menu
-        /*toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_back_button);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onBackToManageInvoices();
-            }
-        });*/
 
         ((FloatingActionButton) getActivity().findViewById(R.id.fab)).hide();
 
-        if (mInvoice.getCounterPrint() > 0) {
+        if (mInvoice.getCounterPrint() > 0)
             ((MainActivity) getActivity()).setActionBarTitle("Imprimée (" + mInvoice.getCounterPrint() + ") fois");
-        } else {
-            if (Invoice.FACTURE.equals(mInvoice.getType())) {
-                ((MainActivity) getActivity()).setActionBarTitle("Facture à imprimer");
-            } else if (Invoice.AVOIR.equals(mInvoice.getType())) {
-                ((MainActivity) getActivity()).setActionBarTitle("Avoir à imprimer");
-            } else {
-                ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_print));
-            }
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        // Back arrow in the menu
-        //toolbar.setNavigationIcon(null);
-        //toolbar.setNavigationOnClickListener(null);
     }
 
     @Override
@@ -216,6 +161,86 @@ public class PrintInvoiceFragment extends Fragment {
         if(null != invoice_number) {
             invoice_number.setText(mInvoice.getRef());
         }
+    }
+
+    private void setTOTALViews(View layout) {
+        ArrayList<String[]> taxes = populateTaxAdapter(mInvoice);
+        TaxAdapter adapter = new TaxAdapter(getContext(), taxes);
+
+        // Set price adapter to recycler view
+        RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.recyclerViewTaxes);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(adapter);
+
+
+        // Convert number to words
+        String total_in_words;
+        if (Invoice.AVOIR.equals(mInvoice.getType())) {
+            total_in_words = "- (moins) " + FrenchNumberToWords.convert(-mInvoice.getTotalTTC());
+        } else {
+            total_in_words = FrenchNumberToWords.convert(mInvoice.getTotalTTC());
+        }
+        total_in_words += " francs CFP";
+        ((TextView) layout.findViewById(R.id.tot_words)).setText(total_in_words);
+    }
+
+    private ArrayList<String[]> populateTaxAdapter(Invoice invoice) {
+        ArrayList<String[]> taxes = new ArrayList<>();
+
+        // Total HT
+        Integer TOT_HT = invoice.getTotalHT();
+        if (Invoice.AVOIR.equals(invoice.getType())) {
+            TOT_HT = -TOT_HT;
+        }
+        String[] HT = new String[2];
+        HT[0] = getString(R.string.tot_ht);
+        HT[1] = String.format("%,d", TOT_HT) + " " + getString(R.string.xpf);
+        taxes.add(HT);
+
+
+        // Multiple tax rates
+        NumberFormat nf = new DecimalFormat("##.##");
+        HashMap<Double, Integer> totalTaxes = mInvoice.getTotalTaxes();
+        Iterator<Map.Entry<Double, Integer>> it = totalTaxes.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Double, Integer> item = it.next();
+            String[] TAX = new String[2];
+
+            TAX[0] = "TGC (" + nf.format(item.getKey()) + " %)";
+
+            Integer TOT_TAX = item.getValue();
+            if (Invoice.AVOIR.equals(invoice.getType())) {
+                TOT_TAX = -TOT_TAX;
+            }
+            TAX[1] = String.format("%,d", TOT_TAX) + " " + getString(R.string.xpf);
+
+            taxes.add(TAX);
+        }
+
+
+        // Total Tax2 = TSS
+        Integer TOT_TAX2 = mInvoice.getTotalTax2();
+        if (Invoice.AVOIR.equals(mInvoice.getType())) {
+            TOT_TAX2 = -TOT_TAX2;
+        }
+        String[] TAX2 = new String[2];
+        TAX2[0] = getString(R.string.tax2Label);
+        TAX2[1] = String.format("%,d", TOT_TAX2) + " " + getString(R.string.xpf);
+        taxes.add(TAX2);
+
+
+        // Total TTC
+        Integer TOT_TTC = mInvoice.getTotalTTC();
+        if (Invoice.AVOIR.equals(mInvoice.getType())) {
+            TOT_TTC = -TOT_TTC;
+        }
+        String[] TTC = new String[2];
+        TTC[0] = getString(R.string.tot_ttc);
+        TTC[1] = String.format("%,d", TOT_TTC) + " " + getString(R.string.xpf);
+        taxes.add(TTC);
+
+        return taxes;
     }
 
     public interface OnPrintListener {

@@ -257,7 +257,7 @@ public class DolibarrService extends IntentService {
 
             // Product part
             final List<Product> products = dolibarr.getAllProducts(mAPIKKey).execute().body();
-            if (null != products && !products.isEmpty()) {
+            if (null != products) {
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -282,19 +282,13 @@ public class DolibarrService extends IntentService {
                         }
                     }
                 });
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-
-                    }
-                });
             } else {
                 return -2;
             }
 
             // Customer part
             final List<Customer> customers = dolibarr.getAllCustomers(mAPIKKey).execute().body();
-            if (null != customers && !customers.isEmpty()) {
+            if (null != customers) {
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -326,7 +320,7 @@ public class DolibarrService extends IntentService {
 
             // Price of product per customer part
             final List<ProductCustomerPriceDolibarr> prices = dolibarr.getAllProductsCustomerPrice(mAPIKKey).execute().body();
-            if (null != prices && !prices.isEmpty()) {
+            if (null != prices) {
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -342,7 +336,16 @@ public class DolibarrService extends IntentService {
                     }
                 });
             } else {
-                return -4;
+
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        // Delete the price from realm who are not anymore into dolibarr
+                        realm.where(ProductCustomerPriceDolibarr.class).lessThan("modifiedDate", modifiedDate).findAll().deleteAllFromRealm();
+                    }
+                });
+
+                sendBroadcastMessage(R.string.service_dolibarr_no_productcustomerprice);
             }
 
             // Create or update DolibarrInvoice into Realm
@@ -391,7 +394,8 @@ public class DolibarrService extends IntentService {
             });
             return true;
         } else {
-            return false;
+            sendBroadcastMessage(R.string.service_dolibarr_no_invoice_on_dolibarr);
+            return true;
         }
     }
 
@@ -548,25 +552,25 @@ public class DolibarrService extends IntentService {
                 // Handle negative price
                 Double subprice = line.getSubprice();
                 Integer total_ht = line.getTotal_ht_round();
-                Integer total_tss = line.getTotal_tva_round();
-                Integer total_tgc = line.getTotal_tgc_round();
+                Integer total_tax = line.getTotal_tax_round();
+                Integer total_tax2 = line.getTotal_tax2_round();
                 Integer total_ttc = line.getTotal_ttc_round();
                 if (Invoice.AVOIR.equals(invoice.getType())) {
                     subprice = -subprice;
                     total_ht = -total_ht;
-                    total_tss = -total_tss;
-                    total_tgc = -total_tgc;
+                    total_tax = -total_tax;
+                    total_tax2 = -total_tax2;
                     total_ttc = -total_ttc;
                 }
                 lineJson.addProperty("subprice", subprice);
                 lineJson.addProperty("total_ht", total_ht);
-                lineJson.addProperty("total_tva", total_tss);
-                lineJson.addProperty("total_localtax1", total_tgc);
+                lineJson.addProperty("total_tva", total_tax);
+                lineJson.addProperty("total_localtax1", total_tax2);
                 lineJson.addProperty("total_ttc", total_ttc);
 
                 lineJson.addProperty("qty", line.getQty());
-                lineJson.addProperty("tva_tx", line.getProd().getTva_tx());
-                lineJson.addProperty("localtax1_tx", line.getProd().getLocaltax1_tx());
+                lineJson.addProperty("tva_tx", line.getProd().getTaxRate());
+                lineJson.addProperty("localtax1_tx", line.getProd().getSecondTaxRate());
                 lineJson.addProperty("rang", rang);
                 array.add(lineJson);
 

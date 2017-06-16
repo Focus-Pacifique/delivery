@@ -15,32 +15,32 @@ public class Line extends RealmObject {
     private Double subprice;
     private Integer qty;
     private Double total_ht;
-    private Double total_tva;
-    private Double total_tgc;
+    private Double total_tax;
+    private Double total_tax2;
     private Double total_ttc;
 
     public Integer getTotal_ht_round() {
         return (int) Math.round(total_ht);
     }
 
-    public Integer getTotal_tva_round() {
-        return (int) Math.round(total_tva);
+    public Integer getTotal_tax_round() {
+        return (int) Math.round(total_tax);
     }
 
-    public Integer getTotal_tgc_round() {
-        return (int) Math.round(total_tgc);
+    public Integer getTotal_tax2_round() {
+        return (int) Math.round(total_tax2);
     }
 
     public Integer getTotal_ttc_round() {
         // vrai montant
         // return (int) Math.round(total_ttc);
 
-        // arrondi
-        return getTotal_ht_round() + getTotal_tva_round() + getTotal_tgc_round();
+        // arrondi pour la TGC et la TSS
+        return getTotal_ht_round() + getTotal_tax_round() + getTotal_tax2_round();
     }
 
-    public void setTotal_tgc(Double total_tgc) {
-        this.total_tgc = total_tgc;
+    public void setTotal_tax2(Double total_tax2) {
+        this.total_tax2 = total_tax2;
     }
 
     public Integer getId() {
@@ -79,8 +79,8 @@ public class Line extends RealmObject {
         this.total_ht = total_ht;
     }
 
-    public void setTotal_tva(Double total_tva) {
-        this.total_tva = total_tva;
+    public void setTotal_tax(Double total_tax) {
+        this.total_tax = total_tax;
     }
 
     public void setTotal_ttc(Double total_ttc) {
@@ -89,9 +89,9 @@ public class Line extends RealmObject {
 
     public void updatePrices() {
         this.total_ht = qty * subprice;
-        this.total_tva = total_ht * (prod.getTva_tx()/100);
-        this.total_tgc = total_ht * (prod.getLocaltax1_tx()/100);
-        this.total_ttc = total_ht + total_tva + total_tgc;
+        this.total_tax = total_ht * (prod.getTaxRate()/100);
+        this.total_tax2 = total_ht * (prod.getSecondTaxRate()/100);
+        this.total_ttc = total_ht + total_tax + total_tax2;
     }
 
     public void addQuantity(Integer quantity) {

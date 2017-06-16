@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,36 +21,44 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapt
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.model.Invoice;
+import ovh.snacking.snacking.util.LibUtil;
+import ovh.snacking.snacking.view.fragment.InvoicesExpandableListFragment;
 
 /**
  * Created by alexis on 21/04/17.
  */
 
-public class ExpandableInvoicesSection extends StatelessSection {
+public class ExpandableInvoicesSection extends StatelessSection implements InvoicesExpandableListFragment.FilterableSection {
+
     private ExpandableInvoicesSectionListener mListener;
     private Context mContext;
     private long mLastClickTime = 0;
     private SectionedRecyclerViewAdapter mSectionAdapter;
     private boolean mExpanded;
-    private String mTitle;
+    private String mSectionName;
     private ArrayList<Invoice> mList;
+    private ArrayList<Invoice> mFilteredList;
     private int mImgHeader;
+    private String mQuery;
 
     public interface ExpandableInvoicesSectionListener {
         void onInvoiceSelected(Invoice invoice);
-        void onInvoiceLongClick(Invoice invoice);
+        void deleteInvoice(Invoice invoice, ExpandableInvoicesSection adapter);
+        void createAvoirFromFacture(Invoice invoice, SectionedRecyclerViewAdapter adapter);
     }
 
-    public ExpandableInvoicesSection(SectionedRecyclerViewAdapter sectionAdapter, String title, ArrayList<Invoice> list, Fragment frag, boolean expanded) {
+    public ExpandableInvoicesSection(SectionedRecyclerViewAdapter sectionAdapter, String sectionName, ArrayList<Invoice> list, Fragment frag, boolean expanded) {
         super(R.layout.section_header_expandable, R.layout.section_item_invoice);
 
         this.mSectionAdapter = sectionAdapter;
         this.mContext = frag.getContext();
-        this.mTitle = title;
+        this.mSectionName = sectionName;
         this.mList = list;
-        this.mListener = (ExpandableInvoicesSectionListener) frag;
+        this.mFilteredList = new ArrayList<>(list);
+        this.mListener = (ExpandableInvoicesSectionListener) frag.getActivity();
         this.mImgHeader = 0;
         this.mExpanded = expanded;
+        this.mQuery = "";
     }
 
     public void setImgHeader(int imgHeader) {
@@ -61,7 +71,7 @@ public class ExpandableInvoicesSection extends StatelessSection {
 
     @Override
     public int getContentItemsTotal() {
-        return mExpanded ? mList.size() : 0;
+        return mExpanded ? mFilteredList.size() : 0;
     }
 
     @Override
@@ -76,8 +86,11 @@ public class ExpandableInvoicesSection extends StatelessSection {
         final ItemViewHolder itemHolder = (ItemViewHolder) holder;
         NumberFormat nf = new DecimalFormat("#,###.##");
 
+        // Highlight color
+        int highlightColor = ContextCompat.getColor(mContext, R.color.colorPrimaryDark);
+
         // bind your view here
-        final Invoice invoice = mList.get(position);
+        final Invoice invoice = mFilteredList.get(position);
 
         // Invoice type & totalTTC
         if (Invoice.FACTURE.equals(invoice.getType())) {
@@ -94,11 +107,13 @@ public class ExpandableInvoicesSection extends StatelessSection {
 
         // Customer ref & totalTTC
         if (null != invoice.getCustomer()) {
-            itemHolder.customerName.setText(String.valueOf(invoice.getCustomer().getName()));
+            if(!mQuery.isEmpty())
+                itemHolder.customerName.setText(LibUtil.highlight(mQuery, String.valueOf(invoice.getCustomer().getName()), highlightColor));
+            else
+                itemHolder.customerName.setText(String.valueOf(invoice.getCustomer().getName()));
         } else {
             itemHolder.customerName.setText(String.valueOf("Problème dans la base"));
         }
-
 
         //Datetime
         SimpleDateFormat simpleDate = new SimpleDateFormat("HH:mm  dd/MM", Locale.FRANCE);
@@ -114,14 +129,20 @@ public class ExpandableInvoicesSection extends StatelessSection {
         }
 
         // Invoice ref
-        itemHolder.invoiceRef.setText(String.valueOf(invoice.getRef()));
+        if(!mQuery.isEmpty())
+            itemHolder.invoiceRef.setText(LibUtil.highlight(mQuery, String.valueOf(invoice.getRef()), highlightColor));
+        else
+            itemHolder.invoiceRef.setText(String.valueOf(invoice.getRef()));
 
         itemHolder.rootView.setOnLongClickListener(new View.OnLongClickListener() {
            @Override
            public boolean onLongClick(View v) {
                int adapterPosition = itemHolder.getAdapterPosition();
                if (adapterPosition != RecyclerView.NO_POSITION) {
-                   mListener.onInvoiceLongClick(invoice);
+                   if(Invoice.FINISHED.equals(invoice.getState()) && Invoice.FACTURE.equals(invoice.getType()))
+                       mListener.createAvoirFromFacture(invoice, mSectionAdapter);
+                   else if (Invoice.ONGOING.equals(invoice.getState()))
+                       mListener.deleteInvoice(invoice, ExpandableInvoicesSection.this);
                }
                return true;
            }
@@ -149,7 +170,7 @@ public class ExpandableInvoicesSection extends StatelessSection {
         final HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
 
         // Title
-        headerHolder.tvTitle.setText(String.format("%s (%s)", mTitle, mList.size()));
+        headerHolder.tvTitle.setText(String.format("%s (%s)", mSectionName, mFilteredList.size()));
 
         // Icon
         if (mImgHeader != 0)
@@ -171,6 +192,42 @@ public class ExpandableInvoicesSection extends StatelessSection {
                 mSectionAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    // Insert a new item to the RecyclerView on a predefined position
+    public void insert(Invoice invoice) {
+        mList.add(0, invoice);
+        mFilteredList.add(0, invoice);
+        mSectionAdapter.notifyItemInsertedInSection(mSectionName, 0);
+        //mSectionAdapter.notifyItemRangeChangedInSection(mSectionName, 0, mFilteredList.size());
+    }
+
+    // Remove a RecyclerView item containing a specified Data object
+    public void remove(Invoice invoice) {
+        mList.remove(invoice);
+        int position = mFilteredList.indexOf(invoice);
+        mFilteredList.remove(position);
+        mSectionAdapter.notifyItemRemovedFromSection(mSectionName, position);
+        //mSectionAdapter.notifyItemRangeChangedInSection(mSectionName, position, mFilteredList.size());
+    }
+
+    @Override
+    public void filter(String query) {
+        mQuery = query;
+        if (TextUtils.isEmpty(query)) {
+            mFilteredList = new ArrayList<>(mList);
+            this.setVisible(true);
+        }
+        else {
+            mFilteredList.clear();
+            for (Invoice invoice : mList) {
+                if (invoice.getRef().toLowerCase().contains(query.toLowerCase()) ||             // Search by Ref
+                        invoice.getCustomer().getName().toLowerCase().contains(query.toLowerCase())) {        // Search by customer name
+                    mFilteredList.add(invoice);
+                }
+            }
+            this.setVisible(!mFilteredList.isEmpty());
+        }
     }
 
     private class HeaderViewHolder extends RecyclerView.ViewHolder {

@@ -127,7 +127,7 @@ public class PrintInvoiceStatementFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        fab.setImageResource(R.drawable.ic_action_print);
+        fab.setImageResource(R.drawable.ic_print_white_24dp);
         fab.show();
     }
 

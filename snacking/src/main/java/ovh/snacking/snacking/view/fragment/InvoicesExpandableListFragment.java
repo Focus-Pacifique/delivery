@@ -110,7 +110,7 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         // Refresh data into adapter
         populateAdapter();
 
-        fab.setImageResource(R.drawable.ic_new);
+        fab.setImageResource(R.drawable.ic_create_white_24dp);
         fab.show();
     }
 

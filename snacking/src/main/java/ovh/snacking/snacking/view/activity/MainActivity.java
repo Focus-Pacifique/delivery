@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         // Set default values only for the first time
-        PreferenceManager.setDefaultValues(MainActivity.this, R.xml.pref, false);
+        PreferenceManager.setDefaultValues(MainActivity.this, R.xml.preferences, false);
 
         realm = RealmSingleton.getInstance(getApplicationContext()).getRealm();
         mUser = realm.where(User.class).equalTo("isActive", true).findFirst();

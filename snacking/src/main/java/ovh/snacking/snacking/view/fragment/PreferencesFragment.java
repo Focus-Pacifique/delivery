@@ -48,7 +48,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
     @Override
     public void onCreatePreferencesFix(Bundle bundle, String s) {
         // Load the preferences from an XML resource
-        addPreferencesFromResource(R.xml.pref);
+        addPreferencesFromResource(R.xml.preferences);
     }
 
     @Override

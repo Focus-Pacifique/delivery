@@ -84,7 +84,7 @@ public class GroupProductFragment extends Fragment {
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.nav_group_product));
-        fab.setImageResource(R.drawable.ic_new);
+        fab.setImageResource(R.drawable.ic_create_white_24dp);
         fab.show();
     }
 

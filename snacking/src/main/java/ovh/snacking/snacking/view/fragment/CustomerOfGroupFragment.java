@@ -93,7 +93,7 @@ public class CustomerOfGroupFragment extends Fragment {
         //Title
         ((MainActivity) getActivity()).setActionBarTitle(String.valueOf(mGroup.getName()));
 
-        fab.setImageResource(R.drawable.ic_new);
+        fab.setImageResource(R.drawable.ic_create_white_24dp);
         fab.show();
 
         // Back arrow in the menu

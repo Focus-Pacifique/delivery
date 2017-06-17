@@ -28,7 +28,7 @@ import ovh.snacking.snacking.model.ProductGroup;
  * Created by ACER on 07/02/2017.
  */
 
-public class TabFragmentRecyclerViewProduct extends Fragment {
+public class TabFragmentProduct extends Fragment {
     private Realm realm;
     private SectionedRecyclerViewAdapter mSectionAdapter;
 

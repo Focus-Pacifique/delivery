@@ -113,7 +113,7 @@ public class EditingInvoiceFragment extends Fragment {
         });*/
 
         // fab to print the print_invoice_fragment
-        fab.setImageResource(R.drawable.ic_action_print);
+        fab.setImageResource(R.drawable.ic_print_white_24dp);
         fab.show();
 
         ((MainActivity) getActivity()).setActionBarTitle(mInvoice.getCustomer().getName());
@@ -242,7 +242,7 @@ public class EditingInvoiceFragment extends Fragment {
             // getItem is called to instantiate the fragment for the given page.
             switch (position) {
                 case 0:
-                    return new TabFragmentRecyclerViewProduct();
+                    return new TabFragmentProduct();
                 case 1:
                     return new TabFragmentEditInvoice();
             }

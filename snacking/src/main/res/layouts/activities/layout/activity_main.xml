@@ -51,6 +51,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:fabSize="mini"
-        app:srcCompat="@drawable/ic_new" />
+        app:srcCompat="@drawable/ic_create_white_24dp" />
 
     </android.support.design.widget.CoordinatorLayout>

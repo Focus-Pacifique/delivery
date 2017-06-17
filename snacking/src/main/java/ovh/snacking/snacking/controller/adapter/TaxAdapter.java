@@ -1,6 +1,5 @@
 package ovh.snacking.snacking.controller.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,26 +14,24 @@ import ovh.snacking.snacking.R;
  * Created by alexis on 16/06/17.
  */
 
-public class TaxAdapter extends RecyclerView.Adapter<TaxAdapter.TaxViewHolder> {
+public class TaxAdapter extends RecyclerView.Adapter<TaxAdapter.ViewHolder> {
     private ArrayList<String[]> mList;
-    private Context mContext;
 
-    public TaxAdapter(Context context, ArrayList<String[]> taxes) {
+    public TaxAdapter(ArrayList<String[]> taxes) {
         mList = taxes;
-        mContext = context;
     }
 
     @Override
-    public TaxViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Create new view
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tax_amount, parent, false);
 
         // create and return ViewHolder
-        return new TaxViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(TaxViewHolder viewHolder, int position) {
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
         final String[] price = mList.get(position);
 
         viewHolder.tvTaxLabel.setText(String.valueOf(price[0]));
@@ -46,11 +43,11 @@ public class TaxAdapter extends RecyclerView.Adapter<TaxAdapter.TaxViewHolder> {
         return (null != mList ? mList.size() : 0);
     }
 
-    public static class TaxViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvTaxLabel;
         private final TextView tvTaxAmount;
 
-        private TaxViewHolder(View view) {
+        private ViewHolder(View view) {
             super(view);
             tvTaxLabel = (TextView) view.findViewById(R.id.tvTaxLabel);
             tvTaxAmount = (TextView) view.findViewById(R.id.tvTaxAmount);

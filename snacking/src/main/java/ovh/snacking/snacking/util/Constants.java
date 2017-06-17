@@ -26,12 +26,4 @@ public final class Constants {
     // Defines the key to receive the broadcast message
     public static final String BROADCAST_MESSAGE_SEND =
             "ovh.snacking.snacking.action.BROADCAST_MESSAGE_SEND";
-
-    // Defines the key for the login datas
-    public static final String LOGIN_USER =
-            "ovh.snacking.snacking.view.login.LOGIN_USER";
-    public static final String PASSWORD_USER =
-            "ovh.snacking.snacking.view.login.PASSWORD_USER";
-    public static final String URL_SERVER =
-            "ovh.snacking.snacking.view.login.URL_SERVER";
 }

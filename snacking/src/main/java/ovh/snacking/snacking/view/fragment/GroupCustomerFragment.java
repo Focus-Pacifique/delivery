@@ -62,7 +62,7 @@ public class GroupCustomerFragment extends Fragment {
         mRecyclerView.setLayoutManager(glm);
 
         RealmResults<CustomerGroup> customerGroups = realm.where(CustomerGroup.class).findAllSorted("position");
-        GroupCustomerAdapter mGroupAdapter = new GroupCustomerAdapter(getContext(), customerGroups);
+        GroupCustomerAdapter mGroupAdapter = new GroupCustomerAdapter(customerGroups);
         mRecyclerView.setAdapter(mGroupAdapter);
 
         return view;
@@ -168,8 +168,8 @@ public class GroupCustomerFragment extends Fragment {
 
     private class GroupCustomerAdapter extends RealmRecyclerViewAdapter<CustomerGroup, GroupCustomerAdapter.ViewHolder> {
 
-        private GroupCustomerAdapter(Context context, OrderedRealmCollection<CustomerGroup> realmResults) {
-            super(context, realmResults, true);
+        private GroupCustomerAdapter(OrderedRealmCollection<CustomerGroup> realmResults) {
+            super(realmResults, true);
         }
 
         @Override

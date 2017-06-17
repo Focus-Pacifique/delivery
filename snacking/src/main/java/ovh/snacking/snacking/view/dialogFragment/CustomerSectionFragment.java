@@ -110,7 +110,7 @@ public class CustomerSectionFragment extends AppCompatDialogFragment {
     }
 
     public interface CustomerSectionFragmentListener {
-        void onCustomerSelected(Integer customerId);
+        void onCustomerSelected(Customer customer);
     }
 
     private class CustomerSection extends StatelessSection {
@@ -121,7 +121,7 @@ public class CustomerSectionFragment extends AppCompatDialogFragment {
 
         public CustomerSection(String title, List<Customer> list) {
             // call constructor with layout resources for this Section header and items
-            super(R.layout.section_header_expandable, R.layout.section_item_customer);
+            super(R.layout.section_header_expandable, R.layout.item_customer);
             this.mTitle = title;
             this.mList = list;
         }
@@ -150,7 +150,7 @@ public class CustomerSectionFragment extends AppCompatDialogFragment {
             itemHolder.rootView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mListener.onCustomerSelected(selectedCustomer.getId());
+                    mListener.onCustomerSelected(selectedCustomer);
                     dismiss();
                 }
             });

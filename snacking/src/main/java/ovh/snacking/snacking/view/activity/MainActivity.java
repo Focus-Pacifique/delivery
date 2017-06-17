@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -21,6 +22,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -30,7 +32,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,12 +39,15 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 import io.realm.Realm;
 import ovh.snacking.snacking.R;
+import ovh.snacking.snacking.controller.InvoiceController;
 import ovh.snacking.snacking.controller.adapter.ExpandableInvoicesSection;
 import ovh.snacking.snacking.controller.print.InvoicePrintDocumentAdapter;
+import ovh.snacking.snacking.controller.service.DolibarrBroadcastReceiver;
 import ovh.snacking.snacking.controller.service.DolibarrService;
 import ovh.snacking.snacking.model.Customer;
 import ovh.snacking.snacking.model.CustomerGroup;
@@ -51,10 +55,9 @@ import ovh.snacking.snacking.model.Invoice;
 import ovh.snacking.snacking.model.InvoiceChange;
 import ovh.snacking.snacking.model.ProductGroup;
 import ovh.snacking.snacking.model.User;
-import ovh.snacking.snacking.model.Value;
 import ovh.snacking.snacking.util.Constants;
-import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.util.LibUtil;
+import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.view.dialogFragment.CustomerSectionFragment;
 import ovh.snacking.snacking.view.dialogFragment.DatePickerEndFragment;
 import ovh.snacking.snacking.view.dialogFragment.DatePickerStartFragment;
@@ -64,22 +67,22 @@ import ovh.snacking.snacking.view.fragment.GroupCustomerFragment;
 import ovh.snacking.snacking.view.fragment.GroupProductFragment;
 import ovh.snacking.snacking.view.fragment.InvoiceStatementFragment;
 import ovh.snacking.snacking.view.fragment.InvoicesExpandableListFragment;
+import ovh.snacking.snacking.view.fragment.PreferencesFragment;
 import ovh.snacking.snacking.view.fragment.PrintInvoiceFragment;
 import ovh.snacking.snacking.view.fragment.PrintInvoiceStatementFragment;
 import ovh.snacking.snacking.view.fragment.ProductOfGroupFragment;
-import ovh.snacking.snacking.view.fragment.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity
         implements InvoicesExpandableListFragment.OnInvoicesExpandableListener,
-        CustomerSectionFragment.CustomerSectionFragmentListener,
         EditingInvoiceFragment.OnEditInvoiceListener,
-        PrintInvoiceFragment.OnPrintListener,
+        PrintInvoiceFragment.PrintInvoiceFragmentListener,
         PrintInvoiceStatementFragment.OnPrintInvoiceStatementListener,
         GroupCustomerFragment.OnGroupCustomerSelectedListener,
         GroupProductFragment.OnGroupProductSelectedListener,
         DatePickerStartFragment.OnDatePickerStartFragment,
         DatePickerEndFragment.OnDatePickerEndFragment,
-        ExpandableInvoicesSection.ExpandableInvoicesSectionListener {
+        ExpandableInvoicesSection.ExpandableInvoicesSectionListener,
+        CustomerSectionFragment.CustomerSectionFragmentListener {
 
     public static final String TAG_CUSTOMER_SELECT = "ovh.snacking.snacking.view.dialogFragment.CustomerSectionFragment";
     public static final String TAG_EDITING_INVOICE = "ovh.snacking.snacking.view.fragment.EditingInvoiceFragment";
@@ -87,7 +90,7 @@ public class MainActivity extends AppCompatActivity
     public static final String TAG_PRINT_INVOICE = "ovh.snacking.snacking.view.PrntInvoice";
     public static final String TAG_PRINT_INVOICE_STATEMENT = "ovh.snacking.snacking.view.fragment.PrintInvoiceStatementFragment";
     public static final String TAG_INVOICE_STATEMENT = "ovh.snacking.snacking.view.fragment.InvoiceStatementFragment";
-    public static final String TAG_SETTINGS_FRAGMENT = "ovh.snacking.snacking.view.fragment.SettingsFragment";
+    public static final String TAG_SETTINGS_FRAGMENT = "ovh.snacking.snacking.view.fragment.PreferencesFragment";
     public static final String TAG_MANAGE_GROUP_CUSTOMER = "ovh.snacking.snacking.view.fragment.GroupCustomerFragment";
     public static final String TAG_CUSTOMER_OF_GROUP = "ovh.snacking.snacking.view.fragment.CustomerOfGroupFragment";
     public static final String TAG_MANAGE_GROUP_PRODUCT = "ovh.snacking.snacking.view.fragment.GroupProductFragment";
@@ -107,6 +110,9 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navView;
     private ActionBarDrawerToggle mDrawerToggle;
 
+    // Broadcast receiver
+    DolibarrBroadcastReceiver mSyncReceiver;
+
     //Print
     private ArrayList<PrintJob> mPrintJobs;
 
@@ -117,8 +123,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        realm = RealmSingleton.getInstance(getApplicationContext()).getRealm();
 
+        // Set default values only for the first time
+        PreferenceManager.setDefaultValues(MainActivity.this, R.xml.pref, false);
+
+        realm = RealmSingleton.getInstance(getApplicationContext()).getRealm();
         mUser = realm.where(User.class).equalTo("isActive", true).findFirst();
 
         setContentView(R.layout.activity_main);
@@ -153,6 +162,11 @@ public class MainActivity extends AppCompatActivity
         // Set user name and app infos in the navigationview
         ((TextView) navView.getHeaderView(0).findViewById(R.id.nav_header_app_infos)).setText(getString(R.string.app_name) + " (" + getVersionInfo() + ")");
         ((TextView) navView.getHeaderView(0).findViewById(R.id.nav_header_user)).setText("user " + mUser.getName());
+
+        //Filter to get the synchronisation status with broadcast notification
+        IntentFilter mStatusIntentFilter = new IntentFilter(Constants.BROADCAST_MESSAGE_INTENT);
+        mSyncReceiver = new DolibarrBroadcastReceiver();
+        LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(mSyncReceiver, mStatusIntentFilter);
     }
 
     @Override
@@ -174,6 +188,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        LocalBroadcastManager.getInstance(MainActivity.this).unregisterReceiver(mSyncReceiver);
         realm.close();
     }
 
@@ -308,26 +323,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private Integer createInvoice(final Integer customerId, final Integer invoiceType, final Integer factureSourceId) {
-        final Integer newInvoiceId = RealmSingleton.getInstance(MainActivity.this).nextInvoiceId();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Customer customer = realm.where(Customer.class).equalTo("id", customerId).findFirst();
-                Invoice invoice = realm.createObject(Invoice.class, newInvoiceId);
-                invoice.setCustomer(customer);
-                invoice.setUser(mUser);
-                invoice.setType(invoiceType);
-                invoice.setFk_facture_source(factureSourceId);
-            }
-        });
-        return newInvoiceId;
-    }
-
-    private Integer createInvoice(final Integer customerId, final Integer invoiceType) {
-        return createInvoice(customerId, invoiceType, null);
-    }
-
     /***********************************/
     /**  InvoiceExpandableList frag  **/
     /**********************************/
@@ -335,20 +330,25 @@ public class MainActivity extends AppCompatActivity
     public void newInvoice() {
         launchFragment(getFragment(TAG_CUSTOMER_SELECT), TAG_CUSTOMER_SELECT, true);
     }
-
     @Override
     public void goToInvoice(Invoice invoice) {
-        if (Invoice.ONGOING.equals(invoice.getState())) {
+        if (Invoice.ONGOING == invoice.getState()) {
             EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
             frag.setInvoiceId(invoice.getId());
             launchFragment(frag, TAG_EDITING_INVOICE, true);
-        } else if (Invoice.FINISHED.equals(invoice.getState())) {
-            PrintInvoiceFragment frag = (PrintInvoiceFragment) getFragment(MainActivity.TAG_PRINT_INVOICE);
-            frag.setInvoiceId(invoice.getId());
+        } else if (Invoice.FINISHED == invoice.getState()) {
+            PrintInvoiceFragment frag = PrintInvoiceFragment.newInstance(invoice.getId());
             launchFragment(frag, TAG_PRINT_INVOICE, true);
         }
     }
 
+    @Override
+    public void onCustomerSelected(Customer customer) {
+        final EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
+        Invoice newInvoice = InvoiceController.createFacture(MainActivity.this, customer);
+        frag.setInvoiceId(newInvoice.getId());
+        launchFragment(frag, TAG_EDITING_INVOICE, true);
+    }
 
     /**********************************/
     /**  Group Customer select part  **/
@@ -371,50 +371,18 @@ public class MainActivity extends AppCompatActivity
         launchFragment(frag, TAG_PRODUCT_OF_GROUP, true);
     }
 
-
-    /****************************/
-    /**  Customer select part  **/
-    /****************************/
-    @Override
-    public void onCustomerSelected(final Integer customerId) {
-        final EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
-        Integer invoiceId = createInvoice(customerId, Invoice.FACTURE);
-        frag.setInvoiceId(invoiceId);
-        launchFragment(frag, TAG_EDITING_INVOICE, true);
-    }
-
-
     /****************************/
     /**  Editing invoice part  **/
     /****************************/
     @Override
     public void onShowInvoice(Integer invoiceId) {
-        PrintInvoiceFragment frag = (PrintInvoiceFragment) getFragment(MainActivity.TAG_PRINT_INVOICE);
-        frag.setInvoiceId(invoiceId);
+        PrintInvoiceFragment frag = PrintInvoiceFragment.newInstance(invoiceId);
         launchFragment(frag, TAG_PRINT_INVOICE, true);
     }
 
     /************************************/
     /**  Print invoice fragment part  **/
     /***********************************/
-
-    @Override
-    public boolean onFinishInvoice(Integer invoiceId) {
-        final Invoice invoice = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
-        boolean isFinished;
-
-        // Finish the invoice
-        if (invoice.getLines().size() > 0 && Invoice.ONGOING.equals(invoice.getState())) {
-            finishInvoice(invoice);
-            isFinished = true;
-        } else if (invoice.getLines().size() > 0 && Invoice.FINISHED.equals(invoice.getState())) {
-            isFinished = true;
-        } else {
-            Toast.makeText(getApplicationContext(), "Impossible de terminer, il n'y a aucun produits dans la facture", Toast.LENGTH_LONG).show();
-            isFinished = false;
-        }
-        return isFinished;
-    }
 
     @Override
     public void onChangeLastInvoice(View container_invoice, final Integer invoiceId) {
@@ -495,9 +463,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        if (Invoice.FACTURE.equals(invoice.getType())) {
+        if (Invoice.FACTURE == invoice.getType()) {
             setTitle("Facture terminée, imprimée (" + invoice.getCounterPrint() + ") fois");
-        } else if (Invoice.AVOIR.equals(invoice.getType())) {
+        } else if (Invoice.AVOIR == invoice.getType()) {
             setTitle("Avoir terminé, imprimée (" + invoice.getCounterPrint() + ") fois");
         }
     }
@@ -658,7 +626,7 @@ public class MainActivity extends AppCompatActivity
                     frag =  new PrintInvoiceFragment();
                     break;
                 case TAG_SETTINGS_FRAGMENT:
-                    frag =  new SettingsFragment();
+                    frag =  new PreferencesFragment();
                     break;
                 case TAG_PRINT_INVOICE_STATEMENT:
                     frag =  new PrintInvoiceStatementFragment();
@@ -722,40 +690,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void finishInvoice(final Invoice invoice) {
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                invoice.setState(Invoice.FINISHED);
-
-                // Save the number into the database
-                Integer next = nextNumber(invoice);
-                invoice.setNumber(next);
-
-                // Actual date
-                invoice.setDate(new Date());
-
-                // Update the new values of max facture and avoir into object Value
-                realm.where(Value.class).findFirst().update(invoice);
-            }
-        });
-    }
-
-    private Integer nextNumber(Invoice invoice) {
-        Value value = realm.where(Value.class).findFirst();
-        Integer nextNumber;
-        if (Invoice.AVOIR.equals(invoice.getType())) {
-            nextNumber = value.getLastNumberAvoir() + 1;
-        } else {
-            nextNumber = value.getLastNumberFacture() + 1;
-        }
-        return nextNumber;
-    }
-
-    private String nextRef(Invoice invoice) {
-        Integer max = nextNumber(invoice);
-        return invoice.computeRef(max);
-    }
 
     private PrintedPdfDocument createPDFFromView(View content) {
         PrintAttributes printAttrs = new PrintAttributes.Builder().
@@ -792,17 +726,16 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // Check if a data update is needed
     private void checkSynchronisation() {
-        // Check if an update is needed
-        Date lastSyncDate;
-        if (realm.where(Value.class).findFirst().getLastSync() == null) {
-            lastSyncDate = new Date(System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000); // if never synchronized, set lastSyncDate 7 days before today
-        } else {
-            lastSyncDate = realm.where(Value.class).findFirst().getLastSync();
-        }
+        long prefLastDate = PreferenceManager.getDefaultSharedPreferences(this).getLong(PreferencesFragment.PREF_SYNC_LAST_DATE, 0);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        int days = sdf.format(new Date()).compareTo(sdf.format(lastSyncDate));
+        // if never synchronized, set lastSyncDate 7 days before today
+        if(prefLastDate == 0)
+            prefLastDate = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.FRANCE);
+        int days = sdf.format(new Date()).compareTo(sdf.format(prefLastDate));
 
         if(days >= 1) {
             // Sync now if number of days >= 1
@@ -811,7 +744,7 @@ public class MainActivity extends AppCompatActivity
             startService(intent);
 
             // Check and set the alarm
-            if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsFragment.PREF_KEY_AUTO_SYNC, true)) {
+            if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PreferencesFragment.PREF_SYNC_AUTO, true)) {
                 LibUtil.schedulePeriodicSync(getApplicationContext());
             } else {
                 LibUtil.removePeriodicSync(getApplicationContext());
@@ -849,21 +782,20 @@ public class MainActivity extends AppCompatActivity
         displayDialogCreateAvoir(invoice, adapter);
     }
 
-    private void displayDialogCreateAvoir(final Invoice invoice, final SectionedRecyclerViewAdapter adapter) {
+    private void displayDialogCreateAvoir(final Invoice factureSource, final SectionedRecyclerViewAdapter adapter) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle(R.string.dialog_title_create_avoir)
-                .setMessage(invoice.getCustomer().getName() + "\n" +
-                        "(Facture n°" + invoice.getRef() + ")")
+                .setMessage(factureSource.getCustomer().getName() + "\n" +
+                        "(Facture n°" + factureSource.getRef() + ")")
                 .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Integer invoiceId = createInvoice(invoice.getCustomer().getId(), Invoice.AVOIR, invoice.getId());
-                        Invoice invoiceCreated = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
+                        Invoice newAvoir = InvoiceController.createAvoir(MainActivity.this, factureSource.getCustomer(), factureSource.getId());
 
                         // Notify and insert invoice into adapter
-                        ((ExpandableInvoicesSection) adapter.getSection(InvoicesExpandableListFragment.SECTION_ONGOING)).insert(invoiceCreated);
+                        ((ExpandableInvoicesSection) adapter.getSection(InvoicesExpandableListFragment.SECTION_ONGOING)).insert(newAvoir);
 
-                        goToInvoice(invoiceCreated);
+                        goToInvoice(newAvoir);
                     }
                 })
                 .setNegativeButton("Non", new DialogInterface.OnClickListener() {

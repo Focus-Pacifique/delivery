@@ -36,7 +36,8 @@ import ovh.snacking.snacking.view.activity.MainActivity;
  * Fragment to display invoices by date
  */
 
-public class InvoicesExpandableListFragment extends android.support.v4.app.Fragment implements SearchView.OnQueryTextListener {
+public class InvoicesExpandableListFragment extends android.support.v4.app.Fragment implements
+        SearchView.OnQueryTextListener {
 
     public static final String SECTION_ONGOING      = "En cours";
     public static final String SECTION_FINISHED     = "Terminées";
@@ -312,7 +313,6 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
 
         mAdapter.notifyDataSetChanged();
     }
-
 
     public interface OnInvoicesExpandableListener {
         void goToInvoice(Invoice invoice);

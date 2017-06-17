@@ -2,6 +2,7 @@ package ovh.snacking.snacking.view.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -45,13 +46,14 @@ public class TabFragmentRecyclerViewProduct extends Fragment {
         // Set up your RecyclerView with the SectionedRecyclerViewAdapter
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
-        GridLayoutManager glm = new GridLayoutManager(getContext(), 4);
+        final int thumbPerRow = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(PreferencesFragment.PREF_APPLICATION_PRODUCT_PER_ROW, ""));
+        GridLayoutManager glm = new GridLayoutManager(getContext(), thumbPerRow);
         glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
                 switch(mSectionAdapter.getSectionItemViewType(position)) {
                     case SectionedRecyclerViewAdapter.VIEW_TYPE_HEADER:
-                        return 4;
+                        return thumbPerRow;
                     default:
                         return 1;
                 }
@@ -100,7 +102,7 @@ public class TabFragmentRecyclerViewProduct extends Fragment {
 
         public ProductSection(String title, List<Product> list) {
             // call constructor with layout resources for this Section header and items
-            super(R.layout.section_header_expandable, R.layout.section_item_product);
+            super(R.layout.section_header_expandable, R.layout.item_product);
             this.mTitle = title;
             this.mList = list;
         }

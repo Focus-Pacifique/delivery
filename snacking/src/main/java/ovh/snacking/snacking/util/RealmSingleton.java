@@ -170,13 +170,18 @@ public class RealmSingleton {
                         schema.get("ProductCustomerPriceDolibarr").removeField("price_HT");
                     schema.get("ProductCustomerPriceDolibarr").addField("price_HT", Double.class);
 
-                    if(schema.get("Value").hasField("tss"))
-                        schema.get("Value").removeField("tss");
+                    if(schema.contains("Value"))
+                        schema.remove("Value");
 
                     if(schema.get("Product").hasField("tva_tx"))
                         schema.get("Product").renameField("tva_tx", "taxRate");
                     if(schema.get("Product").hasField("localtax1_tx"))
                         schema.get("Product").renameField("localtax1_tx", "secondTaxRate");
+
+                    if(schema.get("Invoice").hasField("number"))
+                        schema.get("Invoice").removeField("number");
+                    if(schema.get("Invoice").hasField("user"))
+                        schema.get("Invoice").removeField("user");
 
                     oldVersion = 5;
                 }

@@ -3,15 +3,13 @@ package ovh.snacking.snacking.view.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -27,17 +25,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-
 import io.realm.Realm;
 import io.realm.RealmResults;
 import okhttp3.OkHttpClient;
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.controller.API.APIDolibarr;
-import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.model.CustomerGroup;
 import ovh.snacking.snacking.model.ProductGroup;
 import ovh.snacking.snacking.model.User;
-import ovh.snacking.snacking.model.Value;
+import ovh.snacking.snacking.util.RealmSingleton;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -211,28 +207,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 // Set initial value for groups
                 if (null == realm.where(ProductGroup.class).findFirst()) {
                     ProductGroup group1 = realm.createObject(ProductGroup.class, nextProductGroupId());
-                    group1.setName("Groupe 1");
+                    group1.setName("Tous les produits");
                     group1.setPosition(1);
-
-                    ProductGroup group2 = realm.createObject(ProductGroup.class, nextProductGroupId());
-                    group2.setName("Groupe 2");
-                    group2.setPosition(2);
                 }
 
                 if (null == realm.where(CustomerGroup.class).findFirst()) {
                     CustomerGroup group = realm.createObject(CustomerGroup.class, nextCustomerGroupId());
-                    group.setName("Favoris");
+                    group.setName("Tous les clients");
                     group.setPosition(1);
                 }
 
                 // Update the user
                 if (null == mUser.getInitialValues() || mUser.getInitialValues() != 1)
                     mUser.setInitialValues(1);
-
-                // Initialize numbers for invoice, tax etc...
-                if (realm.where(Value.class).findFirst() == null) {
-                    realm.createObject(Value.class);
-                }
             }
         });
     }

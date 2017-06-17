@@ -1,6 +1,6 @@
 package ovh.snacking.snacking.controller.adapter;
 
-import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
@@ -16,15 +16,15 @@ import ovh.snacking.snacking.model.Product;
 
 public class ProductTwoLinesListAdapter extends RealmBaseAdapter<Product> implements ListAdapter {
 
-    public ProductTwoLinesListAdapter(Context context, OrderedRealmCollection<Product> realmResults) {
-        super(context, realmResults);
+    public ProductTwoLinesListAdapter(OrderedRealmCollection<Product> realmResults) {
+        super(realmResults);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ProductTwoLinesListAdapter.ViewHolder viewHolder;
         if (convertView == null) {
-            convertView = inflater.inflate(android.R.layout.simple_list_item_2, parent, false);
+            convertView = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_2, parent, false);
             viewHolder = new ProductTwoLinesListAdapter.ViewHolder();
             viewHolder.ref = (TextView) convertView.findViewById(android.R.id.text1);
             viewHolder.label = (TextView) convertView.findViewById(android.R.id.text2);

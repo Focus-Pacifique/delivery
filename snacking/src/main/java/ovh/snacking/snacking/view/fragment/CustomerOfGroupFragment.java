@@ -1,7 +1,6 @@
 package ovh.snacking.snacking.view.fragment;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -70,7 +69,7 @@ public class CustomerOfGroupFragment extends Fragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), LinearLayoutManager.VERTICAL));
 
         RealmResults<CustomerAndGroupBinding> customers = realm.where(CustomerAndGroupBinding.class).equalTo("group.id", mGroup.getId()).findAllSorted("position");
-        CustomerRecyclerViewAdapter mCustomerAdapter = new CustomerRecyclerViewAdapter(getContext(), customers);
+        CustomerRecyclerViewAdapter mCustomerAdapter = new CustomerRecyclerViewAdapter(customers);
         recyclerView.setAdapter(mCustomerAdapter);
 
         return view;
@@ -125,7 +124,7 @@ public class CustomerOfGroupFragment extends Fragment {
     private void dialogAddCustomerToGroup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Set the dialog title
-        builder.setAdapter(new CustomerAdapter(getContext(), realm.where(Customer.class).findAll()), null);
+        builder.setAdapter(new CustomerAdapter(realm.where(Customer.class).findAll()), null);
 
         AlertDialog ad = builder.create();
         ad.getListView().setItemsCanFocus(false);
@@ -184,13 +183,13 @@ public class CustomerOfGroupFragment extends Fragment {
     }*/
 
     public class CustomerRecyclerViewAdapter extends RealmRecyclerViewAdapter<CustomerAndGroupBinding, CustomerRecyclerViewAdapter.ViewHolder> {
-        public CustomerRecyclerViewAdapter(Context context, OrderedRealmCollection<CustomerAndGroupBinding> realmResults) {
-            super(context, realmResults, true);
+        public CustomerRecyclerViewAdapter(OrderedRealmCollection<CustomerAndGroupBinding> realmResults) {
+            super(realmResults, true);
         }
 
         @Override
         public CustomerRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.section_item_customer, parent, false);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_customer, parent, false);
             return new CustomerRecyclerViewAdapter.ViewHolder(itemView);
         }
 

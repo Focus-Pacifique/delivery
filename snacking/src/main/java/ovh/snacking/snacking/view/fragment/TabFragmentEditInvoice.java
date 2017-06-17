@@ -4,17 +4,18 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import io.realm.Realm;
 import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.controller.adapter.LineAdapter;
-import ovh.snacking.snacking.util.RealmSingleton;
+import ovh.snacking.snacking.controller.adapter.InvoiceLineAdapter;
 import ovh.snacking.snacking.model.Invoice;
+import ovh.snacking.snacking.util.RealmSingleton;
 
 /**
  * Created by Alex on 14/11/2016.
@@ -39,7 +40,7 @@ public class TabFragmentEditInvoice extends Fragment {
         View layout = inflater.inflate(R.layout.fragment_edit_invoice, container, false);
 
         TextView text_view_invoice = (TextView) layout.findViewById(R.id.text_view_invoice);
-        if (Invoice.AVOIR.equals(invoice.getType())) {
+        if (Invoice.AVOIR == invoice.getType()) {
             text_view_invoice.setText(R.string.invoice_type_avoir);
             text_view_invoice.setTextColor(Color.DKGRAY);
         } else {
@@ -47,9 +48,11 @@ public class TabFragmentEditInvoice extends Fragment {
             text_view_invoice.setTextColor(Color.BLUE);
         }
 
-        ListView listView = (ListView) layout.findViewById(R.id.list_view_selected_products);
-        LineAdapter lineInvoiceAdapter = new LineAdapter(getContext(), invoice.getLines(), invoice.getId());
-        listView.setAdapter(lineInvoiceAdapter);
+        // Set invoice line adapter to recycler view
+        InvoiceLineAdapter adapter = new InvoiceLineAdapter(getContext(), invoice.getLines(), invoice.getType(), InvoiceLineAdapter.VIEW_EDIT);
+        RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.recyclerViewInvoiceLines);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         return layout;
     }

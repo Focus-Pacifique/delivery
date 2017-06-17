@@ -73,7 +73,7 @@ public class InvoiceStatementFragment extends Fragment {
 
         // Invoices
         ListView listView = (ListView) layout.findViewById(R.id.list_view_invoice_statement_lines);
-        DolibarrInvoiceStatementAdapter invoiceStatementAdapter = new DolibarrInvoiceStatementAdapter(getContext(), invoices);
+        DolibarrInvoiceStatementAdapter invoiceStatementAdapter = new DolibarrInvoiceStatementAdapter(invoices);
         listView.setAdapter(invoiceStatementAdapter);
 
 

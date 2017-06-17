@@ -1,6 +1,6 @@
 package ovh.snacking.snacking.controller.print;
 
-import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
@@ -21,15 +21,15 @@ import ovh.snacking.snacking.model.DolibarrInvoice;
 public class DolibarrInvoiceStatementAdapter extends RealmBaseAdapter<DolibarrInvoice> implements ListAdapter {
     private Realm realm;
 
-    public DolibarrInvoiceStatementAdapter(Context context, OrderedRealmCollection<DolibarrInvoice> realmResults) {
-        super(context, realmResults);
+    public DolibarrInvoiceStatementAdapter(OrderedRealmCollection<DolibarrInvoice> realmResults) {
+        super(realmResults);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         DolibarrInvoiceStatementAdapter.ViewHolder viewHolder;
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.print_invoice_statement_line, parent, false);
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.print_invoice_statement_line, parent, false);
             viewHolder = new DolibarrInvoiceStatementAdapter.ViewHolder();
             viewHolder.date = (TextView) convertView.findViewById(R.id.dolibarr_invoice_date);
             viewHolder.ref = (TextView) convertView.findViewById(R.id.dolibarr_invoice_ref);

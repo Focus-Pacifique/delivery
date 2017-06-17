@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
@@ -22,25 +23,17 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import ovh.snacking.snacking.R;
-import ovh.snacking.snacking.util.Constants;
-import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.controller.service.DolibarrBroadcastReceiver;
+import ovh.snacking.snacking.controller.service.DolibarrService;
 import ovh.snacking.snacking.model.Invoice;
 import ovh.snacking.snacking.model.User;
-import ovh.snacking.snacking.model.Value;
-import ovh.snacking.snacking.controller.service.DolibarrService;
+import ovh.snacking.snacking.util.Constants;
+import ovh.snacking.snacking.util.RealmSingleton;
+import ovh.snacking.snacking.view.fragment.PreferencesFragment;
 
 public class SynchronizationActivity extends AppCompatActivity {
 
     private Realm realm;
-    private Value mValue;
-    private RealmChangeListener<Value> callback = new RealmChangeListener<Value>() {
-        @Override
-        public void onChange(Value value) {
-            mValue = value;
-            refreshUI();
-        }
-    };
 
     private RealmResults<Invoice> invoicesToPost;
     private RealmChangeListener<RealmResults<Invoice>> callbackInvoice = new RealmChangeListener<RealmResults<Invoice>>() {
@@ -83,10 +76,6 @@ public class SynchronizationActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        // Put the object Value in mValue
-        getValues();
-        mValue.addChangeListener(callback);
-
         // Register the invoice to post callback
         invoicesToPost = realm.where(Invoice.class).equalTo("state", Invoice.FINISHED).equalTo("isPOSTToDolibarr", false).findAll();
         invoicesToPost.addChangeListener(callbackInvoice);
@@ -126,8 +115,7 @@ public class SynchronizationActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        mValue.removeChangeListeners();
-        invoicesToPost.removeChangeListeners();
+        invoicesToPost.removeAllChangeListeners();
     }
 
     @Override
@@ -169,26 +157,14 @@ public class SynchronizationActivity extends AppCompatActivity {
     }
 
     private void updateLastSyncDate() {
-        Date date = mValue.getLastSync();
+        long date = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getLong(PreferencesFragment.PREF_SYNC_LAST_DATE, 0);
+        Date dateLastSync = new Date(date);
         TextView textView = (TextView) findViewById(R.id.last_sync_date);
-        if(null != date) {
+        if(null != dateLastSync) {
             SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             textView.setText(simpleDate.format(date));
         } else {
             textView.setText("Jamais synchronisé !");
-        }
-    }
-
-    private void getValues() {
-        if (realm.where(Value.class).findFirst() == null) {
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    mValue = realm.createObject(Value.class);
-                }
-            });
-        } else {
-            mValue = realm.where(Value.class).findFirst();
         }
     }
 

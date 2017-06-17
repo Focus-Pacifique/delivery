@@ -3,6 +3,7 @@ package ovh.snacking.snacking.controller.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -30,6 +31,7 @@ import ovh.snacking.snacking.BuildConfig;
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.controller.API.APIDolibarr;
 import ovh.snacking.snacking.controller.API.APIFileUpload;
+import ovh.snacking.snacking.controller.InvoiceController;
 import ovh.snacking.snacking.util.Constants;
 import ovh.snacking.snacking.model.Customer;
 import ovh.snacking.snacking.model.CustomerAndGroupBinding;
@@ -40,8 +42,8 @@ import ovh.snacking.snacking.model.ProductAndGroupBinding;
 import ovh.snacking.snacking.model.ProductCustomerPriceDolibarr;
 import ovh.snacking.snacking.model.Product;
 import ovh.snacking.snacking.model.User;
-import ovh.snacking.snacking.model.Value;
 import ovh.snacking.snacking.view.activity.MainActivity;
+import ovh.snacking.snacking.view.fragment.PreferencesFragment;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -359,15 +361,10 @@ public class DolibarrService extends IntentService {
         }
 
         // Set the date of the last sync
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Value value = realm.where(Value.class).findFirst();
-                if (null != value) {
-                    value.setLastSync(new Date());
-                }
-            }
-        });
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .edit()
+                .putLong(PreferencesFragment.PREF_SYNC_LAST_DATE, new Date().getTime())
+                .apply();
 
         // If all is fine
         return 0;
@@ -438,7 +435,7 @@ public class DolibarrService extends IntentService {
         // Then post the rest of the factures
         RealmResults<Invoice> invoices = realm.where(Invoice.class).equalTo("state", Invoice.FINISHED).equalTo("isPOSTToDolibarr", false).findAll();
         for (final Invoice facture : invoices) {
-            if (Invoice.FINISHED.equals(facture.getState()) && !facture.isPOSTToDolibarr() && Invoice.FACTURE.equals(facture.getType())) {
+            if (Invoice.FINISHED == facture.getState() && !facture.isPOSTToDolibarr() && Invoice.FACTURE == facture.getType()) {
 
                 if (!postInvoiceToDolibarr(facture)) {
                     return -6;
@@ -451,7 +448,7 @@ public class DolibarrService extends IntentService {
     }
 
     private boolean postInvoiceToDolibarr(final Invoice invoice) throws IOException, IllegalStateException {
-        if (invoiceExists(invoice.getRef(), invoice.getTotalTTC(), invoice.getCustomer().getId())) {
+        if (invoiceExists(invoice.getRef(), InvoiceController.getTotalTTC(invoice), invoice.getCustomer().getId())) {
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -518,13 +515,13 @@ public class DolibarrService extends IntentService {
             obj.addProperty("socid", invoice.getCustomer().getId());
             Long date = invoice.getDate().getTime() / 1000;
             obj.addProperty("date", date.intValue());
-            if (Invoice.FACTURE.equals(invoice.getType())) {
+            if (Invoice.FACTURE == invoice.getType()) {
                 obj.addProperty("type", 0); // 0=Facture de doit, 2=Facture avoir
-                obj.addProperty("note_private", "Tablette " + invoice.getUser().getName() + ", ref " + invoice.getRef());
-            } else if (Invoice.AVOIR.equals(invoice.getType())) {
+                obj.addProperty("note_private", "Tablette " + realm.where(User.class).findFirst().getName() + ", ref " + invoice.getRef());
+            } else if (Invoice.AVOIR == invoice.getType()) {
                 Invoice facture_source = realm.where(Invoice.class).equalTo("id", invoice.getFk_facture_source()).findFirst();
                 obj.addProperty("note_private", "Tablette "
-                        + invoice.getUser().getName()
+                        + realm.where(User.class).findFirst().getName()
                         + ", ref " + invoice.getRef()
                         + ", factureTab " + facture_source.getRef()
                         + ", factureDoliId " + facture_source.getId_dolibarr());
@@ -555,7 +552,7 @@ public class DolibarrService extends IntentService {
                 Integer total_tax = line.getTotal_tax_round();
                 Integer total_tax2 = line.getTotal_tax2_round();
                 Integer total_ttc = line.getTotal_ttc_round();
-                if (Invoice.AVOIR.equals(invoice.getType())) {
+                if (Invoice.AVOIR == invoice.getType()) {
                     subprice = -subprice;
                     total_ht = -total_ht;
                     total_tax = -total_tax;

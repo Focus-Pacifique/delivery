@@ -39,10 +39,6 @@ public class Line extends RealmObject {
         return getTotal_ht_round() + getTotal_tax_round() + getTotal_tax2_round();
     }
 
-    public void setTotal_tax2(Double total_tax2) {
-        this.total_tax2 = total_tax2;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -73,18 +69,6 @@ public class Line extends RealmObject {
 
     public void setSubprice(Double subprice) {
         this.subprice = subprice;
-    }
-
-    public void setTotal_ht(Double total_ht) {
-        this.total_ht = total_ht;
-    }
-
-    public void setTotal_tax(Double total_tax) {
-        this.total_tax = total_tax;
-    }
-
-    public void setTotal_ttc(Double total_ttc) {
-        this.total_ttc = total_ttc;
     }
 
     public void updatePrices() {

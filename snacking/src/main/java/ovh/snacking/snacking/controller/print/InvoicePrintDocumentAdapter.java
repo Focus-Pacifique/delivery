@@ -54,7 +54,7 @@ public class InvoicePrintDocumentAdapter extends PrintDocumentAdapter {
 
         // Return print information to print framework
         PrintDocumentInfo info = new PrintDocumentInfo
-                .Builder("print_invoice.pdf")
+                .Builder("print_invoice_fragment.pdf")
                 .setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
                 .setPageCount(1)
                 .build();

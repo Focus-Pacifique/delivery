@@ -81,35 +81,41 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="200dip"
+                    android:id="@+id/tvProduct"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
                     android:paddingStart="@dimen/default_padding"
                     android:text="@string/products"/>
                 <TextView
-                    android:layout_width="80dip"
+                    android:id="@+id/tvPriceHT"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:gravity="end"
                     android:paddingEnd="@dimen/default_padding"
                     android:text="@string/price_u_ht"/>
                 <TextView
-                    android:layout_width="80dip"
+                    android:id="@+id/tvQty"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:gravity="end"
                     android:paddingEnd="@dimen/default_padding"
                     android:text="@string/qty_deliver"/>
                 <TextView
-                    android:layout_width="120dip"
+                    android:id="@+id/tvTotalLineHT"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
                     android:gravity="end"
                     android:paddingEnd="@dimen/default_padding"
                     android:text="@string/total_line"/>
-
             </LinearLayout>
 
-            <ListView
-                android:id="@+id/list_view_invoice_lines"
+            <!-- Invoice lines -->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerViewInvoiceLines"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:divider="@null" />

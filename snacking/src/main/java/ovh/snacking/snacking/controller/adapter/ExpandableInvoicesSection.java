@@ -20,6 +20,7 @@ import java.util.Locale;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
 import ovh.snacking.snacking.R;
+import ovh.snacking.snacking.controller.InvoiceController;
 import ovh.snacking.snacking.model.Invoice;
 import ovh.snacking.snacking.util.LibUtil;
 import ovh.snacking.snacking.view.fragment.InvoicesExpandableListFragment;
@@ -48,7 +49,7 @@ public class ExpandableInvoicesSection extends StatelessSection implements Invoi
     }
 
     public ExpandableInvoicesSection(SectionedRecyclerViewAdapter sectionAdapter, String sectionName, ArrayList<Invoice> list, Fragment frag, boolean expanded) {
-        super(R.layout.section_header_expandable, R.layout.section_item_invoice);
+        super(R.layout.section_header_expandable, R.layout.item_invoice);
 
         this.mSectionAdapter = sectionAdapter;
         this.mContext = frag.getContext();
@@ -82,7 +83,6 @@ public class ExpandableInvoicesSection extends StatelessSection implements Invoi
 
     @Override
     public void onBindItemViewHolder(RecyclerView.ViewHolder holder, final int position) {
-
         final ItemViewHolder itemHolder = (ItemViewHolder) holder;
         NumberFormat nf = new DecimalFormat("#,###.##");
 
@@ -93,16 +93,16 @@ public class ExpandableInvoicesSection extends StatelessSection implements Invoi
         final Invoice invoice = mFilteredList.get(position);
 
         // Invoice type & totalTTC
-        if (Invoice.FACTURE.equals(invoice.getType())) {
+        if (Invoice.FACTURE == invoice.getType()) {
             itemHolder.invoiceType.setText(R.string.invoice_type_facture);
             itemHolder.invoiceType.setTextColor(Color.BLUE);
 
-            itemHolder.invoiceTotalTTC.setText(String.valueOf(nf.format(invoice.getTotalTTC()) + " TTC"));
+            itemHolder.invoiceTotalTTC.setText(String.valueOf(nf.format(InvoiceController.getTotalTTC(invoice)) + " TTC"));
         } else {
             itemHolder.invoiceType.setText(R.string.invoice_type_avoir);
             itemHolder.invoiceType.setTextColor(Color.DKGRAY);
 
-            itemHolder.invoiceTotalTTC.setText(String.valueOf(nf.format(-invoice.getTotalTTC()) + " TTC"));
+            itemHolder.invoiceTotalTTC.setText(String.valueOf(nf.format(-InvoiceController.getTotalTTC(invoice)) + " TTC"));
         }
 
         // Customer ref & totalTTC
@@ -120,10 +120,10 @@ public class ExpandableInvoicesSection extends StatelessSection implements Invoi
         itemHolder.datetime.setText(simpleDate.format(invoice.getDate()));
 
         //Invoice state part
-        if (Invoice.ONGOING.equals(invoice.getState())) {
+        if (invoice.getState() == Invoice.ONGOING) {
             itemHolder.invoiceState.setText(R.string.invoice_state_en_cours);
             itemHolder.invoiceState.setTextColor(Color.YELLOW);
-        } else if (Invoice.FINISHED.equals(invoice.getState())) {
+        } else if (Invoice.FINISHED == invoice.getState()) {
             itemHolder.invoiceState.setText(R.string.invoice_state_terminee);
             itemHolder.invoiceState.setTextColor(Color.GREEN);
         }
@@ -139,9 +139,9 @@ public class ExpandableInvoicesSection extends StatelessSection implements Invoi
            public boolean onLongClick(View v) {
                int adapterPosition = itemHolder.getAdapterPosition();
                if (adapterPosition != RecyclerView.NO_POSITION) {
-                   if(Invoice.FINISHED.equals(invoice.getState()) && Invoice.FACTURE.equals(invoice.getType()))
+                   if(invoice.getState() == Invoice.FINISHED && Invoice.FACTURE == invoice.getType())
                        mListener.createAvoirFromFacture(invoice, mSectionAdapter);
-                   else if (Invoice.ONGOING.equals(invoice.getState()))
+                   else if (Invoice.ONGOING == invoice.getState())
                        mListener.deleteInvoice(invoice, ExpandableInvoicesSection.this);
                }
                return true;

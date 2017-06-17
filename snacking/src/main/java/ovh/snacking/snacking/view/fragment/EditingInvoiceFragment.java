@@ -30,14 +30,13 @@ import ovh.snacking.snacking.view.activity.MainActivity;
 
 public class EditingInvoiceFragment extends Fragment {
 
-    static final Integer NUM_TABS = 3;
+    static final Integer NUM_TABS = 2;
     OnEditInvoiceListener mListener;
     private Realm realm;
     private Integer invoiceId = 0;
     private Invoice mInvoice;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private FloatingActionButton fab;
-    //private Toolbar toolbar;
 
     public Integer getInvoiceId() {
         return invoiceId;
@@ -113,7 +112,7 @@ public class EditingInvoiceFragment extends Fragment {
             }
         });*/
 
-        // fab to print the print_invoice
+        // fab to print the print_invoice_fragment
         fab.setImageResource(R.drawable.ic_action_print);
         fab.show();
 
@@ -245,8 +244,6 @@ public class EditingInvoiceFragment extends Fragment {
                 case 0:
                     return new TabFragmentRecyclerViewProduct();
                 case 1:
-                    return new TabFragmentGridViewProduct();
-                case 2:
                     return new TabFragmentEditInvoice();
             }
             return null;
@@ -261,10 +258,8 @@ public class EditingInvoiceFragment extends Fragment {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "GROUPE";
+                    return "PRODUITS";
                 case 1:
-                    return "GRILLE";
-                case 2:
                     return "FACTURE";
             }
             return null;

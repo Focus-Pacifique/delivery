@@ -1,11 +1,11 @@
 package ovh.snacking.snacking.view.fragment;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +23,8 @@ import java.util.GregorianCalendar;
 import io.realm.Realm;
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.controller.adapter.CustomerAdapter;
-import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.model.Customer;
+import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.view.activity.MainActivity;
 import ovh.snacking.snacking.view.dialogFragment.DatePickerEndFragment;
 import ovh.snacking.snacking.view.dialogFragment.DatePickerStartFragment;
@@ -140,7 +140,7 @@ public class PrintInvoiceStatementFragment extends Fragment {
     private void dialogChooseCustomer() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Set the dialog title
-        builder.setAdapter(new CustomerAdapter(getContext(), realm.where(Customer.class).findAll()), null);
+        builder.setAdapter(new CustomerAdapter(realm.where(Customer.class).findAll()), null);
 
         final AlertDialog ad = builder.create();
         ad.getListView().setItemsCanFocus(false);
@@ -198,9 +198,9 @@ public class PrintInvoiceStatementFragment extends Fragment {
         }
     }
 
+
     public interface OnPrintInvoiceStatementListener {
         void onShowInvoiceStatement(Customer customer, Date startDate, Date endDate);
-
         void onPrintInvoiceStatement(View view);
     }
 }

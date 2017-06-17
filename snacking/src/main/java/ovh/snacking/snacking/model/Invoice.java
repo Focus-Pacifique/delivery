@@ -1,8 +1,6 @@
 package ovh.snacking.snacking.model;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -15,19 +13,17 @@ import io.realm.annotations.PrimaryKey;
 
 public class Invoice extends RealmObject {
 
-    public static final Integer ONGOING = 0;
-    public static final Integer FINISHED = 1;
+    public static final int ONGOING = 0;
+    public static final int FINISHED = 1;
 
-    public static final Integer FACTURE = 0;
-    public static final Integer AVOIR = 1;
+    public static final int FACTURE = 0;
+    public static final int AVOIR = 1;
 
     @PrimaryKey
     private Integer id;
     private Integer type;
     private Integer state;
-    private User user;
     private Date date;
-    private Integer number;
     private String ref;
     private Customer customer;
     private RealmList<Line> lines;
@@ -40,7 +36,6 @@ public class Invoice extends RealmObject {
     public Invoice() {
         super();
         this.type = FACTURE;
-        this.number = 0;
         this.date = new Date();
         this.state = ONGOING;
         this.lines = new RealmList<>();
@@ -48,73 +43,6 @@ public class Invoice extends RealmObject {
         this.isPOSTToDolibarr = false;
         this.counterPrint = 0;
 
-    }
-
-    public String computeRef(Integer nb) {
-        String ref;
-        if (Invoice.AVOIR.equals(type)) {
-            ref = "AV";
-        } else {
-            ref = "FA";
-        }
-        // 2 numbers of the current year
-        SimpleDateFormat simpleDate = new SimpleDateFormat("yy");
-        String year = simpleDate.format(date);
-
-        ref += user.getName() + year + "-" + String.format("%04d", nb);
-
-        return ref;
-    }
-
-    public Integer getTotalHT() {
-        Integer total_ht = 0;
-        for (Line line : lines) {
-            total_ht += line.getTotal_ht_round();
-        }
-        return total_ht;
-    }
-
-    public HashMap<Double, Integer> getTotalTaxes() {
-        HashMap<Double, Integer> totalTaxes = new HashMap<>();
-
-        // First compute the total of each tax rate
-        for(Line line : lines) {
-            Double taxRate = line.getProd().getTaxRate();
-            if (totalTaxes.containsKey(taxRate)) {
-                int currentTaxAmount = totalTaxes.get(taxRate);
-                totalTaxes.remove(taxRate);
-                totalTaxes.put(taxRate, currentTaxAmount + line.getTotal_tax_round());
-            } else {
-                totalTaxes.put(line.getProd().getTaxRate(), line.getTotal_tax_round());
-            }
-        }
-
-        return totalTaxes;
-    }
-
-    public Integer getTotalTax2() {
-        Integer total_tax2 = 0;
-        for (Line line : lines) {
-            total_tax2 += line.getTotal_tax2_round();
-        }
-        return total_tax2;
-    }
-
-    public Integer getTotalTTC() {
-        Integer total_ttc = 0;
-        for (Line line : lines) {
-            total_ttc += line.getTotal_ttc_round();
-        }
-        return total_ttc;
-    }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
-        this.ref = computeRef(number);
     }
 
     public Integer getId() {
@@ -147,14 +75,6 @@ public class Invoice extends RealmObject {
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public RealmList<Line> getLines() {

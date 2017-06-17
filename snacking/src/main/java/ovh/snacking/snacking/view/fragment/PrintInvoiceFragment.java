@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -19,13 +18,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import io.realm.Realm;
 import ovh.snacking.snacking.NumberToWords.FrenchNumberToWords;
 import ovh.snacking.snacking.R;
+import ovh.snacking.snacking.controller.InvoiceController;
+import ovh.snacking.snacking.controller.adapter.InvoiceLineAdapter;
 import ovh.snacking.snacking.controller.adapter.TaxAdapter;
-import ovh.snacking.snacking.controller.print.PrintInvoiceAdapter;
 import ovh.snacking.snacking.model.Invoice;
 import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.view.activity.MainActivity;
@@ -36,93 +37,103 @@ import ovh.snacking.snacking.view.activity.MainActivity;
 
 public class PrintInvoiceFragment extends Fragment {
 
-    OnPrintListener mListener;
-    private Integer invoiceId = 0;
-    private Invoice mInvoice;
+    public static String ARG_INVOICE_ID = "invoiceId";
+
+    PrintInvoiceFragmentListener mListener;
     private Realm realm;
+    private Invoice mInvoice;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mListener = (OnPrintListener) context;
+            mListener = (PrintInvoiceFragmentListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnPrintListener");
+            throw new ClassCastException(context.toString() + " must implement PrintInvoiceFragmentListener");
         }
     }
 
-    public void setInvoiceId(Integer invoiceId) {
-        this.invoiceId = invoiceId;
+    public static PrintInvoiceFragment newInstance(int invoiceId) {
+        PrintInvoiceFragment frag = new PrintInvoiceFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(ARG_INVOICE_ID, invoiceId);
+        frag.setArguments(bundle);
+
+        return frag;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         realm = RealmSingleton.getInstance(getContext()).getRealm();
-        final View layout = inflater.inflate(R.layout.print_invoice, container, false);
+        final View layout = inflater.inflate(R.layout.print_invoice_fragment, container, false);
 
-        // Set up the invoice lines adapter
-        mInvoice = realm.where(Invoice.class).equalTo("id", invoiceId).findFirst();
-        ListView listView = (ListView) layout.findViewById(R.id.list_view_invoice_lines);
-        PrintInvoiceAdapter lineInvoiceAdapter = new PrintInvoiceAdapter(getContext(), mInvoice.getLines(), mInvoice.getId());
-        listView.setAdapter(lineInvoiceAdapter);
+        // Set up the mInvoice lines adapter
+        mInvoice = realm.where(Invoice.class).equalTo("id", getArguments().getInt(ARG_INVOICE_ID)).findFirst();
+        if(mInvoice != null) {
 
-        // Customer
-        TextView customer = (TextView) layout.findViewById(R.id.customer_name);
-        customer.setText(mInvoice.getCustomer().getName());
+            // Set mInvoice lines adapter to recycler view
+            InvoiceLineAdapter invoiceLineAdapter = new InvoiceLineAdapter(getContext(), mInvoice.getLines(), mInvoice.getType(), InvoiceLineAdapter.VIEW_PRINT);
+            RecyclerView recyclerViewInvoiceLines = (RecyclerView) layout.findViewById(R.id.recyclerViewInvoiceLines);
+            recyclerViewInvoiceLines.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerViewInvoiceLines.setAdapter(invoiceLineAdapter);
 
-        // Invoice date and number
-        SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy");
-        TextView date = (TextView) layout.findViewById(R.id.invoice_date);
-        date.setText("Date : " + simpleDate.format(mInvoice.getDate()));
+            // Customer
+            TextView customer = (TextView) layout.findViewById(R.id.customer_name);
+            customer.setText(mInvoice.getCustomer().getName());
 
-        TextView invoice_title = (TextView) layout.findViewById(R.id.invoice_title);
-        invoice_title.setText(getTitle(mInvoice));
+            // Invoice date
+            SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
+            ((TextView) layout.findViewById(R.id.invoice_date)).setText(String.valueOf("Date : " + simpleDate.format(mInvoice.getDate())));
 
-        TextView invoice_number = (TextView) layout.findViewById(R.id.invoice_number);
-        if (Invoice.FINISHED.equals(mInvoice.getState())) {
-            invoice_number.setText(mInvoice.getRef());
-        } else {
-            invoice_number.setText(mInvoice.computeRef(0));
-        }
+            // Invoice number
+            ((TextView) layout.findViewById(R.id.invoice_title)).setText(getTitle());
+            ((TextView) layout.findViewById(R.id.invoice_number)).setText(Invoice.FINISHED == mInvoice.getState() ? mInvoice.getRef() : InvoiceController.computeInvoiceNextReference(getContext(), mInvoice.getType()));
 
-        // Facture source pour les avoirs
-        TextView facture_source_number = (TextView) layout.findViewById(R.id.facture_source_number);
-        if (Invoice.AVOIR.equals(mInvoice.getType())) {
-            Invoice factureSource = realm.where(Invoice.class).equalTo("id", mInvoice.getFk_facture_source()).findFirst();
-            if (factureSource != null) {
-                facture_source_number.setText("(de la Facture N°" + factureSource.getRef() + ")");
-                facture_source_number.setVisibility(View.VISIBLE);
+            // Facture source pour les avoirs
+            switch (mInvoice.getType()) {
+                case Invoice.AVOIR :
+                    layout.findViewById(R.id.facture_source_number).setVisibility(View.VISIBLE);
+                    Invoice factureSource = realm.where(Invoice.class).equalTo("id", mInvoice.getFk_facture_source()).findFirst();
+                    if (factureSource != null)
+                        ((TextView) layout.findViewById(R.id.facture_source_number)).setText("(de la Facture N°" + factureSource.getRef() + ")");
+                    else
+                        ((TextView) layout.findViewById(R.id.facture_source_number)).setText("(facture non trouvée)");
+                    break;
+                default:
+                    layout.findViewById(R.id.facture_source_number).setVisibility(View.GONE);
+                    break;
             }
-        } else {
-            facture_source_number.setVisibility(View.INVISIBLE);
-        }
 
-        setTOTALViews(layout);
+            setTOTALViews(layout, mInvoice);
 
-        // Listeners
-        Button btnPrint = (Button) layout.findViewById(R.id.button_print);
-        btnPrint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isFinished = mListener.onFinishInvoice(invoiceId);
-                if (isFinished) {
-                    updateInvoiceRef();
-                    mListener.onPrint(getView().findViewById(R.id.document_content), invoiceId);
-                }
-            }
-        });
-
-        Button btnChangeInvoice = (Button) layout.findViewById(R.id.button_change_last_invoice);
-        if (!mInvoice.isPOSTToDolibarr() && mInvoice.getId() == realm.where(Invoice.class).max("id").intValue() && Invoice.FINISHED.equals(mInvoice.getState())) {
-            btnChangeInvoice.setVisibility(View.VISIBLE);
-            btnChangeInvoice.setOnClickListener(new View.OnClickListener() {
+            // Listeners
+            Button btnPrint = (Button) layout.findViewById(R.id.button_print);
+            btnPrint.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mListener.onChangeLastInvoice(getView().findViewById(R.id.document_content), invoiceId);
+                    if (InvoiceController.finishInvoice(getContext(), mInvoice)) {
+                        TextView invoice_number = (TextView) getView().findViewById(R.id.invoice_number);
+                        if(null != invoice_number) {
+                            invoice_number.setText(mInvoice.getRef());
+                        }
+                        mListener.onPrint(getView().findViewById(R.id.document_content), mInvoice.getId());
+                    }
                 }
             });
-        } else {
-            btnChangeInvoice.setVisibility(View.INVISIBLE);
+
+            Button btnChangeInvoice = (Button) layout.findViewById(R.id.button_change_last_invoice);
+            if (!mInvoice.isPOSTToDolibarr() && mInvoice.getId() == realm.where(Invoice.class).max("id").intValue() && Invoice.FINISHED == mInvoice.getState()) {
+                btnChangeInvoice.setVisibility(View.VISIBLE);
+                btnChangeInvoice.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mListener.onChangeLastInvoice(getView().findViewById(R.id.document_content), mInvoice.getId());
+                    }
+                });
+            } else {
+                btnChangeInvoice.setVisibility(View.GONE);
+            }
         }
 
         return layout;
@@ -131,9 +142,7 @@ public class PrintInvoiceFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         ((FloatingActionButton) getActivity().findViewById(R.id.fab)).hide();
-
         if (mInvoice.getCounterPrint() > 0)
             ((MainActivity) getActivity()).setActionBarTitle("Imprimée (" + mInvoice.getCounterPrint() + ") fois");
     }
@@ -144,42 +153,32 @@ public class PrintInvoiceFragment extends Fragment {
         realm.close();
     }
 
-    private String getTitle(Invoice invoice) {
-        String ref;
-        if (Invoice.FACTURE.equals(invoice.getType())) {
+    private String getTitle() {
+        String ref = "";
+        if (Invoice.FACTURE == mInvoice.getType()) {
             ref = "FACTURE N°";
-        } else if (Invoice.AVOIR.equals(invoice.getType())) {
+        } else if (Invoice.AVOIR == mInvoice.getType()) {
             ref = "AVOIR N°";
-        } else {
-            ref = "INVOICE N°" + invoice.getRef();
         }
         return ref;
     }
 
-    private void updateInvoiceRef() {
-        TextView invoice_number = (TextView) getView().findViewById(R.id.invoice_number);
-        if(null != invoice_number) {
-            invoice_number.setText(mInvoice.getRef());
-        }
-    }
-
-    private void setTOTALViews(View layout) {
-        ArrayList<String[]> taxes = populateTaxAdapter(mInvoice);
-        TaxAdapter adapter = new TaxAdapter(getContext(), taxes);
+    private void setTOTALViews(View layout, Invoice invoice) {
+        ArrayList<String[]> taxes = populateTaxAdapter(invoice);
+        TaxAdapter adapter = new TaxAdapter(taxes);
 
         // Set price adapter to recycler view
         RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.recyclerViewTaxes);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
 
         // Convert number to words
         String total_in_words;
-        if (Invoice.AVOIR.equals(mInvoice.getType())) {
-            total_in_words = "- (moins) " + FrenchNumberToWords.convert(-mInvoice.getTotalTTC());
+        if (Invoice.AVOIR == mInvoice.getType()) {
+            total_in_words = "- (moins) " + FrenchNumberToWords.convert(-InvoiceController.getTotalTTC(invoice));
         } else {
-            total_in_words = FrenchNumberToWords.convert(mInvoice.getTotalTTC());
+            total_in_words = FrenchNumberToWords.convert(InvoiceController.getTotalTTC(invoice));
         }
         total_in_words += " francs CFP";
         ((TextView) layout.findViewById(R.id.tot_words)).setText(total_in_words);
@@ -189,8 +188,8 @@ public class PrintInvoiceFragment extends Fragment {
         ArrayList<String[]> taxes = new ArrayList<>();
 
         // Total HT
-        Integer TOT_HT = invoice.getTotalHT();
-        if (Invoice.AVOIR.equals(invoice.getType())) {
+        Integer TOT_HT = InvoiceController.getTotalHT(invoice);
+        if (Invoice.AVOIR == invoice.getType()) {
             TOT_HT = -TOT_HT;
         }
         String[] HT = new String[2];
@@ -201,7 +200,7 @@ public class PrintInvoiceFragment extends Fragment {
 
         // Multiple tax rates
         NumberFormat nf = new DecimalFormat("##.##");
-        HashMap<Double, Integer> totalTaxes = mInvoice.getTotalTaxes();
+        HashMap<Double, Integer> totalTaxes = InvoiceController.getTotalTaxes(invoice);
         Iterator<Map.Entry<Double, Integer>> it = totalTaxes.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Double, Integer> item = it.next();
@@ -210,7 +209,7 @@ public class PrintInvoiceFragment extends Fragment {
             TAX[0] = "TGC (" + nf.format(item.getKey()) + " %)";
 
             Integer TOT_TAX = item.getValue();
-            if (Invoice.AVOIR.equals(invoice.getType())) {
+            if (Invoice.AVOIR == invoice.getType()) {
                 TOT_TAX = -TOT_TAX;
             }
             TAX[1] = String.format("%,d", TOT_TAX) + " " + getString(R.string.xpf);
@@ -220,8 +219,8 @@ public class PrintInvoiceFragment extends Fragment {
 
 
         // Total Tax2 = TSS
-        Integer TOT_TAX2 = mInvoice.getTotalTax2();
-        if (Invoice.AVOIR.equals(mInvoice.getType())) {
+        Integer TOT_TAX2 = InvoiceController.getTotalTax2(invoice);
+        if (Invoice.AVOIR == mInvoice.getType()) {
             TOT_TAX2 = -TOT_TAX2;
         }
         String[] TAX2 = new String[2];
@@ -231,8 +230,8 @@ public class PrintInvoiceFragment extends Fragment {
 
 
         // Total TTC
-        Integer TOT_TTC = mInvoice.getTotalTTC();
-        if (Invoice.AVOIR.equals(mInvoice.getType())) {
+        Integer TOT_TTC = InvoiceController.getTotalTTC(invoice);
+        if (Invoice.AVOIR == mInvoice.getType()) {
             TOT_TTC = -TOT_TTC;
         }
         String[] TTC = new String[2];
@@ -243,14 +242,8 @@ public class PrintInvoiceFragment extends Fragment {
         return taxes;
     }
 
-    public interface OnPrintListener {
-        //void onBackToManageInvoices();
-
-        boolean onFinishInvoice(Integer invoiceId);
-
+    public interface PrintInvoiceFragmentListener {
         void onChangeLastInvoice(View view, Integer invoiceId);
-
         void onPrint(View view, Integer invoiceId);
     }
-
 }

@@ -1,77 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- Application -->
     <PreferenceCategory
-        android:icon="@drawable/ic_sync_black_24dp"
-        android:key="pref_key_storage_settings"
-        android:title="@string/pref_header_data_sync">
+        android:title="@string/pref_header_application">
 
-        <!-- A 'parent' preference, which enables/disables child preferences (below)
-         when checked/unchecked. -->
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="pref_key_auto_sync"
-            android:summary="@string/pref_summary_auto_sync"
-            android:title="@string/pref_title_auto_sync"/>
-
-        <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
         <Preference
-            android:key="pref_key_manual_sync"
-            android:summary="@string/pref_summary_manual_sync"
-            android:title="@string/pref_title_manual_sync">
+            android:key="pref_application_user"
+            android:title="@string/pref_application_user"
+            android:defaultValue="unknown"/>
+        <ListPreference
+            android:key="pref_application_product_per_row"
+            android:title="@string/pref_application_product_per_row"
+            android:dialogTitle="@string/pref_application_product_per_row"
+            android:entries="@array/pref_application_product_per_row_entries"
+            android:entryValues="@array/pref_application_product_per_row_entries"
+            app:defaultValue="4"
+            android:summary="%s"/>
+    </PreferenceCategory>
+
+    <!-- Invoice -->
+    <PreferenceCategory android:title="@string/pref_header_invoice">
+
+        <EditTextPreference
+            android:key="pref_invoice_prefix_avoir"
+            android:title="@string/pref_invoice_prefix_avoir"
+            android:defaultValue="AV"/>
+        <EditTextPreference
+            android:key="pref_invoice_prefix_facture"
+            android:title="@string/pref_invoice_prefix_facture"
+            android:defaultValue="FA" />
+        <EditTextPreference
+            android:key="pref_invoice_username"
+            android:title="@string/pref_invoice_username"/>
+        <EditTextPreference
+            android:key="pref_invoice_next_avoir"
+            android:title="@string/pref_invoice_next_avoir"
+            android:defaultValue="3"
+            android:inputType="number"/>
+        <EditTextPreference
+            android:key="pref_invoice_next_facture"
+            android:title="@string/pref_invoice_next_facture"
+            android:defaultValue="3"
+            android:inputType="number" />
+    </PreferenceCategory>
+
+    <!-- Data & sync -->
+    <PreferenceCategory
+        android:title="@string/pref_header_sync">
+
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="pref_sync_auto"
+            android:summary="@string/pref_sync_auto_summary"
+            android:title="@string/pref_sync_auto"/>
+        <Preference
+            android:key="pref_sync_last_date"
+            android:title="@string/pref_sync_last_date"
+            android:defaultValue="Never synchronized">
             <intent android:action="ovh.snacking.snacking.view.SynchronizationActivity" />
         </Preference>
-
     </PreferenceCategory>
-
-    <!--
-
-    <PreferenceCategory
-        android:title="@string/pref_header_general">
-        <Preference
-            android:key="pref_key_invoice_statement_period"
-            android:summary="%s"
-            android:negativeButtonText="@null"
-            android:positiveButtonText="@null"
-            android:title="@string/pref_title_invoice_statement_period" />
-        <Preference android:title="@string/pref_title_invoice_statement"
-            android:key="pref_key_invoice_statement" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/pref_header_product"
-        android:key="pref_key_storage_settings">
-        <Preference android:title="oice_sment">
-            <intent android:action="ovh.snacking.snacking.view.ManageGroupActivity" />
-        </Preference>
-    </PreferenceCategory>-->
-
-    <!-- A 'parent' preference, which enables/disables child preferences (below)
-         when checked/unchecked. -->
-    <!-- <SwitchPreference
-        android:defaultValue="true"
-        android:key="notifications_new_message"
-        android:title="@string/pref_title_new_message_notifications" /> -->
-
-
-    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
-    <!-- <SwitchPreference
-        android:defaultValue="true"
-        android:dependency="notifications_new_message"
-        android:key="notifications_new_message_vibrate"
-        android:title="@string/pref_title_vibrate" /> -->
-
-    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-         dismiss it. -->
-    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
-    <!-- <ListPreference
-        android:defaultValue="1"
-        android:entries="@array/pref_product_sort_titles"
-        android:entryValues="@array/pref_product_sort_values"
-        android:key="product_sort_list"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"
-        android:title="@string/pref_title_product_sort" /> -->
 
 </PreferenceScreen>

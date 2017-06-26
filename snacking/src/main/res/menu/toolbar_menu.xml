@@ -7,9 +7,4 @@
         app:showAsAction="always"
         app:actionViewClass="android.support.v7.widget.SearchView"
         android:iconifiedByDefault="true" />
-    <item
-        android:id="@+id/action_settings"
-        android:icon="@android:drawable/ic_menu_manage"
-        android:title="@string/action_menu"
-        app:showAsAction="ifRoom"/>
 </menu>

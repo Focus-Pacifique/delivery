@@ -8,8 +8,11 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.widget.EditText;
 
+import java.text.DecimalFormat;
 import java.text.Normalizer;
+import java.text.NumberFormat;
 import java.util.Calendar;
 
 import ovh.snacking.snacking.controller.service.DolibarrService;
@@ -76,6 +79,24 @@ public class LibUtil {
             }
 
             return highlighted;
+        }
+    }
+
+    public static String formatDouble(double value) {
+        NumberFormat nf = new DecimalFormat("#,###.##");
+        return nf.format(value);
+    }
+
+    public static double parseEditTextInput(EditText et) {
+        if (!et.getText().toString().isEmpty()) {
+            final Double input = Double.parseDouble(et.getText().toString());
+            if (input > 0) {
+                return input;
+            } else {
+                return 0;
+            }
+        } else {
+            return 0;
         }
     }
 }

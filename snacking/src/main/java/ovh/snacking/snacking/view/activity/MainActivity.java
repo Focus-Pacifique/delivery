@@ -61,9 +61,9 @@ import ovh.snacking.snacking.util.RealmSingleton;
 import ovh.snacking.snacking.view.dialogFragment.CustomerSectionFragment;
 import ovh.snacking.snacking.view.dialogFragment.DatePickerEndFragment;
 import ovh.snacking.snacking.view.dialogFragment.DatePickerStartFragment;
-import ovh.snacking.snacking.view.fragment.CustomerOfGroupFragment;
+import ovh.snacking.snacking.view.fragment.CustomerGroupDetailsFragment;
+import ovh.snacking.snacking.view.fragment.CustomerGroupsFragment;
 import ovh.snacking.snacking.view.fragment.EditingInvoiceFragment;
-import ovh.snacking.snacking.view.fragment.GroupCustomerFragment;
 import ovh.snacking.snacking.view.fragment.GroupProductFragment;
 import ovh.snacking.snacking.view.fragment.InvoiceStatementFragment;
 import ovh.snacking.snacking.view.fragment.InvoicesExpandableListFragment;
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity
         EditingInvoiceFragment.OnEditInvoiceListener,
         PrintInvoiceFragment.PrintInvoiceFragmentListener,
         PrintInvoiceStatementFragment.OnPrintInvoiceStatementListener,
-        GroupCustomerFragment.OnGroupCustomerSelectedListener,
+        CustomerGroupsFragment.CustomerGroupFragmentListener,
         GroupProductFragment.OnGroupProductSelectedListener,
         DatePickerStartFragment.OnDatePickerStartFragment,
         DatePickerEndFragment.OnDatePickerEndFragment,
@@ -91,8 +91,8 @@ public class MainActivity extends AppCompatActivity
     public static final String TAG_PRINT_INVOICE_STATEMENT = "ovh.snacking.snacking.view.fragment.PrintInvoiceStatementFragment";
     public static final String TAG_INVOICE_STATEMENT = "ovh.snacking.snacking.view.fragment.InvoiceStatementFragment";
     public static final String TAG_SETTINGS_FRAGMENT = "ovh.snacking.snacking.view.fragment.PreferencesFragment";
-    public static final String TAG_MANAGE_GROUP_CUSTOMER = "ovh.snacking.snacking.view.fragment.GroupCustomerFragment";
-    public static final String TAG_CUSTOMER_OF_GROUP = "ovh.snacking.snacking.view.fragment.CustomerOfGroupFragment";
+    public static final String TAG_MANAGE_GROUP_CUSTOMER = "ovh.snacking.snacking.view.fragment.CustomerGroupsFragment";
+    public static final String TAG_CUSTOMER_GROUP_DETAILS = "ovh.snacking.snacking.view.fragment.CustomerGroupDetailsFragment";
     public static final String TAG_MANAGE_GROUP_PRODUCT = "ovh.snacking.snacking.view.fragment.GroupProductFragment";
     public static final String TAG_PRODUCT_OF_GROUP = "ovh.snacking.snacking.view.fragment.ProductOfGroupFragment";
     public static final String TAG_INVOICES_EXPANDABLE_LIST = "ovh.snacking.snacking.view.fragment.InvoicesExpandableListFragment";
@@ -231,7 +231,6 @@ public class MainActivity extends AppCompatActivity
     // Called whenever we call invalidateOptionsMenu()
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_settings).setVisible(false);
         menu.findItem(R.id.action_search).setVisible(false);
         return true;
     }
@@ -239,7 +238,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
-        getMenuInflater().inflate(R.menu.app_bar_actions, menu);
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         return true;
     }
 
@@ -354,10 +353,9 @@ public class MainActivity extends AppCompatActivity
     /**  Group Customer select part  **/
     /**********************************/
     @Override
-    public void onGroupCustomerSelected(CustomerGroup group) {
-        final CustomerOfGroupFragment frag = (CustomerOfGroupFragment) getFragment(MainActivity.TAG_CUSTOMER_OF_GROUP);
-        frag.setCustomerGroup(group);
-        launchFragment(frag, TAG_CUSTOMER_OF_GROUP, true);
+    public void displayCustomersOfGroup(CustomerGroup group) {
+        CustomerGroupDetailsFragment frag = CustomerGroupDetailsFragment.newInstance(group.getPosition());
+        launchFragment(frag, TAG_CUSTOMER_GROUP_DETAILS, true);
     }
 
 
@@ -635,10 +633,7 @@ public class MainActivity extends AppCompatActivity
                     frag =  new InvoiceStatementFragment();
                     break;
                 case TAG_MANAGE_GROUP_CUSTOMER:
-                    frag =  new GroupCustomerFragment();
-                    break;
-                case TAG_CUSTOMER_OF_GROUP:
-                    frag =  new CustomerOfGroupFragment();
+                    frag =  new CustomerGroupsFragment();
                     break;
                 case TAG_MANAGE_GROUP_PRODUCT:
                     frag =  new GroupProductFragment();

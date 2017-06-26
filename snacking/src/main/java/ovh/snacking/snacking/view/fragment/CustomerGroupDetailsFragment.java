@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +19,10 @@ import android.widget.TextView;
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
-import io.realm.RealmResults;
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.controller.adapter.CustomerAdapter;
+import ovh.snacking.snacking.controller.adapter.CustomerTouchHelperAdapter;
+import ovh.snacking.snacking.controller.adapter.ItemTouchHelperCallback;
 import ovh.snacking.snacking.model.Customer;
 import ovh.snacking.snacking.model.CustomerAndGroupBinding;
 import ovh.snacking.snacking.model.CustomerGroup;
@@ -34,26 +36,25 @@ import ovh.snacking.snacking.view.activity.MainActivity;
  *
  */
 
-public class CustomerOfGroupFragment extends Fragment {
+public class CustomerGroupDetailsFragment extends Fragment implements CustomerTouchHelperAdapter.OnStartDragListener {
 
-    //OnCustomerOfGroupListener mListener;
+    public static String ARG_GROUP_POSITION = "position";
+
     private Realm realm;
+    private RecyclerView mRecyclerView;
+    private CustomerTouchHelperAdapter mAdapter;
+    private ItemTouchHelper mItemTouchHelper;
     private FloatingActionButton fab;
     private CustomerGroup mGroup;
-    //private Toolbar toolbar;
 
-    /*@Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            mListener = (OnCustomerOfGroupListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnCustomerOfGroupListener");
-        }
-    }*/
+    public static CustomerGroupDetailsFragment newInstance(int position) {
+        CustomerGroupDetailsFragment frag = new CustomerGroupDetailsFragment();
 
-    public void setCustomerGroup(CustomerGroup mGroup) {
-        this.mGroup = mGroup;
+        Bundle bundle = new Bundle();
+        bundle.putInt(ARG_GROUP_POSITION, position);
+        frag.setArguments(bundle);
+
+        return frag;
     }
 
     @Override
@@ -61,16 +62,17 @@ public class CustomerOfGroupFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recycler_view, container, false);
         realm = RealmSingleton.getInstance(getContext()).getRealm();
 
+        mGroup = realm.where(CustomerGroup.class).equalTo(CustomerGroup.FIELD_POSITION, getArguments().getInt(ARG_GROUP_POSITION)).findFirst();
+
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), LinearLayoutManager.VERTICAL));
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        setUpRecyclerView();
 
-        RealmResults<CustomerAndGroupBinding> customers = realm.where(CustomerAndGroupBinding.class).equalTo("group.id", mGroup.getId()).findAllSorted("position");
-        CustomerRecyclerViewAdapter mCustomerAdapter = new CustomerRecyclerViewAdapter(customers);
-        recyclerView.setAdapter(mCustomerAdapter);
+
+        //RealmResults<CustomerAndGroupBinding> customers = realm.where(CustomerAndGroupBinding.class).equalTo("group.id", mGroup.getId()).findAllSorted("position");
+        //CustomerRecyclerViewAdapter mCustomerAdapter = new CustomerRecyclerViewAdapter(customers);
+        //recyclerView.setAdapter(mCustomerAdapter);
 
         return view;
     }
@@ -95,30 +97,31 @@ public class CustomerOfGroupFragment extends Fragment {
 
         fab.setImageResource(R.drawable.ic_create_white_24dp);
         fab.show();
-
-        // Back arrow in the menu
-        /*toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_back_button);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onBackPressed();
-            }
-        });*/
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        // Back arrow in the menu
-        //toolbar.setNavigationIcon(null);
-        //toolbar.setNavigationOnClickListener(null);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mRecyclerView.setAdapter(null);
         realm.close();
+    }
+
+    private void setUpRecyclerView() {
+        mAdapter = new CustomerTouchHelperAdapter(mGroup.getCustomers(), this, realm);
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addItemDecoration( new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+
+        mItemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallback(mAdapter));
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
+
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
     }
 
     private void dialogAddCustomerToGroup() {
@@ -134,15 +137,16 @@ public class CustomerOfGroupFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Manage selected items here
                 final Customer customer = (Customer) parent.getItemAtPosition(position);
-                realm.executeTransaction(new Realm.Transaction() {
+                mAdapter.i
+                /*realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
                         CustomerAndGroupBinding bind = realm.createObject(CustomerAndGroupBinding.class, nextCustomerAndGroupBindingId());
                         bind.setCustomer(customer);
                         bind.setGroup(mGroup);
-                        bind.setPosition(nextCustomerAndGroupBindingPosition(mGroup));
+                        //bind.setPosition(nextCustomerAndGroupBindingPosition(mGroup));
                     }
-                });
+                });*/
             }
         });
 
@@ -150,7 +154,7 @@ public class CustomerOfGroupFragment extends Fragment {
     }
 
     private boolean removeCustomerFromGroup(final CustomerAndGroupBinding bind) {
-        realm.executeTransaction(new Realm.Transaction() {
+        /*realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
 
@@ -166,7 +170,7 @@ public class CustomerOfGroupFragment extends Fragment {
                 //Delete the line
                 bind.deleteFromRealm();
             }
-        });
+        });*/
         return true;
     }
 
@@ -174,9 +178,9 @@ public class CustomerOfGroupFragment extends Fragment {
         return realm.where(CustomerAndGroupBinding.class).findFirst() != null ? (realm.where(CustomerAndGroupBinding.class).max("id").intValue() + 1) : 1;
     }
 
-    private Integer nextCustomerAndGroupBindingPosition(CustomerGroup group) {
-        return realm.where(CustomerAndGroupBinding.class).equalTo("group.id", group.getId()).findAll().size();
-    }
+    /*private Integer nextCustomerAndGroupBindingPosition(CustomerGroup group) {
+        //return realm.where(CustomerAndGroupBinding.class).equalTo("group.id", group.getId()).findAll().size();
+    }*/
 
     /*public interface OnCustomerOfGroupListener {
         void onBackPressed();

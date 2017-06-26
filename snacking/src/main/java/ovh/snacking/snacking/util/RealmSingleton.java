@@ -184,6 +184,10 @@ public class RealmSingleton {
                         schema.get("Invoice").removeField("user");
 
                     oldVersion = 5;
+
+                } if (oldVersion == 5) {
+                    schema.get("CustomerGroup").addRealmListField("customers", schema.get("Customer"));
+                    schema.remove("CustomerAndGroupBinding");
                 }
             }
         };

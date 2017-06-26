@@ -16,7 +16,7 @@
     <string name="title_product_of_group">Groupe</string>
 
 
-    <!-- Strings related to CustomerOfGroupFragment-->
+    <!-- Strings related to CustomerGroupDetailsFragment-->
     <string name="title_customer_of_group">Groupe</string>
 
     <string name="dialog_title_group_product">Nouveau groupe de produit</string>

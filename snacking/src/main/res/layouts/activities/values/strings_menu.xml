@@ -3,4 +3,10 @@
     <string name="action_search">Rechercher</string>
     <string name="action_menu">Menu</string>
     <string name="hint_search_customer">Client, n° de facture</string>
+
+    <!-- Contextual acton bar menu -->
+    <string name="add_item">Ajouter</string>
+    <string name="start_delete">Mode suppression</string>
+    <string name="delete">Supprimer</string>
+
 </resources>

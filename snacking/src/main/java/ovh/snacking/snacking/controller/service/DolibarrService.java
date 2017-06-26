@@ -583,7 +583,7 @@ public class DolibarrService extends IntentService {
 
     private void deleteCustomerBind(CustomerAndGroupBinding bind) {
         // Set correct position of customer
-        RealmResults<CustomerAndGroupBinding> lines = realm.where(CustomerAndGroupBinding.class)
+        /*RealmResults<CustomerAndGroupBinding> lines = realm.where(CustomerAndGroupBinding.class)
                 .equalTo("group.id", bind.getGroup().getId())
                 .greaterThan("position", bind.getPosition())
                 .findAll();
@@ -591,7 +591,7 @@ public class DolibarrService extends IntentService {
             line.setPosition(line.getPosition() - 1);
         }
         //Delete the line
-        bind.deleteFromRealm();
+        bind.deleteFromRealm();*/
     }
 
     private void deleteProductBind(ProductAndGroupBinding bind) {

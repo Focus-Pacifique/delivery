@@ -174,7 +174,7 @@ public class GroupProductFragment extends Fragment {
 
         @Override
         public GroupProductAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_group, parent, false);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_manage_position, parent, false);
             return new ViewHolder(itemView);
         }
 
@@ -193,9 +193,9 @@ public class GroupProductFragment extends Fragment {
 
             public ViewHolder(View view) {
                 super(view);
-                imgItem = (ImageView) view.findViewById(R.id.group_image);
-                groupName = (TextView) view.findViewById(R.id.group_name);
-                groupPosition = (TextView) view.findViewById(R.id.group_position);
+                imgItem = (ImageView) view.findViewById(R.id.image);
+                groupName = (TextView) view.findViewById(R.id.tvPosition);
+                groupPosition = (TextView) view.findViewById(R.id.tvName);
                 view.setOnLongClickListener(this);
                 view.setOnClickListener(this);
             }

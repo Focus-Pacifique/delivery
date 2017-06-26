@@ -30,7 +30,6 @@ import io.realm.RealmResults;
 import okhttp3.OkHttpClient;
 import ovh.snacking.snacking.R;
 import ovh.snacking.snacking.controller.API.APIDolibarr;
-import ovh.snacking.snacking.model.CustomerGroup;
 import ovh.snacking.snacking.model.ProductGroup;
 import ovh.snacking.snacking.model.User;
 import ovh.snacking.snacking.util.RealmSingleton;
@@ -211,12 +210,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     group1.setPosition(1);
                 }
 
-                if (null == realm.where(CustomerGroup.class).findFirst()) {
-                    CustomerGroup group = realm.createObject(CustomerGroup.class, nextCustomerGroupId());
-                    group.setName("Tous les clients");
-                    group.setPosition(1);
-                }
-
                 // Update the user
                 if (null == mUser.getInitialValues() || mUser.getInitialValues() != 1)
                     mUser.setInitialValues(1);
@@ -226,10 +219,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private Integer nextProductGroupId() {
         return (null != realm.where(ProductGroup.class).findFirst() ? (realm.where(ProductGroup.class).max("id").intValue() + 1) : 1);
-    }
-
-    private Integer nextCustomerGroupId() {
-        return null != realm.where(CustomerGroup.class).findFirst() ? (realm.where(CustomerGroup.class).max("id").intValue() + 1) : 1;
     }
 
     /**

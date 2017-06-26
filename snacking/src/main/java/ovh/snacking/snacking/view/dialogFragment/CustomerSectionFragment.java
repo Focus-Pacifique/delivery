@@ -86,10 +86,10 @@ public class CustomerSectionFragment extends AppCompatDialogFragment {
     private List<Customer> getCustomerInGroup(CustomerGroup group) {
         List<Customer> customers = new ArrayList<>();
 
-        RealmResults<CustomerAndGroupBinding> customerAndGroupBindings = realm.where(CustomerAndGroupBinding.class).equalTo("group.id", group.getId()).findAllSorted("position");
+        /*RealmResults<CustomerAndGroupBinding> customerAndGroupBindings = realm.where(CustomerAndGroupBinding.class).equalTo("group.id", group.getId()).findAllSorted("position");
         for (CustomerAndGroupBinding customerAndGroupBinding : customerAndGroupBindings) {
             customers.add(customerAndGroupBinding.getCustomer());
-        }
+        }*/
 
         return customers;
     }

@@ -38,10 +38,6 @@ public class CustomerGroup extends RealmObject {
         return customers;
     }
 
-    public void setCustomers(RealmList<Customer> customers) {
-        this.customers = customers;
-    }
-
     public static CustomerGroup create(Realm realm) {
         CustomerGroup newGroup = realm.createObject(CustomerGroup.class);
         newGroup.setPosition(realm.where(CustomerGroup.class).findAll().size() - 1);

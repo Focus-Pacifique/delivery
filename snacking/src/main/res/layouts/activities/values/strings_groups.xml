@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_fragment_group">Groupes de clients</string>
-    <string name="dialog_change_group_name">Changer le nom du groupe</string>
+    <string name="dialog_change_group_name">Nouveau nom du groupe</string>
 </resources>

@@ -8,7 +8,7 @@
 
 
 
-    <!-- Strings related to CustomerSectionFragment -->
+    <!-- Strings related to DialogCustomerSection -->
     <string name="title_customer_select">Sélectionnez un client</string>
 
     <!-- Strings related to product group fragment-->
@@ -16,7 +16,7 @@
     <string name="title_product_of_group">Groupe</string>
 
 
-    <!-- Strings related to CustomerGroupDetailsFragment-->
+    <!-- Strings related to FragmentCustomerGroupDetails-->
     <string name="title_customer_of_group">Groupe</string>
 
     <string name="dialog_title_group_product">Nouveau groupe de produit</string>

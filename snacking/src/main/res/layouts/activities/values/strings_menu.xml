@@ -5,8 +5,11 @@
     <string name="hint_search_customer">Client, n° de facture</string>
 
     <!-- Contextual acton bar menu -->
-    <string name="add_item">Ajouter</string>
-    <string name="start_delete">Mode suppression</string>
-    <string name="delete">Supprimer</string>
+    <string name="action_add">Ajouter</string>
+    <string name="action_editer">Editer</string>
+
+    <string name="action_start_delete_mode">Mode suppression</string>
+    <string name="action_cancel_delete_mode">Annuler mode suppression</string>
+    <string name="action_delete">Supprimer</string>
 
 </resources>

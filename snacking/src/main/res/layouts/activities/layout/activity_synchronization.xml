@@ -5,7 +5,7 @@
                                                  android:layout_width="match_parent"
                                                  android:layout_height="match_parent"
                                                  android:fitsSystemWindows="true"
-                                                 tools:context="ovh.snacking.snacking.view.activity.SynchronizationActivity">
+                                                 tools:context="com.focus.delivery.view.activity.SynchronizationActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

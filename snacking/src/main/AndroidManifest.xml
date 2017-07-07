@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ovh.snacking.snacking">
-
-    <uses-sdk android:minSdkVersion="21" />
+    package="com.focus.delivery">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -18,12 +16,12 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name">
         <service
-            android:name=".controller.service.DolibarrService"
+            android:name="com.focus.delivery.service.DolibarrService"
             android:exported="false"
             android:label="@string/synchronization_service_name" />
 
         <activity
-            android:name=".view.activity.SplashActivity"
+            android:name="com.focus.delivery.view.activity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -32,17 +30,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.activity.LoginActivity"
+            android:name="com.focus.delivery.view.activity.LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
         <activity
-            android:name=".view.activity.MainActivity"
+            android:name="com.focus.delivery.view.activity.MainActivity"
             android:label="@string/title_manage_invoices_fragment"
             android:theme="@style/AppTheme"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
         <activity
-            android:name=".view.activity.SynchronizationActivity"
+            android:name="com.focus.delivery.view.activity.SynchronizationActivity"
             android:label="@string/title_activity_synchronization"
             android:theme="@style/AppTheme"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
@@ -54,7 +52,7 @@
         </activity>
 
         <receiver
-            android:name=".controller.service.DolibarrBroadcastReceiver"
+            android:name="com.focus.delivery.service.DolibarrBroadcastReceiver"
             android:label="Broadcast Receiver">
         </receiver>
     </application>

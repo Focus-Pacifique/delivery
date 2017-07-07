@@ -3,7 +3,7 @@ apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    buildToolsVersion "26.0.0"
 
     defaultConfig {
         applicationId "ovh.snacking.snacking"
@@ -13,27 +13,16 @@ android {
         versionName "1.3"
     }
 
-    signingConfigs {
-        release {
-            keyAlias 'snacking'
-            keyPassword '-DZNp5_CG1ZHSt-07fNz'
-            storeFile file('/home/alexis/dev/android/android.jks')
-            storePassword 'GWlqX1QvBE9yj4Y_N-yp'
-        }
-    }
-
     buildTypes {
         release {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
         }
         debug {
             debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt')
-            signingConfig signingConfigs.release
         }
     }
 

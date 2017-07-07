@@ -13,7 +13,7 @@
               android:paddingTop="@dimen/activity_vertical_margin"
               android:showDividers="middle"
               app:layout_behavior="@string/appbar_scrolling_view_behavior"
-              tools:context="ovh.snacking.snacking.view.activity.SynchronizationActivity"
+              tools:context="com.focus.delivery.view.activity.SynchronizationActivity"
               tools:showIn="@layout/activity_synchronization">
     <RelativeLayout
         android:layout_width="match_parent"

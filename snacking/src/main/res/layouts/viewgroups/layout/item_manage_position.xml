@@ -15,6 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:paddingStart="@dimen/activity_horizontal_margin"
         android:paddingEnd="@dimen/activity_horizontal_margin"/>
     <TextView
         android:id="@+id/tvName"
@@ -30,5 +31,7 @@
         android:layout_centerVertical="true"
         android:src="@drawable/ic_reorder_black_24dp"
         android:layout_alignParentEnd="true"
-        android:scaleType="center"/>
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:scaleType="center" />
 </RelativeLayout>

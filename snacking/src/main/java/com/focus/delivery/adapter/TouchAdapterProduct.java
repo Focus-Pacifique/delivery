@@ -52,7 +52,7 @@ public class TouchAdapterProduct extends RealmRecyclerViewAdapter<Product, Touch
     public void onBindViewHolder(final TouchAdapterProduct.ViewHolder viewHolder, int position) {
         final Product product = getData().get(position);
         viewHolder.tvPosition.setText(String.valueOf(position));
-        viewHolder.tvName.setText(String.valueOf(product.getLabel()));
+        viewHolder.tvName.setText(String.valueOf(product.getRef()));
 
         viewHolder.handleView.setOnTouchListener(new View.OnTouchListener() {
             @Override

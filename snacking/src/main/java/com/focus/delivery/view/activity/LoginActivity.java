@@ -202,23 +202,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-
-                // Set initial value for groups
-                if (null == realm.where(ProductGroup.class).findFirst()) {
-                    ProductGroup group1 = realm.createObject(ProductGroup.class, nextProductGroupId());
-                    group1.setName("Tous les produits");
-                    group1.setPosition(1);
-                }
-
                 // Update the user
                 if (null == mUser.getInitialValues() || mUser.getInitialValues() != 1)
                     mUser.setInitialValues(1);
             }
         });
-    }
-
-    private Integer nextProductGroupId() {
-        return (null != realm.where(ProductGroup.class).findFirst() ? (realm.where(ProductGroup.class).max("id").intValue() + 1) : 1);
     }
 
     /**

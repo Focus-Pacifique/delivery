@@ -13,6 +13,18 @@ import io.realm.annotations.PrimaryKey;
 
 public class Invoice extends RealmObject {
 
+    public static final String FIELD_ID                     = "id";
+    public static final String FIELD_TYPE                   = "type";
+    public static final String FIELD_STATE                  = "state";
+    public static final String FIELD_DATE                   = "date";
+    public static final String FIELD_REF                    = "ref";
+    public static final String FIELD_CUSTOMER               = "customer";
+    public static final String FIELD_LINES                  = "lines";
+    public static final String FIELD_FK_FACTURE_SOURCE      = "fk_facture_source";
+    public static final String FIELD_ID_DOLIBARR            = "id_dolibarr";
+    public static final String FIELD_IS_POST_TO_DOLIBARR    = "isPOSTToDolibarr";
+    public static final String FIELD_COUNTER_PRINT          = "counterPrint";
+
     public static final int ONGOING = 0;
     public static final int FINISHED = 1;
 
@@ -79,10 +91,6 @@ public class Invoice extends RealmObject {
 
     public RealmList<Line> getLines() {
         return lines;
-    }
-
-    public void setLines(RealmList<Line> line) {
-        this.lines = line;
     }
 
     public Integer getState() {

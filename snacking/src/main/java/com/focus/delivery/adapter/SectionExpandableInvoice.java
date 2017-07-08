@@ -21,6 +21,7 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapt
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
 import com.focus.delivery.R;
 import com.focus.delivery.controller.InvoiceController;
+import com.focus.delivery.interfaces.FilterableList;
 import com.focus.delivery.model.Invoice;
 import com.focus.delivery.util.LibUtil;
 import com.focus.delivery.view.fragment.InvoicesExpandableListFragment;
@@ -29,9 +30,9 @@ import com.focus.delivery.view.fragment.InvoicesExpandableListFragment;
  * Created by alexis on 21/04/17.
  */
 
-public class SectionExpandableInvoice extends StatelessSection implements InvoicesExpandableListFragment.FilterableSection {
+public class SectionExpandableInvoice extends StatelessSection implements FilterableList {
 
-    private SectionExpandableInvoicesListener mListener;
+    private SectionExpandableInvoiceListener mListener;
     private Context mContext;
     private long mLastClickTime = 0;
     private SectionedRecyclerViewAdapter mSectionAdapter;
@@ -42,7 +43,7 @@ public class SectionExpandableInvoice extends StatelessSection implements Invoic
     private int mImgHeader;
     private String mQuery;
 
-    public interface SectionExpandableInvoicesListener {
+    public interface SectionExpandableInvoiceListener {
         void onInvoiceSelected(Invoice invoice);
         void deleteInvoice(Invoice invoice, SectionExpandableInvoice adapter);
         void createAvoirFromFacture(Invoice invoice, SectionedRecyclerViewAdapter adapter);
@@ -56,7 +57,7 @@ public class SectionExpandableInvoice extends StatelessSection implements Invoic
         this.mSectionName = sectionName;
         this.mList = list;
         this.mFilteredList = new ArrayList<>(list);
-        this.mListener = (SectionExpandableInvoicesListener) frag.getActivity();
+        this.mListener = (SectionExpandableInvoiceListener) frag.getActivity();
         this.mImgHeader = 0;
         this.mExpanded = expanded;
         this.mQuery = "";
@@ -122,10 +123,10 @@ public class SectionExpandableInvoice extends StatelessSection implements Invoic
         //Invoice state part
         if (invoice.getState() == Invoice.ONGOING) {
             itemHolder.invoiceState.setText(R.string.invoice_state_en_cours);
-            itemHolder.invoiceState.setTextColor(Color.YELLOW);
+            itemHolder.invoiceState.setTextColor(ContextCompat.getColor(mContext, R.color.colorInvoiceOngoing));
         } else if (Invoice.FINISHED == invoice.getState()) {
             itemHolder.invoiceState.setText(R.string.invoice_state_terminee);
-            itemHolder.invoiceState.setTextColor(Color.GREEN);
+            itemHolder.invoiceState.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryDark));
         }
 
         // Invoice ref
@@ -134,7 +135,7 @@ public class SectionExpandableInvoice extends StatelessSection implements Invoic
         else
             itemHolder.invoiceRef.setText(String.valueOf(invoice.getRef()));
 
-        itemHolder.rootView.setOnLongClickListener(new View.OnLongClickListener() {
+        itemHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
            @Override
            public boolean onLongClick(View v) {
                int adapterPosition = itemHolder.getAdapterPosition();
@@ -148,7 +149,7 @@ public class SectionExpandableInvoice extends StatelessSection implements Invoic
            }
        });
 
-        itemHolder.rootView.setOnClickListener(new View.OnClickListener() {
+        itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
@@ -172,6 +173,18 @@ public class SectionExpandableInvoice extends StatelessSection implements Invoic
         // Title
         headerHolder.tvTitle.setText(String.format("%s (%s)", mSectionName, mFilteredList.size()));
 
+        switch (mSectionName) {
+            case InvoicesExpandableListFragment.SECTION_ONGOING:
+                headerHolder.tvTitle.setTextColor(ContextCompat.getColor(mContext, R.color.colorInvoiceOngoing));
+                break;
+            case InvoicesExpandableListFragment.SECTION_FINISHED:
+                headerHolder.tvTitle.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryDark));
+                break;
+            default:
+                headerHolder.tvTitle.setTextColor(ContextCompat.getColor(mContext, android.R.color.darker_gray));
+                break;
+        }
+
         // Icon
         if (mImgHeader != 0)
             headerHolder.imgHeader.setImageResource(mImgHeader);
@@ -182,7 +195,7 @@ public class SectionExpandableInvoice extends StatelessSection implements Invoic
         );
 
         // Handle the expand event
-        headerHolder.rootView.setOnClickListener(new View.OnClickListener() {
+        headerHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mExpanded = !mExpanded;
@@ -232,14 +245,12 @@ public class SectionExpandableInvoice extends StatelessSection implements Invoic
 
     private class HeaderViewHolder extends RecyclerView.ViewHolder {
 
-        private final View rootView;
         private final ImageView imgHeader;
         private final TextView tvTitle;
         private final ImageView imgExpand;
 
         private HeaderViewHolder(View view) {
             super(view);
-            rootView = view;
             imgHeader = (ImageView) view.findViewById(R.id.header_img);
             tvTitle = (TextView) view.findViewById(R.id.header_title);
             imgExpand = (ImageView) view.findViewById(R.id.header_expand);
@@ -248,7 +259,6 @@ public class SectionExpandableInvoice extends StatelessSection implements Invoic
 
     private class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        private final View rootView;
         private final TextView invoiceType;
         private final TextView invoiceRef;
         private final TextView customerName;
@@ -258,7 +268,6 @@ public class SectionExpandableInvoice extends StatelessSection implements Invoic
 
         private ItemViewHolder(View view) {
             super(view);
-            rootView = view;
             invoiceType = (TextView) view.findViewById(R.id.invoice_type);
             invoiceRef = (TextView) view.findViewById(R.id.invoice_ref);
             customerName = (TextView) view.findViewById(R.id.customer_name);

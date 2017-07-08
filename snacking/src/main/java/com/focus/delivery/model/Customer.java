@@ -14,6 +14,15 @@ import io.realm.annotations.PrimaryKey;
  */
 
 public class Customer extends RealmObject {
+
+    public static final String FIELD_ID             = "id";
+    public static final String FIELD_NAME           = "name";
+    public static final String FIELD_ADDRESS        = "address";
+    public static final String FIELD_ZIP            = "zip";
+    public static final String FIELD_TOWN           = "town";
+    public static final String FIELD_PHONE          = "phone";
+    public static final String FIELD_MODIFIED_DATE  = "modifiedDate";
+
     @Expose
     @PrimaryKey
     private Integer id;

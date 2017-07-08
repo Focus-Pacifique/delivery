@@ -8,17 +8,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.SearchView;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import io.github.luizgrp.sectionedrecyclerviewadapter.Section;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
-import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import com.focus.delivery.R;
+import com.focus.delivery.adapter.SectionExpandableCustomer;
+import com.focus.delivery.interfaces.FilterableList;
 import com.focus.delivery.model.Customer;
 import com.focus.delivery.model.CustomerGroup;
 import com.focus.delivery.util.RealmSingleton;
@@ -27,190 +25,107 @@ import com.focus.delivery.util.RealmSingleton;
  * Created by Alex on 17/11/2016.
  */
 
-public class DialogCustomerSection extends AppCompatDialogFragment {
+public class DialogCustomerSection extends AppCompatDialogFragment
+        implements SectionExpandableCustomer.SectionExpandableCustomerListener,
+        SearchView.OnQueryTextListener {
 
-    CustomerSectionFragmentListener mListener;
+    private DialogCustomerSectionListener mListener;
     private Realm realm;
+    private SectionedRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
-    private SectionedRecyclerViewAdapter mSectionAdapter;
+    private SearchView mSearchView;  // SearchView
+    private String mQuery = "";                     // Search query
+
+
+    public interface DialogCustomerSectionListener {
+        void onCustomerSelected(Customer customer);
+    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mListener = (CustomerSectionFragmentListener) context;
+            mListener = (DialogCustomerSectionListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement CustomerSectionFragmentListener");
+            throw new ClassCastException(context.toString() + " must implement DialogCustomerSectionListener");
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_recycler_view, container, false);
+        View view = inflater.inflate(R.layout.dialog_customer_section, container, false);
         realm = RealmSingleton.getInstance(getContext()).getRealm();
 
-        // Create an instance of SectionedRecyclerViewAdapter
-        mSectionAdapter = new SectionedRecyclerViewAdapter();
-
-        // Add your Sections
-        populateAdapter();
-
-        // Set up your RecyclerView with the SectionedRecyclerViewAdapter
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        //mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
-        mRecyclerView.setAdapter(mSectionAdapter);
+        setUpRecyclerView();
+
+        // Search view
+        mSearchView = (SearchView) view.findViewById(R.id.searchView);
+        // Configure the search info and add any event listeners
+        mSearchView.setQueryHint(getString(R.string.hint_search_product));
+        mSearchView.setOnQueryTextListener(this);
+
+        // Set the old search query
+        mSearchView.setQuery(mQuery, false);
 
         return view;
     }
 
-    private void populateAdapter() {
+    private void setUpRecyclerView() {
+        // Create an instance of SectionedRecyclerViewAdapter
+        mAdapter = new SectionedRecyclerViewAdapter();
 
-        RealmResults<CustomerGroup> customerGroups = realm.where(CustomerGroup.class).findAllSorted("position");
+        // Populate sections
+        RealmResults<CustomerGroup> customerGroups = realm.where(CustomerGroup.class).findAllSorted(CustomerGroup.FIELD_POSITION);
 
         //Manage empty customers in groups
         if (realm.where(CustomerGroup.class).findFirst() == null) {
-            mSectionAdapter.addSection(new DialogCustomerSection.CustomerSection(String.valueOf("Tous les clients"), getAllCustomer()));
+            mAdapter.addSection(new SectionExpandableCustomer(mAdapter, "Tous les clients", realm.where(Customer.class).findAllSorted(Customer.FIELD_NAME), this, true));
         } else {
             for (CustomerGroup group : customerGroups) {
-                List<Customer> customers = getCustomerInGroup(group);
-                if (customers.size() > 0) {
-                    mSectionAdapter.addSection(new DialogCustomerSection.CustomerSection(String.valueOf(group.getName()), customers));
+                if (group.getCustomers().size() > 0) {
+                    mAdapter.addSection(new SectionExpandableCustomer(mAdapter, group.getName(), group.getCustomers(), this, true));
                 }
             }
         }
-    }
 
-    private List<Customer> getCustomerInGroup(CustomerGroup group) {
-        List<Customer> customers = new ArrayList<>();
-
-        /*RealmResults<CustomerAndGroupBinding> customerAndGroupBindings = realm.where(CustomerAndGroupBinding.class).equalTo("group.id", group.getId()).findAllSorted("position");
-        for (CustomerAndGroupBinding customerAndGroupBinding : customerAndGroupBindings) {
-            customers.add(customerAndGroupBinding.getCustomer());
-        }*/
-
-        return customers;
-    }
-
-    private List<Customer> getAllCustomer() {
-        List<Customer> customers = new ArrayList<>();
-        RealmResults<Customer> allCustomer = realm.where(Customer.class).findAllSorted("name");
-        for (Customer customer : allCustomer) {
-            customers.add(customer);
-        }
-        return customers;
+        // Set up your RecyclerView with the SectionedRecyclerViewAdapter
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
+        // To hide the soft keyboard
+        mSearchView.clearFocus();
+        mRecyclerView.setAdapter(null);
         realm.close();
     }
 
-    public interface CustomerSectionFragmentListener {
-        void onCustomerSelected(Customer customer);
+    @Override
+    public void onCustomerSelected(Customer customer) {
+        mListener.onCustomerSelected(customer);
+        dismiss();
     }
 
-    private class CustomerSection extends StatelessSection {
+    /**
+     * Listen for events on SearchView item. Called in 'onCreateOptionsMenu()'.
+     */
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
 
-        private String mTitle;
-        private List<Customer> mList;
-        private boolean mExpanded = true;
-
-        public CustomerSection(String title, List<Customer> list) {
-            // call constructor with layout resources for this Section header and items
-            super(R.layout.section_header_expandable, R.layout.item_customer);
-            this.mTitle = title;
-            this.mList = list;
-        }
-
-        @Override
-        public int getContentItemsTotal() {
-            return mExpanded ? mList.size() : 0;
-        }
-
-        @Override
-        public RecyclerView.ViewHolder getItemViewHolder(View view) {
-            // return a custom instance of ViewHolder for the items of this section
-            return new CustomerSection.ItemViewHolder(view);
-        }
-
-        @Override
-        public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-            final CustomerSection.ItemViewHolder itemHolder = (CustomerSection.ItemViewHolder) holder;
-
-            // bind your view here
-            final Customer selectedCustomer = mList.get(position);
-            itemHolder.tvItem.setText(String.valueOf(selectedCustomer.getName()));
-            itemHolder.imgItem.setImageResource(R.drawable.ic_person_black_24dp);
-
-            itemHolder.rootView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mListener.onCustomerSelected(selectedCustomer);
-                    dismiss();
-                }
-            });
-        }
-
-        @Override
-        public RecyclerView.ViewHolder getHeaderViewHolder(View view) {
-            return new CustomerSection.HeaderViewHolder(view);
-        }
-
-        @Override
-        public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder) {
-            final HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
-
-            // Title
-            headerHolder.tvTitle.setText(String.format("%s (%s)", mTitle, mList.size()));
-
-            // Arrow expand/collapse
-            headerHolder.imgExpand.setImageResource(
-                    mExpanded ? R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp
-            );
-
-            // Handle the expand event
-            headerHolder.rootView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mExpanded = !mExpanded;
-                    headerHolder.imgExpand.setImageResource(
-                            mExpanded ? R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp
-                    );
-                    mSectionAdapter.notifyDataSetChanged();
-                }
-            });
-        }
-
-
-        private class HeaderViewHolder extends RecyclerView.ViewHolder {
-
-            private final View rootView;
-            private final TextView tvTitle;
-            private final ImageView imgExpand;
-
-            private HeaderViewHolder(View view) {
-                super(view);
-                rootView = view;
-                tvTitle = (TextView) view.findViewById(R.id.header_title);
-                imgExpand = (ImageView) view.findViewById(R.id.header_expand);
+    @Override
+    public boolean onQueryTextChange(String query) {
+        mQuery = query;
+        for (Section section : mAdapter.getSectionsMap().values()) {
+            if (section instanceof FilterableList) {
+                ((FilterableList) section).filter(query);
             }
         }
-
-        private class ItemViewHolder extends RecyclerView.ViewHolder {
-
-            private final View rootView;
-            private final ImageView imgItem;
-            private final TextView tvItem;
-
-            private ItemViewHolder(View view) {
-                super(view);
-                rootView = view;
-                imgItem = (ImageView) view.findViewById(R.id.customer_image);
-                tvItem = (TextView) view.findViewById(R.id.customer_name);
-            }
-        }
+        mAdapter.notifyDataSetChanged();
+        return true;
     }
 }

@@ -16,7 +16,7 @@ import com.focus.delivery.R;
 import com.focus.delivery.interfaces.ItemTouchHelperAdapter;
 import com.focus.delivery.interfaces.ItemTouchHelperViewHolder;
 import com.focus.delivery.interfaces.OnStartDragListener;
-import com.focus.delivery.model.CustomerGroup;
+import com.focus.delivery.model.ProductGroup;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
@@ -24,31 +24,31 @@ import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
 /**
- * Created by alexis on 18/06/17.
+ * Created by alex on 08/07/17.
  */
 
-public class TouchAdapterGroupCustomer extends RealmRecyclerViewAdapter<CustomerGroup, TouchAdapterGroupCustomer.ViewHolder>
+public class TouchAdapterGroupProduct extends RealmRecyclerViewAdapter<ProductGroup, TouchAdapterGroupProduct.ViewHolder>
         implements ItemTouchHelperAdapter {
 
     private final OnStartDragListener mDragStartListener;
-    private final TouchAdapterGroupCustomerListener mListener;
+    private final TouchAdapterGroupProductListener mListener;
     private final Context mContext;
     private Realm realm;
 
-    public interface TouchAdapterGroupCustomerListener {
-        void onCustomerGroupSelected(CustomerGroup group);
+    public interface TouchAdapterGroupProductListener {
+        void onProductGroupSelected(ProductGroup group);
     }
 
-    public TouchAdapterGroupCustomer(OrderedRealmCollection<CustomerGroup> realmResults, Fragment fragment, Realm realm) {
+    public TouchAdapterGroupProduct(OrderedRealmCollection<ProductGroup> realmResults, Fragment fragment, Realm realm) {
         super(realmResults, false);
         this.mContext = fragment.getContext();
         this.mDragStartListener = (OnStartDragListener) fragment;
-        this.mListener = (TouchAdapterGroupCustomerListener) fragment;
+        this.mListener = (TouchAdapterGroupProductListener) fragment;
         this.realm = realm;
     }
 
     @Override
-    public TouchAdapterGroupCustomer.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TouchAdapterGroupProduct.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_manage_position, parent, false);
         return new ViewHolder(itemView);
     }
@@ -56,7 +56,7 @@ public class TouchAdapterGroupCustomer extends RealmRecyclerViewAdapter<Customer
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         if(getData() != null) {
-            final CustomerGroup group = getData().get(position);
+            final ProductGroup group = getData().get(position);
 
             holder.tvPosition.setText(String.valueOf(group.getPosition()));
             holder.tvName.setText(String.valueOf(group.getName()));
@@ -64,7 +64,7 @@ public class TouchAdapterGroupCustomer extends RealmRecyclerViewAdapter<Customer
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mListener.onCustomerGroupSelected(group);
+                    mListener.onProductGroupSelected(group);
                 }
             });
         }
@@ -86,19 +86,19 @@ public class TouchAdapterGroupCustomer extends RealmRecyclerViewAdapter<Customer
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                CustomerGroup group = realm.where(CustomerGroup.class).equalTo(CustomerGroup.FIELD_POSITION, fromPosition).findFirst();
+                ProductGroup group = realm.where(ProductGroup.class).equalTo(ProductGroup.FIELD_POSITION, fromPosition).findFirst();
                 if (fromPosition < toPosition) {
-                    RealmResults<CustomerGroup> results = realm.where(CustomerGroup.class)
-                            .greaterThan(CustomerGroup.FIELD_POSITION, fromPosition)
-                            .lessThanOrEqualTo(CustomerGroup.FIELD_POSITION, toPosition)
+                    RealmResults<ProductGroup> results = realm.where(ProductGroup.class)
+                            .greaterThan(ProductGroup.FIELD_POSITION, fromPosition)
+                            .lessThanOrEqualTo(ProductGroup.FIELD_POSITION, toPosition)
                             .findAll();
                     for (int i = 0; i < results.size(); i++) {
                         results.get(i).setPosition(results.get(i).getPosition() - 1);
                     }
                 } else {
-                    RealmResults<CustomerGroup> results = realm.where(CustomerGroup.class)
-                            .greaterThanOrEqualTo(CustomerGroup.FIELD_POSITION, toPosition)
-                            .lessThan(CustomerGroup.FIELD_POSITION, fromPosition)
+                    RealmResults<ProductGroup> results = realm.where(ProductGroup.class)
+                            .greaterThanOrEqualTo(ProductGroup.FIELD_POSITION, toPosition)
+                            .lessThan(ProductGroup.FIELD_POSITION, fromPosition)
                             .findAll();
                     for (int i = 0; i < results.size(); i++) {
                         results.get(i).setPosition(results.get(i).getPosition() + 1);
@@ -116,7 +116,7 @@ public class TouchAdapterGroupCustomer extends RealmRecyclerViewAdapter<Customer
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                CustomerGroup.delete(realm, getData().get(position).getPosition());
+                ProductGroup.delete(realm, getData().get(position).getPosition());
             }
         });
         notifyItemRemoved(position);

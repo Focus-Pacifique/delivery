@@ -270,13 +270,6 @@ public class DolibarrService extends IntentService {
                         // Delete the product from realm who are not anymore into dolibarr
                         RealmResults<Product> productsToDelete = realm.where(Product.class).lessThan("modifiedDate", modifiedDate).findAll();
                         for(Product product : productsToDelete) {
-                            // First delete product from table ProductAndGroupBinding
-                            RealmResults<ProductAndGroupBinding> binds = realm.where(ProductAndGroupBinding.class).equalTo("product.id", product.getId()).findAll();
-                            for(ProductAndGroupBinding bind : binds) {
-                                deleteProductBind(bind);
-                            }
-
-                            // Then delete product from realm
                             product.deleteFromRealm();
                         }
                     }
@@ -571,7 +564,7 @@ public class DolibarrService extends IntentService {
         return obj;
     }
 
-    private void deleteProductBind(ProductAndGroupBinding bind) {
+    /*private void deleteProductBind(ProductAndGroupBinding bind) {
         // Set correct position of product
         RealmResults<ProductAndGroupBinding> lines = realm.where(ProductAndGroupBinding.class)
                 .equalTo("group.id", bind.getGroup().getId())
@@ -582,7 +575,7 @@ public class DolibarrService extends IntentService {
         }
         //Delete the line
         bind.deleteFromRealm();
-    }
+    }*/
 
     //private JsonObject convertInvoiceBackup2Json(InvoiceChange invoice) {
 

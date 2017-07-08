@@ -61,40 +61,40 @@ import com.focus.delivery.util.RealmSingleton;
 import com.focus.delivery.view.dialogFragment.DialogCustomerSection;
 import com.focus.delivery.view.dialogFragment.DatePickerEndFragment;
 import com.focus.delivery.view.dialogFragment.DatePickerStartFragment;
-import com.focus.delivery.view.fragment.FragmentCustomerGroups;
+import com.focus.delivery.view.fragment.FragmentCustomerGroupsGroupCustomer;
 import com.focus.delivery.view.fragment.FragmentCustomerGroupDetails;
-import com.focus.delivery.view.fragment.EditingInvoiceFragment;
-import com.focus.delivery.view.fragment.FragmentProductGroup;
+import com.focus.delivery.view.fragment.TabFragmentEditInvoice;
+import com.focus.delivery.view.fragment.FragmentProductGroupDetails;
+import com.focus.delivery.view.fragment.FragmentProductGroups;
 import com.focus.delivery.view.fragment.InvoiceStatementFragment;
 import com.focus.delivery.view.fragment.InvoicesExpandableListFragment;
 import com.focus.delivery.view.fragment.PreferencesFragment;
 import com.focus.delivery.view.fragment.FragmentPrintInvoice;
 import com.focus.delivery.view.fragment.PrintInvoiceStatementFragment;
-import com.focus.delivery.view.fragment.ProductOfGroupFragment;
 
 public class MainActivity extends AppCompatActivity
         implements InvoicesExpandableListFragment.OnInvoicesExpandableListener,
-        EditingInvoiceFragment.OnEditInvoiceListener,
+        TabFragmentEditInvoice.TabFragmentEditInvoiceListener,
         FragmentPrintInvoice.FragmentPrintInvoiceListener,
         PrintInvoiceStatementFragment.OnPrintInvoiceStatementListener,
-        FragmentCustomerGroups.CustomerGroupFragmentListener,
-        FragmentProductGroup.ProductGroupFragmentListener,
+        FragmentCustomerGroupsGroupCustomer.FragmentCustomerGroupsListener,
+        FragmentProductGroups.FragmentProductGroupsListener,
         DatePickerStartFragment.OnDatePickerStartFragment,
         DatePickerEndFragment.OnDatePickerEndFragment,
-        SectionExpandableInvoice.SectionExpandableInvoicesListener,
-        DialogCustomerSection.CustomerSectionFragmentListener {
+        SectionExpandableInvoice.SectionExpandableInvoiceListener,
+        DialogCustomerSection.DialogCustomerSectionListener {
 
     public static final String TAG_CUSTOMER_SELECT = "ovh.snacking.snacking.view.dialogFragment.DialogCustomerSection";
-    public static final String TAG_EDITING_INVOICE = "ovh.snacking.snacking.view.fragment.EditingInvoiceFragment";
+    public static final String TAG_EDITING_INVOICE = "ovh.snacking.snacking.view.fragment.TabFragmentEditInvoice";
     //public static final String TAG_MANAGING_INVOICE = "ovh.snacking.snacking.view.ManagingInvoice";
     public static final String TAG_PRINT_INVOICE = "ovh.snacking.snacking.view.PrntInvoice";
     public static final String TAG_PRINT_INVOICE_STATEMENT = "ovh.snacking.snacking.view.fragment.PrintInvoiceStatementFragment";
     public static final String TAG_INVOICE_STATEMENT = "ovh.snacking.snacking.view.fragment.InvoiceStatementFragment";
     public static final String TAG_SETTINGS_FRAGMENT = "ovh.snacking.snacking.view.fragment.PreferencesFragment";
-    public static final String TAG_MANAGE_GROUP_CUSTOMER = "ovh.snacking.snacking.view.fragment.FragmentCustomerGroups";
+    public static final String TAG_MANAGE_GROUP_CUSTOMER = "ovh.snacking.snacking.view.fragment.FragmentCustomerGroupsGroupCustomer";
     public static final String TAG_CUSTOMER_GROUP_DETAILS = "ovh.snacking.snacking.view.fragment.FragmentCustomerGroupDetails";
-    public static final String TAG_MANAGE_GROUP_PRODUCT = "ovh.snacking.snacking.view.fragment.FragmentProductGroup";
-    public static final String TAG_PRODUCT_OF_GROUP = "ovh.snacking.snacking.view.fragment.ProductOfGroupFragment";
+    public static final String TAG_MANAGE_GROUP_PRODUCT = "ovh.snacking.snacking.view.fragment.FragmentProductGroups";
+    public static final String TAG_PRODUCT_OF_GROUP = "ovh.snacking.snacking.view.fragment.FragmentProductGroupDetails";
     public static final String TAG_INVOICES_EXPANDABLE_LIST = "ovh.snacking.snacking.view.fragment.InvoicesExpandableListFragment";
 
     private Realm realm;
@@ -229,18 +229,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     // Called whenever we call invalidateOptionsMenu()
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_search).setVisible(false);
-        return true;
-    }
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        menu.findItem(R.id.action_search).setVisible(false);
+//        return true;
+//    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu items for use in the action bar
+//        getMenuInflater().inflate(R.menu.menu_search, menu);
+//        return true;
+//    }
 
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
@@ -332,8 +332,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void goToInvoice(Invoice invoice) {
         if (Invoice.ONGOING == invoice.getState()) {
-            EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
-            frag.setInvoiceId(invoice.getId());
+            TabFragmentEditInvoice frag = TabFragmentEditInvoice.newInstance(invoice.getId());
             launchFragment(frag, TAG_EDITING_INVOICE, true);
         } else if (Invoice.FINISHED == invoice.getState()) {
             FragmentPrintInvoice frag = FragmentPrintInvoice.newInstance(invoice.getId());
@@ -343,9 +342,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onCustomerSelected(Customer customer) {
-        final EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
-        Invoice newInvoice = InvoiceController.createFacture(MainActivity.this, customer);
-        frag.setInvoiceId(newInvoice.getId());
+        final TabFragmentEditInvoice frag = TabFragmentEditInvoice.newInstance(InvoiceController.createFacture(MainActivity.this, customer).getId());
         launchFragment(frag, TAG_EDITING_INVOICE, true);
     }
 
@@ -363,9 +360,8 @@ public class MainActivity extends AppCompatActivity
     /**  Group Product select part  **/
     /*********************************/
     @Override
-    public void onGroupProductSelected(ProductGroup productGroup) {
-        final ProductOfGroupFragment frag = (ProductOfGroupFragment) getFragment(MainActivity.TAG_PRODUCT_OF_GROUP);
-        frag.setProductGroup(productGroup);
+    public void displayProductsOfGroup(ProductGroup productGroup) {
+        FragmentProductGroupDetails frag = FragmentProductGroupDetails.newInstance(productGroup.getPosition());
         launchFragment(frag, TAG_PRODUCT_OF_GROUP, true);
     }
 
@@ -418,8 +414,7 @@ public class MainActivity extends AppCompatActivity
             }
         });*/
 
-        EditingInvoiceFragment frag = (EditingInvoiceFragment) getFragment(MainActivity.TAG_EDITING_INVOICE);
-        frag.setInvoiceId(invoiceId);
+        TabFragmentEditInvoice frag = TabFragmentEditInvoice.newInstance(invoiceId);
         launchFragment(frag, TAG_EDITING_INVOICE, true);
     }
 
@@ -618,7 +613,7 @@ public class MainActivity extends AppCompatActivity
                     frag = new DialogCustomerSection();
                     break;
                 case TAG_EDITING_INVOICE:
-                    frag = new EditingInvoiceFragment();
+                    frag = new TabFragmentEditInvoice();
                     break;
                 case TAG_PRINT_INVOICE:
                     frag =  new FragmentPrintInvoice();
@@ -633,13 +628,13 @@ public class MainActivity extends AppCompatActivity
                     frag =  new InvoiceStatementFragment();
                     break;
                 case TAG_MANAGE_GROUP_CUSTOMER:
-                    frag =  new FragmentCustomerGroups();
+                    frag =  new FragmentCustomerGroupsGroupCustomer();
                     break;
                 case TAG_MANAGE_GROUP_PRODUCT:
-                    frag =  new FragmentProductGroup();
+                    frag =  new FragmentProductGroups();
                     break;
                 case TAG_PRODUCT_OF_GROUP:
-                    frag =  new ProductOfGroupFragment();
+                    frag =  new FragmentProductGroupDetails();
                     break;
                 case TAG_INVOICES_EXPANDABLE_LIST:
                     frag = new InvoicesExpandableListFragment();

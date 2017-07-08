@@ -3,6 +3,7 @@
     <string name="action_search">Rechercher</string>
     <string name="action_menu">Menu</string>
     <string name="hint_search_customer">Client, n° de facture</string>
+    <string name="hint_search_product">Libellé, référence</string>
 
     <!-- Contextual acton bar menu -->
     <string name="action_add">Ajouter</string>

@@ -37,23 +37,23 @@ import io.realm.Realm;
  *
  */
 
-public class FragmentCustomerGroups extends Fragment implements
-        TouchAdapterGroupCustomer.CustomerGroupAdapterListener,
+public class FragmentCustomerGroupsGroupCustomer extends Fragment implements
+        TouchAdapterGroupCustomer.TouchAdapterGroupCustomerListener,
         OnStartDragListener {
 
     private Realm realm;
     private RecyclerView mRecyclerView;
     private TouchAdapterGroupCustomer mAdapter;
     private ItemTouchHelper mItemTouchHelper;
-    private CustomerGroupFragmentListener mListener;
+    private FragmentCustomerGroupsListener mListener;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mListener = (CustomerGroupFragmentListener) context;
+            mListener = (FragmentCustomerGroupsListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement CustomerGroupFragmentListener");
+            throw new ClassCastException(context.toString() + " must implement FragmentCustomerGroupsListener");
         }
     }
 
@@ -79,12 +79,12 @@ public class FragmentCustomerGroups extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_group));
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_customer_group));
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         mRecyclerView.setAdapter(null);
         realm.close();
     }
@@ -178,7 +178,7 @@ public class FragmentCustomerGroups extends Fragment implements
         mListener.displayCustomersOfGroup(group);
     }
 
-    public interface CustomerGroupFragmentListener {
+    public interface FragmentCustomerGroupsListener {
         void displayCustomersOfGroup(CustomerGroup group);
     }
 

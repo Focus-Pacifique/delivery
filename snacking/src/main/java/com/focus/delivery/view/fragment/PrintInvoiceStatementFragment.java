@@ -132,6 +132,12 @@ public class PrintInvoiceStatementFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        fab.hide();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         realm.close();

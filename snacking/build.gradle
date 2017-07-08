@@ -2,17 +2,17 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
 android {
+    signingConfigs {
+    }
     compileSdkVersion 25
     buildToolsVersion "26.0.0"
-
     defaultConfig {
-        applicationId "ovh.snacking.snacking"
+        applicationId 'com.focus.delivery'
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 4
         versionName "1.3"
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -25,7 +25,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt')
         }
     }
-
     sourceSets {
         main {
             res.srcDirs =
@@ -38,6 +37,8 @@ android {
                             'src/main/res'
                     ]
         }
+    }
+    productFlavors {
     }
 }
 

@@ -2,7 +2,6 @@ package com.focus.delivery.view.fragment;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
@@ -22,12 +21,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.focus.delivery.R;
-import com.focus.delivery.adapter.AdapterCustomerList;
-import com.focus.delivery.adapter.TouchAdapterCustomer;
+import com.focus.delivery.adapter.AdapterProductList;
 import com.focus.delivery.adapter.ItemTouchHelperCallback;
+import com.focus.delivery.adapter.TouchAdapterProduct;
 import com.focus.delivery.interfaces.OnStartDragListener;
-import com.focus.delivery.model.Customer;
-import com.focus.delivery.model.CustomerGroup;
+import com.focus.delivery.model.Product;
+import com.focus.delivery.model.ProductGroup;
 import com.focus.delivery.util.RealmSingleton;
 import com.focus.delivery.view.activity.MainActivity;
 
@@ -36,23 +35,23 @@ import io.realm.Realm;
 /**
  * Created by Alex on 07/02/2017.
  *
- * Fragment to mangage customers into a group
+ * Fragment to mangage products into a group
  *
  */
 
-public class FragmentCustomerGroupDetails extends Fragment implements OnStartDragListener {
+public class FragmentProductGroupDetails extends Fragment implements OnStartDragListener {
 
     private Realm realm;
     private RecyclerView mRecyclerView;
-    private TouchAdapterCustomer mAdapter;
+    private TouchAdapterProduct mAdapter;
     private ItemTouchHelper mItemTouchHelper;
-    private CustomerGroup mGroup;
+    private ProductGroup mGroup;
 
-    public static FragmentCustomerGroupDetails newInstance(int position) {
-        FragmentCustomerGroupDetails frag = new FragmentCustomerGroupDetails();
+    public static FragmentProductGroupDetails newInstance(int position) {
+        FragmentProductGroupDetails frag = new FragmentProductGroupDetails();
 
         Bundle bundle = new Bundle();
-        bundle.putInt(CustomerGroup.FIELD_POSITION, position);
+        bundle.putInt(ProductGroup.FIELD_POSITION, position);
         frag.setArguments(bundle);
 
         return frag;
@@ -61,13 +60,12 @@ public class FragmentCustomerGroupDetails extends Fragment implements OnStartDra
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recycler_view, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        realm = RealmSingleton.getInstance(getContext()).getRealm();
 
-        // Menu
         setHasOptionsMenu(true);
 
-        realm = RealmSingleton.getInstance(getContext()).getRealm();
-        mGroup = realm.where(CustomerGroup.class).equalTo(CustomerGroup.FIELD_POSITION, getArguments().getInt(CustomerGroup.FIELD_POSITION)).findFirst();
+        mGroup = realm.where(ProductGroup.class).equalTo(ProductGroup.FIELD_POSITION, getArguments().getInt(ProductGroup.FIELD_POSITION)).findFirst();
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
         setUpRecyclerView();
 
@@ -75,7 +73,7 @@ public class FragmentCustomerGroupDetails extends Fragment implements OnStartDra
     }
 
     private void setUpRecyclerView() {
-        mAdapter = new TouchAdapterCustomer(mGroup.getCustomers(), this, realm);
+        mAdapter = new TouchAdapterProduct(mGroup.getProducts(), this, realm);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setHasFixedSize(true);
@@ -97,7 +95,7 @@ public class FragmentCustomerGroupDetails extends Fragment implements OnStartDra
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                displayDialogAddCustomer();
+                displayDialogAddProduct();
                 return true;
             case R.id.action_edit:
                 displayDialogChangeName();
@@ -127,10 +125,10 @@ public class FragmentCustomerGroupDetails extends Fragment implements OnStartDra
         mItemTouchHelper.startDrag(viewHolder);
     }
 
-    private void displayDialogAddCustomer() {
+    private void displayDialogAddProduct() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Set the dialog title
-        builder.setAdapter(new AdapterCustomerList(realm.where(Customer.class).findAll()), null);
+        builder.setAdapter(new AdapterProductList(realm.where(Product.class).findAll()), null);
 
         final AlertDialog ad = builder.create();
         ad.getListView().setItemsCanFocus(false);
@@ -138,19 +136,19 @@ public class FragmentCustomerGroupDetails extends Fragment implements OnStartDra
         ad.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                addCustomer((Customer) parent.getItemAtPosition(position));
+                addProduct((Product) parent.getItemAtPosition(position));
             }
         });
 
         ad.show();
     }
 
-    private void addCustomer(final Customer customer) {
+    private void addProduct(final Product product) {
         // Add customer to group
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                mGroup.getCustomers().add(customer);
+                mGroup.getProducts().add(product);
             }
         });
 
@@ -173,7 +171,7 @@ public class FragmentCustomerGroupDetails extends Fragment implements OnStartDra
                     }
                 });
 
-        final AlertDialog ad = builder.create();
+        final android.support.v7.app.AlertDialog ad = builder.create();
         et.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -190,7 +188,7 @@ public class FragmentCustomerGroupDetails extends Fragment implements OnStartDra
         ad.show();
     }
 
-    private void editGroupName(final CustomerGroup group, final String newName) {
+    private void editGroupName(final ProductGroup group, final String newName) {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {

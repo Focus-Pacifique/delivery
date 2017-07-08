@@ -1,5 +1,6 @@
 package com.focus.delivery.view.fragment;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,65 +18,78 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ListView;
-
-import com.focus.delivery.R;
-import com.focus.delivery.adapter.AdapterCustomerList;
-import com.focus.delivery.adapter.TouchAdapterCustomer;
-import com.focus.delivery.adapter.ItemTouchHelperCallback;
-import com.focus.delivery.interfaces.OnStartDragListener;
-import com.focus.delivery.model.Customer;
-import com.focus.delivery.model.CustomerGroup;
-import com.focus.delivery.util.RealmSingleton;
-import com.focus.delivery.view.activity.MainActivity;
 
 import io.realm.Realm;
 
+import com.focus.delivery.R;
+import com.focus.delivery.adapter.ItemTouchHelperCallback;
+import com.focus.delivery.adapter.TouchAdapterGroupProduct;
+import com.focus.delivery.interfaces.OnStartDragListener;
+import com.focus.delivery.util.RealmSingleton;
+import com.focus.delivery.model.ProductGroup;
+import com.focus.delivery.view.activity.MainActivity;
+
 /**
- * Created by Alex on 07/02/2017.
+ * Created by Alex on 29/01/2017.
  *
- * Fragment to mangage customers into a group
+ * Fragment to manage group of products
  *
  */
 
-public class FragmentCustomerGroupDetails extends Fragment implements OnStartDragListener {
+public class FragmentProductGroups extends Fragment implements
+        TouchAdapterGroupProduct.TouchAdapterGroupProductListener,
+        OnStartDragListener {
 
     private Realm realm;
     private RecyclerView mRecyclerView;
-    private TouchAdapterCustomer mAdapter;
+    private TouchAdapterGroupProduct mAdapter;
     private ItemTouchHelper mItemTouchHelper;
-    private CustomerGroup mGroup;
+    private FragmentProductGroupsListener mListener;
 
-    public static FragmentCustomerGroupDetails newInstance(int position) {
-        FragmentCustomerGroupDetails frag = new FragmentCustomerGroupDetails();
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mListener = (FragmentProductGroupsListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement FragmentProductGroupsListener");
+        }
+    }
 
-        Bundle bundle = new Bundle();
-        bundle.putInt(CustomerGroup.FIELD_POSITION, position);
-        frag.setArguments(bundle);
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        return frag;
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recycler_view, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-
-        // Menu
-        setHasOptionsMenu(true);
-
         realm = RealmSingleton.getInstance(getContext()).getRealm();
-        mGroup = realm.where(CustomerGroup.class).equalTo(CustomerGroup.FIELD_POSITION, getArguments().getInt(CustomerGroup.FIELD_POSITION)).findFirst();
+
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
         setUpRecyclerView();
 
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.title_fragment_product_group));
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        realm.close();
+    }
+
     private void setUpRecyclerView() {
-        mAdapter = new TouchAdapterCustomer(mGroup.getCustomers(), this, realm);
+        mAdapter = new TouchAdapterGroupProduct(realm.where(ProductGroup.class).findAllSorted(ProductGroup.FIELD_POSITION), this, realm);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setHasFixedSize(true);
@@ -94,13 +108,16 @@ public class FragmentCustomerGroupDetails extends Fragment implements OnStartDra
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.action_edit).setVisible(false);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                displayDialogAddCustomer();
-                return true;
-            case R.id.action_edit:
-                displayDialogChangeName();
+                displayDialogAddGroup();
                 return true;
             default:
                 break;
@@ -108,68 +125,17 @@ public class FragmentCustomerGroupDetails extends Fragment implements OnStartDra
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        //Title
-        ((MainActivity) getActivity()).setActionBarTitle(String.valueOf(mGroup.getName()));
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mRecyclerView.setAdapter(null);
-        realm.close();
-    }
-
-    @Override
-    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
-        mItemTouchHelper.startDrag(viewHolder);
-    }
-
-    private void displayDialogAddCustomer() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        // Set the dialog title
-        builder.setAdapter(new AdapterCustomerList(realm.where(Customer.class).findAll()), null);
-
-        final AlertDialog ad = builder.create();
-        ad.getListView().setItemsCanFocus(false);
-        ad.getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        ad.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                addCustomer((Customer) parent.getItemAtPosition(position));
-            }
-        });
-
-        ad.show();
-    }
-
-    private void addCustomer(final Customer customer) {
-        // Add customer to group
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                mGroup.getCustomers().add(customer);
-            }
-        });
-
-        // Notify item inserted
-        mAdapter.notifyItemInserted(mAdapter.getItemCount() - 1);
-    }
-
-    private void displayDialogChangeName() {
+    private void displayDialogAddGroup() {
         final EditText et = new EditText(getContext());
         et.setInputType(InputType.TYPE_CLASS_TEXT);
-        et.setText(mGroup.getName());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(R.string.dialog_change_group_name)
+        builder.setTitle(R.string.dialog_title_product_group)
                 .setView(et)
-                .setPositiveButton("Changer", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Ajouter", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String input = et.getText().toString().isEmpty() ? "" : et.getText().toString();
-                        editGroupName(mGroup, input);
+                        addProductGroup(input);
                     }
                 });
 
@@ -179,7 +145,7 @@ public class FragmentCustomerGroupDetails extends Fragment implements OnStartDra
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     String input = et.getText().toString().isEmpty() ? "" : et.getText().toString();
-                    editGroupName(mGroup, input);
+                    addProductGroup(input);
                     ad.dismiss();
                     return true;
                 }
@@ -190,15 +156,28 @@ public class FragmentCustomerGroupDetails extends Fragment implements OnStartDra
         ad.show();
     }
 
-    private void editGroupName(final CustomerGroup group, final String newName) {
+    private void addProductGroup(final String name) {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                group.setName(newName);
+                ProductGroup group = ProductGroup.create(realm);
+                group.setName(name);
+                mAdapter.notifyItemInserted(group.getPosition());
             }
         });
+    }
 
-        // Update title
-        ((MainActivity) getActivity()).setActionBarTitle(newName);
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
+    }
+
+    @Override
+    public void onProductGroupSelected(ProductGroup group) {
+        mListener.displayProductsOfGroup(group);
+    }
+
+    public interface FragmentProductGroupsListener {
+        void displayProductsOfGroup(ProductGroup productGroup);
     }
 }

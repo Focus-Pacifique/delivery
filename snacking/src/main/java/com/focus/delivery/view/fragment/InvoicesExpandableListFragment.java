@@ -26,6 +26,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import com.focus.delivery.R;
 import com.focus.delivery.adapter.SectionExpandableInvoice;
+import com.focus.delivery.interfaces.FilterableList;
 import com.focus.delivery.model.Invoice;
 import com.focus.delivery.util.RealmSingleton;
 import com.focus.delivery.view.activity.MainActivity;
@@ -119,6 +120,9 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
      */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu items for use in the action bar
+        getActivity().getMenuInflater().inflate(R.menu.menu_search, menu);
+
         mSearchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
 
         // Configure the search info and add any event listeners
@@ -133,12 +137,6 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
             mSearchView.setIconified(true);
         } else
             mSearchView.setIconified(false);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_search).setVisible(true);
-        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -321,10 +319,6 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
         void newInvoice();
     }
 
-    public interface FilterableSection {
-        void filter(String query);
-    }
-
     /**
      * Listen for events on SearchView item. Called in 'onCreateOptionsMenu()'.
      */
@@ -336,8 +330,8 @@ public class InvoicesExpandableListFragment extends android.support.v4.app.Fragm
     public boolean onQueryTextChange(String query) {
         mQuery = query;
         for (Section section : mAdapter.getSectionsMap().values()) {
-            if (section instanceof FilterableSection) {
-                ((FilterableSection) section).filter(query);
+            if (section instanceof FilterableList) {
+                ((FilterableList) section).filter(query);
             }
         }
         mAdapter.notifyDataSetChanged();

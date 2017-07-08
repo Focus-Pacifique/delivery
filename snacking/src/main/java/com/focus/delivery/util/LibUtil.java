@@ -87,9 +87,9 @@ public class LibUtil {
         return nf.format(value);
     }
 
-    public static double parseEditTextInput(EditText et) {
+    public static int parseEditTextInput(EditText et) {
         if (!et.getText().toString().isEmpty()) {
-            final Double input = Double.parseDouble(et.getText().toString());
+            final Integer input = Integer.parseInt(et.getText().toString());
             if (input > 0) {
                 return input;
             } else {

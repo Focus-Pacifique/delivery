@@ -15,6 +15,15 @@ import io.realm.annotations.PrimaryKey;
 
 public class Product extends RealmObject {
 
+    public static final String FIELD_ID                 = "id";
+    public static final String FIELD_REF                = "ref";
+    public static final String FIELD_LABEL              = "label";
+    public static final String FIELD_TYPE               = "type";
+    public static final String FIELD_PRICES             = "price";
+    public static final String FIELD_TAX_RATE           = "taxRate";
+    public static final String FIELD_SECOND_TAX_RATE    = "secondTaxRate";
+    public static final String FIELD_MODIFIED_DATE      = "modifiedDate";
+
     @Expose @PrimaryKey private Integer id;
     @Expose private String ref;
     @Expose private String label;

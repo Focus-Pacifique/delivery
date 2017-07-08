@@ -7,24 +7,6 @@
     <string name="invoice_state_terminee">TERMINEE</string>
 
 
-
-    <!-- Strings related to DialogCustomerSection -->
-    <string name="title_customer_select">Sélectionnez un client</string>
-
-    <!-- Strings related to product group fragment-->
-    <string name="minimum_group_size">Impossible de supprimer le dernier groupe</string>
-    <string name="title_product_of_group">Groupe</string>
-
-
-    <!-- Strings related to FragmentCustomerGroupDetails-->
-    <string name="title_customer_of_group">Groupe</string>
-
-    <string name="dialog_title_group_product">Nouveau groupe de produit</string>
-
-    <!-- Strings related to GroupCustomerFragment -->
-    <string name="dialog_title_customer_group">Nouveau groupe de clients</string>
-
-
     <!-- Strings related to Print -->
     <string name="title_print">Imprimer</string>
     <string name="activity_print">Impression</string>

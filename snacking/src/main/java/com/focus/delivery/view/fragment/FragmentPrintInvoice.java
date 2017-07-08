@@ -37,8 +37,6 @@ import com.focus.delivery.view.activity.MainActivity;
 
 public class FragmentPrintInvoice extends Fragment {
 
-    public static String ARG_INVOICE_ID = "invoiceId";
-
     FragmentPrintInvoiceListener mListener;
     private Realm realm;
     private Invoice mInvoice;
@@ -57,7 +55,7 @@ public class FragmentPrintInvoice extends Fragment {
         FragmentPrintInvoice frag = new FragmentPrintInvoice();
 
         Bundle bundle = new Bundle();
-        bundle.putInt(ARG_INVOICE_ID, invoiceId);
+        bundle.putInt(Invoice.FIELD_ID, invoiceId);
         frag.setArguments(bundle);
 
         return frag;
@@ -69,7 +67,7 @@ public class FragmentPrintInvoice extends Fragment {
         final View layout = inflater.inflate(R.layout.print_invoice_fragment, container, false);
 
         // Set up the mInvoice lines adapter
-        mInvoice = realm.where(Invoice.class).equalTo("id", getArguments().getInt(ARG_INVOICE_ID)).findFirst();
+        mInvoice = realm.where(Invoice.class).equalTo(Invoice.FIELD_ID, getArguments().getInt(Invoice.FIELD_ID)).findFirst();
         if(mInvoice != null) {
 
             // Set mInvoice lines adapter to recycler view

@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_fragment_group">Groupes de clients</string>
+    <string name="title_fragment_customer_group">Groupes de clients</string>
+    <string name="title_fragment_product_group">Groupes de produits</string>
+
+    <string name="dialog_title_product_group">Nouveau groupe de produits</string>
+    <string name="dialog_title_customer_group">Nouveau groupe de clients</string>
+
     <string name="dialog_change_group_name">Nouveau nom du groupe</string>
 </resources>

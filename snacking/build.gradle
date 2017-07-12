@@ -23,6 +23,8 @@ android {
             debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt')
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
         }
     }
 
@@ -31,12 +33,17 @@ android {
             def propsFile = rootProject.file('keystore.properties')
 
             if (propsFile.exists()) {
-                def props = new Properties()
-                props.load(new FileInputStream(propsFile))
-                storeFile = file(props['storeFile'])
-                storePassword = props['storePassword']
-                keyAlias = props['keyAlias']
-                keyPassword = props['keyPassword']
+                try {
+                    def props = new Properties()
+                    props.load(new FileInputStream(propsFile))
+                    storeFile = file(props['storeFile'])
+                    storePassword = props['storePassword']
+                    keyAlias = props['keyAlias']
+                    keyPassword = props['keyPassword']
+                }
+                catch (ex) {
+                    throw new InvalidUserDataException("You should define variables in keystore.properties.")
+                }
             }
         }
     }
@@ -53,8 +60,6 @@ android {
                             'src/main/res'
                     ]
         }
-    }
-    productFlavors {
     }
 }
 

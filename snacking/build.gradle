@@ -13,21 +13,6 @@ android {
         versionName "1.3"
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            debuggable true
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt')
-            applicationIdSuffix '.debug'
-            versionNameSuffix '-DEBUG'
-        }
-    }
-
     signingConfigs {
         release {
             def propsFile = rootProject.file('keystore.properties')
@@ -47,6 +32,23 @@ android {
             }
         }
     }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt')
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
+        }
+    }
+
+
 
     sourceSets {
         main {

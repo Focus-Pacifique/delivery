@@ -5,6 +5,13 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 
+import com.focus.delivery.R;
+import com.focus.delivery.controller.InvoiceController;
+import com.focus.delivery.model.Invoice;
+import com.focus.delivery.model.User;
+import com.focus.delivery.util.LibUtil;
+import com.focus.delivery.util.RealmSingleton;
+import com.focus.delivery.view.activity.MainActivity;
 import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat;
 import com.takisoft.fix.support.v7.preference.SwitchPreferenceCompat;
 
@@ -13,13 +20,6 @@ import java.util.Date;
 import java.util.Map;
 
 import io.realm.Realm;
-import com.focus.delivery.R;
-import com.focus.delivery.controller.InvoiceController;
-import com.focus.delivery.model.Invoice;
-import com.focus.delivery.model.User;
-import com.focus.delivery.util.LibUtil;
-import com.focus.delivery.util.RealmSingleton;
-import com.focus.delivery.view.activity.MainActivity;
 
 /**
  * Created by Alex on 04/02/2017.

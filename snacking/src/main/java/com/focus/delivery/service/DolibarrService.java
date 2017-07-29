@@ -563,19 +563,6 @@ public class DolibarrService extends IntentService {
         return obj;
     }
 
-    /*private void deleteProductBind(ProductAndGroupBinding bind) {
-        // Set correct position of product
-        RealmResults<ProductAndGroupBinding> lines = realm.where(ProductAndGroupBinding.class)
-                .equalTo("group.id", bind.getGroup().getId())
-                .greaterThan("position", bind.getPosition())
-                .findAll();
-        for (ProductAndGroupBinding line : lines) {
-            line.setPosition(line.getPosition() - 1);
-        }
-        //Delete the line
-        bind.deleteFromRealm();
-    }*/
-
     //private JsonObject convertInvoiceBackup2Json(InvoiceChange invoice) {
 
         /****************************************/

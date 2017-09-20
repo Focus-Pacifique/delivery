@@ -22,7 +22,7 @@ import retrofit2.http.Query;
 
 public interface APIDolibarr {
 
-    @GET(".")
+    @GET("status")
     Call<JsonObject> getAPIServerStatus(@Query("DOLAPIKEY") String DOLAPIKEY);
 
     @GET("login")

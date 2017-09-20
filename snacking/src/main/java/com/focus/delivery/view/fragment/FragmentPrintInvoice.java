@@ -204,7 +204,7 @@ public class FragmentPrintInvoice extends Fragment {
             Map.Entry<Double, Integer> item = it.next();
             String[] TAX = new String[2];
 
-            TAX[0] = "TGC (" + nf.format(item.getKey()) + " %)";
+            TAX[0] = "TGC (" + nf.format(item.getKey()) + "%)";
 
             Integer TOT_TAX = item.getValue();
             if (Invoice.AVOIR == invoice.getType()) {
